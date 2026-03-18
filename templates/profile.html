@@ -4,109 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile — SwarmSolve</title>
-    <link rel="stylesheet" href="/static/style.css?v=7">
+    <link rel="stylesheet" href="/static/style.css?v=8">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <style>
+/* Mobile sidebar */
 @media(max-width:768px){
 .hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:300;position:relative;background:none;border:none;cursor:pointer;padding:8px}
 .hamburger span{display:block;width:22px;height:2px;background:#c9d1d9;margin:4px 0;border-radius:2px;transition:.3s}
 .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
 .hamburger.active span:nth-child(2){opacity:0}
 .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
-.nav-sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:300;backdrop-filter:blur(4px)}
+.nav-sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:300}
 .nav-sidebar-overlay.active{display:block}
-.nav-links{display:flex;position:fixed!important;top:0!important;right:-280px!important;width:270px!important;height:100vh!important;background:#0d1117!important;border-left:1px solid #161b22!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;padding:70px 20px 30px!important;gap:4px!important;z-index:350!important;overflow-y:auto!important;transition:right .3s cubic-bezier(.4,0,.2,1)!important;box-shadow:-4px 0 24px rgba(0,0,0,.4)!important}
+.nav-links{display:flex;position:fixed!important;top:0!important;right:-280px!important;width:270px!important;height:100vh!important;background:#0d1117!important;border-left:1px solid #161b22!important;flex-direction:column!important;align-items:stretch!important;padding:70px 20px 30px!important;gap:4px!important;z-index:350!important;overflow-y:auto!important;transition:right .3s!important;box-shadow:-4px 0 24px rgba(0,0,0,.4)!important}
 .nav-links.active{right:0!important}
-body.rtl .nav-links{right:auto!important;left:-280px!important;border-left:none!important;border-right:1px solid #161b22!important;transition:left .3s cubic-bezier(.4,0,.2,1)!important}
+body.rtl .nav-links{right:auto!important;left:-280px!important;transition:left .3s!important}
 body.rtl .nav-links.active{left:0!important}
-.nav-links a,.nav-links button{font-size:15px!important;padding:13px 16px!important;min-height:46px;display:flex!important;align-items:center!important;width:100%!important;border-radius:10px!important;color:#c9d1d9!important;border:none;cursor:pointer;background:transparent}
+.nav-links a,.nav-links button{font-size:15px!important;padding:13px 16px!important;display:flex!important;align-items:center!important;width:100%!important;border-radius:10px!important;color:#c9d1d9!important;border:none;cursor:pointer;background:transparent}
 .nav-links .btn-google{background:#fff!important;color:#333!important}
 }
 @media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
 
-/* ===== PROFILE PAGE STYLES ===== */
+/* Profile page */
 .profile-container{max-width:800px;margin:0 auto;padding:30px 20px 60px}
-
-/* Profile Header Card */
-.profile-card{background:#0d1117;border:1px solid #161b22;border-radius:20px;padding:0;overflow:hidden;margin-bottom:24px}
-.profile-cover{height:120px;background:linear-gradient(135deg,#22d3ee20,#818cf820,#a78bfa20);position:relative}
+.profile-card{background:#0d1117;border:1px solid #161b22;border-radius:20px;overflow:hidden;margin-bottom:24px}
+.profile-cover{height:120px;background:linear-gradient(135deg,#22d3ee20,#818cf820,#a78bfa20)}
 .profile-header{display:flex;align-items:flex-end;gap:20px;padding:0 28px;margin-top:-50px;position:relative;z-index:2}
 .avatar-wrapper{position:relative;flex-shrink:0}
-.avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;object-fit:cover;background:#161b22;display:block}
-.avatar-placeholder{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:40px;color:#060911;font-weight:800}
-.avatar-upload-btn{position:absolute;bottom:2px;right:2px;width:32px;height:32px;background:#22d3ee;border-radius:50%;border:3px solid #0d1117;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:14px}
-.avatar-upload-btn:hover{transform:scale(1.1)}
-.avatar-upload-btn input{display:none}
+.avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;object-fit:cover;background:#161b22;display:block;cursor:pointer}
+.avatar-placeholder{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:40px;color:#060911;font-weight:800;cursor:pointer}
+.avatar-edit-icon{position:absolute;bottom:2px;right:2px;width:30px;height:30px;background:#22d3ee;border-radius:50%;border:3px solid #0d1117;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;pointer-events:none}
 .profile-header-info{padding-bottom:16px;flex:1;min-width:0}
-.profile-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:2px}
 .profile-email{font-size:13px;color:#6e7681}
 .profile-badge-row{display:flex;align-items:center;gap:8px;margin-top:6px}
-
-/* Profile Body */
 .profile-body{padding:20px 28px 28px}
-
-/* Stats Grid */
 .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
 .p-stat{background:#161b22;border-radius:12px;padding:16px;text-align:center;border:1px solid #21262d}
 .p-stat-num{display:block;font-size:24px;font-weight:800;color:#22d3ee;font-family:'JetBrains Mono',monospace}
 .p-stat-label{font-size:11px;color:#6e7681;margin-top:4px}
-
-/* Info Section */
 .profile-info{margin-bottom:24px}
 .profile-info-title{font-size:16px;font-weight:700;color:#f0f6fc;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.btn-edit{background:#161b22;color:#22d3ee;border:1px solid #22d3ee40;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-edit{background:#161b22;color:#22d3ee;border:1px solid #22d3ee40;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
 .btn-edit:hover{background:#22d3ee20}
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .info-item{background:#161b22;border-radius:10px;padding:14px 16px;border:1px solid #21262d}
 .info-item.full-width{grid-column:1/-1}
-.info-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.info-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .info-value{font-size:15px;color:#f0f6fc;word-break:break-word}
 .info-value a{color:#22d3ee}
 .info-value.empty{color:#30363d;font-style:italic}
-
-/* Edit Mode */
-.edit-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:500;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(4px)}
-.edit-overlay.active{display:flex}
-.edit-modal{background:#0d1117;border:1px solid #161b22;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:28px}
-.edit-modal h2{font-size:20px;font-weight:800;color:#f0f6fc;margin-bottom:20px}
-.edit-group{margin-bottom:16px}
-.edit-group label{display:block;font-size:13px;font-weight:600;color:#8b949e;margin-bottom:6px}
-.edit-group input,.edit-group textarea{width:100%;background:#161b22;border:1px solid #21262d;color:#f0f6fc;padding:12px 14px;border-radius:8px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;transition:.2s;-webkit-appearance:none}
-.edit-group input:focus,.edit-group textarea:focus{outline:none;border-color:#22d3ee}
-.edit-buttons{display:flex;gap:10px;margin-top:20px}
-.btn-save{flex:1;background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;padding:12px;border-radius:8px;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:.2s}
-.btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px #22d3ee30}
-.btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-cancel{flex:1;background:#161b22;color:#c9d1d9;padding:12px;border-radius:8px;font-size:15px;font-weight:600;border:1px solid #21262d;cursor:pointer;transition:.2s}
-.btn-cancel:hover{border-color:#30363d}
-
-/* Actions */
 .profile-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn-logout{background:none;border:1.5px solid #f8717140;color:#f87171;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block}
-.btn-logout:hover{background:#f8717120}
+.btn-logout{border:1.5px solid #f8717140;color:#f87171;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;background:none;text-decoration:none}
+
+/* Edit Modal */
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:500;justify-content:center;align-items:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal-box{background:#0d1117;border:1px solid #161b22;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:28px}
+.modal-box h2{font-size:20px;font-weight:800;color:#f0f6fc;margin-bottom:20px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:13px;font-weight:600;color:#8b949e;margin-bottom:6px}
+.fg input,.fg textarea{width:100%;background:#161b22;border:1px solid #21262d;color:#f0f6fc;padding:12px 14px;border-radius:8px;font-size:15px;font-family:inherit}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:#22d3ee}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.btn-save{flex:1;background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;padding:12px;border-radius:8px;font-size:15px;font-weight:700;border:none;cursor:pointer}
+.btn-cancel{flex:1;background:#161b22;color:#c9d1d9;padding:12px;border-radius:8px;font-size:15px;font-weight:600;border:1px solid #21262d;cursor:pointer}
+
+/* Crop Modal */
+.crop-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:600;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.crop-modal.open{display:flex}
+.crop-container{width:100%;max-width:400px;max-height:60vh;background:#000;border-radius:12px;overflow:hidden}
+.crop-container img{display:block;max-width:100%}
+.crop-btns{display:flex;gap:10px;margin-top:16px}
+.crop-btns button{padding:12px 28px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer}
+.btn-crop-ok{background:#22d3ee;color:#060911}
+.btn-crop-cancel{background:#161b22;color:#c9d1d9;border:1px solid #21262d}
+.crop-hint{color:#6e7681;font-size:12px;margin-top:8px;text-align:center}
 
 /* Toast */
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:#34d399;color:#060911;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;z-index:600;transition:transform .3s ease;pointer-events:none}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:#34d399;color:#060911;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;z-index:700;transition:transform .3s;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* Mobile */
 @media(max-width:768px){
     .profile-header{flex-direction:column;align-items:center;text-align:center;padding:0 20px;margin-top:-40px}
-    .profile-header-info{padding-bottom:0}
-    .profile-name{font-size:20px;white-space:normal}
-    .profile-badge-row{justify-content:center}
     .profile-body{padding:16px 20px 24px}
     .profile-stats{grid-template-columns:repeat(2,1fr);gap:8px}
-    .p-stat-num{font-size:20px}
     .info-grid{grid-template-columns:1fr}
-    .edit-modal{padding:20px;margin:10px}
     .profile-actions{flex-direction:column}
     .profile-actions a,.profile-actions button{width:100%;text-align:center}
     .avatar-img,.avatar-placeholder{width:90px;height:90px}
-}
-@media(max-width:480px){
-    .profile-stats{grid-template-columns:1fr}
-    .profile-cover{height:90px}
 }
 </style>
 </head>
@@ -126,20 +115,17 @@ body.rtl .nav-links.active{left:0!important}
     </nav>
 
     <div class="profile-container">
-        <!-- Profile Card -->
         <div class="profile-card">
             <div class="profile-cover"></div>
             <div class="profile-header">
-                <div class="avatar-wrapper">
+                <div class="avatar-wrapper" id="avatar-click-area" title="Click to change photo">
                     {% if user.avatar_url %}
-                        <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar-img" id="avatar-display">
+                        <img src="{{ user.avatar_url }}" alt="" class="avatar-img" id="avatar-display">
                     {% else %}
                         <div class="avatar-placeholder" id="avatar-display">{{ (user.name or 'U')[0] | upper }}</div>
                     {% endif %}
-                    <label class="avatar-upload-btn" title="Change photo">
-                        📷
-                        <input type="file" id="avatar-input" accept="image/*">
-                    </label>
+                    <div class="avatar-edit-icon">📷</div>
+                    <input type="file" id="avatar-input" accept="image/*" style="display:none">
                 </div>
                 <div class="profile-header-info">
                     <div class="profile-name" id="display-name">{{ user.username or user.name or 'New User' }}</div>
@@ -149,132 +135,94 @@ body.rtl .nav-links.active{left:0!important}
                     </div>
                 </div>
             </div>
-
             <div class="profile-body">
-                <!-- Stats -->
                 <div class="profile-stats">
-                    <div class="p-stat">
-                        <span class="p-stat-num">{{ user.agents_count or 0 }}</span>
-                        <span class="p-stat-label" data-i18n="profile.agents">Agents</span>
-                    </div>
-                    <div class="p-stat">
-                        <span class="p-stat-num">{{ user.total_improvements or 0 }}</span>
-                        <span class="p-stat-label" data-i18n="profile.improvements">Improvements</span>
-                    </div>
-                    <div class="p-stat">
-                        <span class="p-stat-num">{{ user.biggest_jump or '—' }}</span>
-                        <span class="p-stat-label" data-i18n="profile.bestJump">Best Jump</span>
-                    </div>
-                    <div class="p-stat">
-                        <span class="p-stat-num">{{ user.challenges_won or 0 }}</span>
-                        <span class="p-stat-label" data-i18n="profile.wins">Wins</span>
-                    </div>
+                    <div class="p-stat"><span class="p-stat-num">{{ user.agents_count or 0 }}</span><span class="p-stat-label">Agents</span></div>
+                    <div class="p-stat"><span class="p-stat-num">{{ user.total_improvements or 0 }}</span><span class="p-stat-label">Improvements</span></div>
+                    <div class="p-stat"><span class="p-stat-num">{{ user.biggest_jump or '—' }}</span><span class="p-stat-label">Best Jump</span></div>
+                    <div class="p-stat"><span class="p-stat-num">{{ user.challenges_won or 0 }}</span><span class="p-stat-label">Wins</span></div>
                 </div>
-
-                <!-- Info -->
                 <div class="profile-info">
                     <div class="profile-info-title">
-                        <span data-i18n="profile.aboutTitle">About</span>
-                        <button class="btn-edit" onclick="openEdit()" data-i18n="profile.editBtn">✏️ Edit</button>
+                        <span>About</span>
+                        <button class="btn-edit" id="btn-open-edit">✏️ Edit</button>
                     </div>
                     <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">Username</div>
-                            <div class="info-value" id="show-username">{{ user.username or '—' }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label" data-i18n="profile.fullName">Full Name</div>
-                            <div class="info-value" id="show-fullname">{{ user.name or '—' }}</div>
-                        </div>
-                        <div class="info-item full-width">
-                            <div class="info-label">Bio</div>
-                            <div class="info-value {% if not user.bio %}empty{% endif %}" id="show-bio">{{ user.bio or 'No bio yet — tell the world about yourself' }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">GitHub</div>
-                            <div class="info-value {% if not user.github %}empty{% endif %}" id="show-github">
-                                {% if user.github %}<a href="https://{{ user.github }}" target="_blank">{{ user.github }}</a>{% else %}Not set{% endif %}
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">LinkedIn</div>
-                            <div class="info-value {% if not user.linkedin %}empty{% endif %}" id="show-linkedin">
-                                {% if user.linkedin %}<a href="https://{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>{% else %}Not set{% endif %}
-                            </div>
-                        </div>
+                        <div class="info-item"><div class="info-label">Username</div><div class="info-value" id="show-username">{{ user.username or '—' }}</div></div>
+                        <div class="info-item"><div class="info-label">Full Name</div><div class="info-value" id="show-fullname">{{ user.name or '—' }}</div></div>
+                        <div class="info-item full-width"><div class="info-label">Bio</div><div class="info-value {% if not user.bio %}empty{% endif %}" id="show-bio">{{ user.bio or 'No bio yet' }}</div></div>
+                        <div class="info-item"><div class="info-label">GitHub</div><div class="info-value {% if not user.github %}empty{% endif %}" id="show-github">{% if user.github %}<a href="https://{{ user.github }}" target="_blank">{{ user.github }}</a>{% else %}Not set{% endif %}</div></div>
+                        <div class="info-item"><div class="info-label">LinkedIn</div><div class="info-value {% if not user.linkedin %}empty{% endif %}" id="show-linkedin">{% if user.linkedin %}<a href="https://{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>{% else %}Not set{% endif %}</div></div>
                     </div>
                 </div>
-
-                <!-- Actions -->
                 <div class="profile-actions">
-                    <a href="/new-agent" class="btn-primary" data-i18n="profile.createAgent">+ Create Agent</a>
-                    <a href="/logout" class="btn-logout" data-i18n="profile.logout">Log Out</a>
+                    <a href="/new-agent" class="btn-primary">+ Create Agent</a>
+                    <a href="/logout" class="btn-logout">Log Out</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Modal -->
-    <div class="edit-overlay" id="edit-overlay">
-        <div class="edit-modal">
-            <h2 data-i18n="profile.editTitle">Edit Profile</h2>
-            <div class="edit-group">
-                <label>Username</label>
-                <input type="text" id="edit-username" value="{{ user.username or '' }}" placeholder="Choose a username">
-            </div>
-            <div class="edit-group">
-                <label data-i18n="profile.fullName">Full Name</label>
-                <input type="text" id="edit-fullname" value="{{ user.name or '' }}" placeholder="Your full name">
-            </div>
-            <div class="edit-group">
-                <label>Bio</label>
-                <textarea id="edit-bio" rows="3" placeholder="Tell the world about yourself">{{ user.bio or '' }}</textarea>
-            </div>
-            <div class="edit-group">
-                <label>GitHub</label>
-                <input type="text" id="edit-github" value="{{ user.github or '' }}" placeholder="github.com/username">
-            </div>
-            <div class="edit-group">
-                <label>LinkedIn</label>
-                <input type="text" id="edit-linkedin" value="{{ user.linkedin or '' }}" placeholder="linkedin.com/in/username">
-            </div>
-            <div class="edit-buttons">
-                <button class="btn-save" id="btn-save" onclick="saveProfile()">Save</button>
-                <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
+    <div class="modal-bg" id="edit-modal">
+        <div class="modal-box">
+            <h2>Edit Profile</h2>
+            <div class="fg"><label>Username</label><input type="text" id="edit-username" value="{{ user.username or '' }}"></div>
+            <div class="fg"><label>Full Name</label><input type="text" id="edit-fullname" value="{{ user.name or '' }}"></div>
+            <div class="fg"><label>Bio</label><textarea id="edit-bio" rows="3">{{ user.bio or '' }}</textarea></div>
+            <div class="fg"><label>GitHub</label><input type="text" id="edit-github" value="{{ user.github or '' }}" placeholder="github.com/username"></div>
+            <div class="fg"><label>LinkedIn</label><input type="text" id="edit-linkedin" value="{{ user.linkedin or '' }}" placeholder="linkedin.com/in/username"></div>
+            <div class="modal-btns">
+                <button class="btn-save" id="btn-save">Save</button>
+                <button class="btn-cancel" id="btn-cancel-edit">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">Profile updated!</div>
+    <!-- Crop Modal -->
+    <div class="crop-modal" id="crop-modal">
+        <div class="crop-container" id="crop-container">
+            <img id="crop-image" src="">
+        </div>
+        <div class="crop-hint">Drag to reposition, scroll to zoom</div>
+        <div class="crop-btns">
+            <button class="btn-crop-ok" id="btn-crop-ok">✓ Use This Photo</button>
+            <button class="btn-crop-cancel" id="btn-crop-cancel">Cancel</button>
+        </div>
+    </div>
 
-    <footer>
-        <p data-i18n="footer.short">SwarmSolve — Open Source Iterative Algorithm Optimization</p>
-    </footer>
+    <div class="toast" id="toast"></div>
 
-    <script src="/static/lang.js?v=7"></script>
+    <footer><p>SwarmSolve — Open Source Iterative Algorithm Optimization</p></footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <script src="/static/lang.js?v=8"></script>
     <script>
-    // Sidebar menu
-    document.addEventListener("DOMContentLoaded",function(){
-        var h=document.getElementById("hamburger");
-        var n=document.getElementById("nav-links");
-        var o=document.getElementById("nav-sidebar-overlay");
-        if(h&&n){
-            h.addEventListener("click",function(e){e.stopPropagation();n.classList.toggle("active");h.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});
-            if(o)o.addEventListener("click",function(){h.classList.remove("active");n.classList.remove("active");o.classList.remove("active");document.body.style.overflow="";});
-            n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";});});
-        }
+    // ===== SIDEBAR =====
+    (function(){
+        var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");
+        if(!h||!n)return;
+        h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});
+        if(o)o.addEventListener("click",close);
+        n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",close);});
+        function close(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}
+    })();
+
+    // ===== TOAST =====
+    function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
+
+    // ===== EDIT MODAL =====
+    document.getElementById("btn-open-edit").addEventListener("click",function(){
+        document.getElementById("edit-modal").classList.add("open");
+        document.body.style.overflow="hidden";
     });
+    document.getElementById("btn-cancel-edit").addEventListener("click",closeEditModal);
+    document.getElementById("edit-modal").addEventListener("click",function(e){if(e.target===this)closeEditModal();});
+    function closeEditModal(){document.getElementById("edit-modal").classList.remove("open");document.body.style.overflow="";}
 
-    // Edit modal
-    function openEdit(){document.getElementById("edit-overlay").classList.add("active");document.body.style.overflow="hidden";}
-    function closeEdit(){document.getElementById("edit-overlay").classList.remove("active");document.body.style.overflow="";}
-    document.getElementById("edit-overlay").addEventListener("click",function(e){if(e.target===this)closeEdit();});
-
-    // Save profile
-    function saveProfile(){
-        var btn=document.getElementById("btn-save");
-        btn.disabled=true;btn.textContent="Saving...";
+    // ===== SAVE PROFILE =====
+    document.getElementById("btn-save").addEventListener("click",function(){
+        var btn=this;btn.disabled=true;btn.textContent="Saving...";
         var data={
             username:document.getElementById("edit-username").value.trim(),
             full_name:document.getElementById("edit-fullname").value.trim(),
@@ -286,60 +234,112 @@ body.rtl .nav-links.active{left:0!important}
         .then(function(r){return r.json();})
         .then(function(d){
             if(d.ok){
-                // Update display
                 document.getElementById("show-username").textContent=data.username||"—";
                 document.getElementById("show-fullname").textContent=data.full_name||"—";
-                var bioEl=document.getElementById("show-bio");
-                bioEl.textContent=data.bio||"No bio yet";
-                bioEl.className="info-value"+(data.bio?"":" empty");
+                document.getElementById("show-bio").textContent=data.bio||"No bio yet";
+                document.getElementById("show-bio").className="info-value"+(data.bio?"":" empty");
                 document.getElementById("display-name").textContent=data.username||data.full_name||"User";
                 showToast("Profile updated!");
-                closeEdit();
-            } else {
-                showToast("Error: "+d.error);
-            }
+                closeEditModal();
+            } else {showToast("Error: "+(d.error||"Unknown"));}
             btn.disabled=false;btn.textContent="Save";
         })
         .catch(function(){btn.disabled=false;btn.textContent="Save";showToast("Network error");});
-    }
+    });
 
-    // Avatar upload via server
+    // ===== AVATAR UPLOAD WITH CROP =====
+    var cropper=null;
+    var cropFile=null;
+
+    // Click avatar area → open file picker
+    document.getElementById("avatar-click-area").addEventListener("click",function(){
+        document.getElementById("avatar-input").click();
+    });
+
+    // File selected → open crop modal
     document.getElementById("avatar-input").addEventListener("change",function(e){
         var file=e.target.files[0];
         if(!file)return;
-        if(file.size>2*1024*1024){showToast("Image too large (max 2MB)");return;}
+        if(file.size>5*1024*1024){showToast("Image too large (max 5MB)");return;}
+        cropFile=file;
 
-        showToast("Uploading...");
-        var fd=new FormData();
-        fd.append("avatar",file);
+        var reader=new FileReader();
+        reader.onload=function(ev){
+            var img=document.getElementById("crop-image");
+            img.src=ev.target.result;
+            document.getElementById("crop-modal").classList.add("open");
+            document.body.style.overflow="hidden";
 
-        fetch("/profile/upload-avatar",{method:"POST",body:fd})
-        .then(function(r){return r.json();})
-        .then(function(d){
-            if(d.ok){
-                var display=document.getElementById("avatar-display");
-                if(display.tagName==="IMG"){
-                    display.src=d.url;
+            // Destroy old cropper if exists
+            if(cropper)cropper.destroy();
+
+            // Init cropper after image loads
+            img.onload=function(){
+                cropper=new Cropper(img,{
+                    aspectRatio:1,
+                    viewMode:1,
+                    dragMode:'move',
+                    cropBoxResizable:true,
+                    cropBoxMovable:true,
+                    minCropBoxWidth:80,
+                    minCropBoxHeight:80,
+                    background:false,
+                    modal:true,
+                    guides:false,
+                    center:true,
+                    highlight:false,
+                    autoCropArea:0.8
+                });
+            };
+        };
+        reader.readAsDataURL(file);
+        // Reset input so same file can be selected again
+        this.value="";
+    });
+
+    // Crop OK → upload cropped image
+    document.getElementById("btn-crop-ok").addEventListener("click",function(){
+        if(!cropper)return;
+        var btn=this;btn.disabled=true;btn.textContent="Uploading...";
+
+        cropper.getCroppedCanvas({
+            width:300,
+            height:300,
+            imageSmoothingEnabled:true,
+            imageSmoothingQuality:'high'
+        }).toBlob(function(blob){
+            var fd=new FormData();
+            fd.append("avatar",blob,"avatar.jpg");
+
+            fetch("/profile/upload-avatar",{method:"POST",body:fd})
+            .then(function(r){return r.json();})
+            .then(function(d){
+                if(d.ok){
+                    var display=document.getElementById("avatar-display");
+                    if(display.tagName==="IMG"){
+                        display.src=d.url;
+                    } else {
+                        var img=document.createElement("img");
+                        img.src=d.url;img.className="avatar-img";img.id="avatar-display";
+                        display.parentNode.replaceChild(img,display);
+                    }
+                    showToast("Photo updated!");
                 } else {
-                    var img=document.createElement("img");
-                    img.src=d.url;
-                    img.className="avatar-img";img.id="avatar-display";
-                    display.parentNode.replaceChild(img,display);
+                    showToast("Upload failed: "+(d.error||""));
                 }
-                showToast("Photo updated!");
-            } else {
-                showToast("Upload failed: "+(d.error||"Unknown error"));
-            }
-        })
-        .catch(function(err){showToast("Upload failed");});
-    });
+                closeCropModal();
+                btn.disabled=false;btn.textContent="✓ Use This Photo";
+            })
+            .catch(function(){showToast("Upload failed");closeCropModal();btn.disabled=false;btn.textContent="✓ Use This Photo";});
+        },"image/jpeg",0.9);
     });
 
-    // Toast
-    function showToast(msg){
-        var t=document.getElementById("toast");
-        t.textContent=msg;t.classList.add("show");
-        setTimeout(function(){t.classList.remove("show");},3000);
+    // Crop cancel
+    document.getElementById("btn-crop-cancel").addEventListener("click",closeCropModal);
+    function closeCropModal(){
+        document.getElementById("crop-modal").classList.remove("open");
+        document.body.style.overflow="";
+        if(cropper){cropper.destroy();cropper=null;}
     }
     </script>
 </body>
