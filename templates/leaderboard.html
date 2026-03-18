@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaderboard — SwarmSolve</title>
-    <link rel="stylesheet" href="/static/style.css?v=3">
+    <link rel="stylesheet" href="/static/style.css?v=4">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@media(max-width:768px){
+.hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:300;position:relative}
+.hamburger span{display:block;width:24px;height:2.5px;background:#c9d1d9;margin:5px 0;border-radius:2px;transition:all .3s ease}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.nav-links{display:none!important;position:fixed;top:0;left:0;right:0;bottom:0;background:#060911f7;flex-direction:column;justify-content:center;align-items:center;gap:10px;z-index:250;padding:80px 24px 40px;overflow-y:auto}
+.nav-links.active{display:flex!important}
+.nav-links a,.nav-links button{font-size:19px!important;padding:15px 32px!important;min-height:52px;display:flex!important;align-items:center;justify-content:center;width:100%;max-width:300px;border-radius:12px}
+.nav-links .btn-google{font-size:17px!important;padding:14px 28px!important;border-radius:12px;justify-content:center;width:100%;max-width:300px}
+.nav-links .nav-why-btn{font-size:15px!important;padding:12px 24px!important;margin-top:6px}
+.nav-links .nav-cta-small{font-size:17px!important;padding:14px 24px!important;border-radius:12px;width:100%;max-width:300px}
+.nav-links .lang-toggle{font-size:16px!important;padding:12px 28px!important;margin-top:4px;width:100%;max-width:300px}
+}
+</style>
 </head>
 <body>
     <nav class="navbar">
@@ -109,6 +125,6 @@
         <p data-i18n="footer.short">SwarmSolve — Open Source Iterative Algorithm Optimization</p>
     </footer>
 
-    <script src="/static/lang.js?v=3"></script>
+    <script src="/static/lang.js?v=4"></script>
 </body>
 </html>
