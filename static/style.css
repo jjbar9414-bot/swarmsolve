@@ -423,106 +423,159 @@ footer{text-align:center;padding:30px 20px;color:#30363d;border-top:1px solid #1
    RESPONSIVE — TABLET & MOBILE (max-width: 768px)
    ============================================================ */
 @media(max-width:768px){
-    /* Navbar hamburger */
-    .navbar{padding:12px 16px}
-    .hamburger{display:flex;flex-direction:column;justify-content:center}
+    /* ── MOBILE NAVBAR ── */
+    .navbar{padding:12px 16px;flex-wrap:nowrap}
+    .hamburger{display:flex !important;flex-direction:column;justify-content:center;position:relative;z-index:250}
+
+    /* Nav links: hidden by default, fullscreen overlay when active */
     .nav-links{
-        display:none;
+        display:none !important;
         position:fixed;
         top:0;left:0;right:0;bottom:0;
-        background:#0d1117f5;
+        background:#060911fa;
         flex-direction:column;
         justify-content:center;
         align-items:center;
-        gap:16px;
-        z-index:150;
-        backdrop-filter:blur(20px);
-        padding:20px;
-        animation:fadeIn .2s ease;
+        gap:8px;
+        z-index:200;
+        padding:80px 30px 40px;
+        overflow-y:auto;
     }
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    .nav-links.active{display:flex}
-    .nav-links a,.nav-links button{font-size:18px;padding:14px 28px;min-height:48px;display:flex;align-items:center;justify-content:center}
-    .nav-links .btn-google{font-size:16px;padding:14px 28px}
-    .nav-links .nav-why-btn{font-size:16px;padding:12px 24px}
-    .nav-links .nav-cta-small{font-size:16px;padding:12px 24px}
-    /* Close button area */
-    .nav-overlay{display:none;position:fixed;top:16px;right:16px;z-index:200}
-    .nav-links.active ~ .nav-overlay{display:block}
+    .nav-links.active{display:flex !important}
 
-    /* Hero */
-    .hero{padding:60px 16px 50px}
+    /* Menu items styling */
+    .nav-links a,
+    .nav-links button{
+        font-size:20px;
+        padding:16px 32px;
+        min-height:52px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:100%;
+        max-width:300px;
+        border-radius:12px;
+        transition:background .2s;
+    }
+    .nav-links a:hover{background:#161b2280}
+    .nav-links .btn-google{
+        font-size:17px;
+        padding:14px 28px;
+        border-radius:12px;
+        justify-content:center;
+        width:100%;
+        max-width:300px;
+    }
+    .nav-links .nav-why-btn{
+        font-size:15px;
+        padding:12px 24px;
+        margin-top:8px;
+    }
+    .nav-links .nav-cta-small{
+        font-size:17px;
+        padding:14px 24px;
+        border-radius:12px;
+        width:100%;
+        max-width:300px;
+    }
+    .nav-links .lang-toggle{
+        font-size:16px;
+        padding:10px 28px;
+        margin-top:4px;
+    }
+
+    /* ── HERO ── */
+    .hero{padding:50px 16px 40px}
     .hero-badge{font-size:11px;padding:5px 12px}
-    .hero-stats{gap:10px}
-    .stat-box{min-width:0;padding:16px 10px;flex:1 1 90px}
-    .stat-label{font-size:11px}
-    .hero-buttons{flex-direction:column;align-items:center}
+    .hero h1{line-height:1.25;margin-bottom:12px}
+    .hero-sub{font-size:15px;margin-bottom:28px;line-height:1.6}
+    .hero-stats{gap:8px}
+    .stat-box{min-width:0;padding:14px 8px;flex:1 1 80px}
+    .stat-number{font-size:22px}
+    .stat-label{font-size:10px}
+    .hero-buttons{flex-direction:column;align-items:center;gap:10px}
     .btn-primary,.btn-outline{width:100%;max-width:320px;text-align:center;padding:14px 24px}
     .btn-large{padding:16px 24px;font-size:16px}
 
-    /* How it works */
-    .how-it-works{padding:50px 16px}
-    .steps{flex-direction:column;gap:12px}
-    .step{width:100%;max-width:400px}
+    /* ── HOW IT WORKS ── */
+    .how-it-works{padding:40px 16px}
+    .section-sub{margin-bottom:24px}
+    .steps{flex-direction:column;gap:12px;align-items:center}
+    .step{width:100%;max-width:400px;padding:24px 20px}
     .step-arrow{display:none}
 
-    /* Challenges */
-    .challenges-section{padding:40px 16px}
+    /* ── CHALLENGES ── */
+    .challenges-section{padding:30px 16px}
     .challenges-section h2,.challenges-section .section-sub{text-align:center}
-    .challenges-grid{grid-template-columns:1fr;gap:14px}
-    .challenge-card{padding:20px}
+    .challenges-grid{grid-template-columns:1fr;gap:12px}
+    .challenge-card{padding:18px}
+    .challenge-card h3{font-size:17px}
 
-    /* Top builders */
-    .top-section{padding:40px 16px}
-    .top-cards{gap:12px}
-    .top-card{width:calc(50% - 8px);min-width:0}
+    /* ── TOP BUILDERS ── */
+    .top-section{padding:30px 16px}
+    .top-cards{gap:10px;justify-content:center}
+    .top-card{width:calc(50% - 6px);min-width:0;padding:16px 12px}
+    .top-avatar{font-size:28px}
+    .top-name{font-size:13px}
 
-    /* Challenge detail */
+    /* ── CHALLENGE DETAIL ── */
     .challenge-detail{padding:20px 16px}
-    .detail-stats{grid-template-columns:repeat(2,1fr);gap:10px}
-    .detail-stat{padding:14px 10px}
+    .challenge-header h1{font-size:22px}
+    .detail-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+    .detail-stat{padding:12px 8px}
     .ds-icon{font-size:18px}
-    .improvement-banner{flex-direction:column;text-align:center;padding:16px}
-    .evo-table th,.evo-table td{padding:10px 12px;font-size:12px}
-    .cta-box{padding:30px 16px}
+    .ds-num{font-size:16px}
+    .ds-label{font-size:10px}
+    .improvement-banner{flex-direction:column;text-align:center;padding:14px;gap:6px}
+    .imp-value{font-size:22px}
+    .evo-table th,.evo-table td{padding:8px 10px;font-size:11px}
+    .cta-box{padding:24px 16px}
 
-    /* Leaderboard */
+    /* ── LEADERBOARD ── */
     .lb-page{padding:20px 16px}
     .podium{flex-direction:column;align-items:center;gap:12px}
     .podium-card{width:100%;max-width:300px}
     .podium-card.p-1,.podium-card.p-2,.podium-card.p-3{order:unset}
-    .lb-table th,.lb-table td{padding:10px 12px;font-size:12px}
-    .lb-cta{padding:30px 16px}
+    .lb-table th,.lb-table td{padding:8px 10px;font-size:11px}
+    .lb-cta{padding:24px 16px}
 
-    /* Profile */
+    /* ── PROFILE ── */
     .profile-page{padding:20px 16px}
     .profile-form{padding:20px}
     .profile-stats-grid{grid-template-columns:repeat(2,1fr)}
     .profile-actions{flex-direction:column}
-    .profile-actions a,.profile-actions button{width:100%;text-align:center}
+    .profile-actions a,.profile-actions button{width:100%;text-align:center;padding:14px}
 
-    /* New Agent */
+    /* ── NEW AGENT ── */
     .agent-page{padding:20px 16px}
-    .agent-step{padding:20px}
+    .agent-step{padding:18px}
+    .agent-step h2{font-size:17px}
     .llm-options{grid-template-columns:1fr}
-    .terminal-body{font-size:11px;padding:12px}
+    .terminal-body{font-size:10px;padding:10px;line-height:1.8}
     .tips-grid{grid-template-columns:1fr}
+    .file-preview code{font-size:11px;line-height:1.6}
 
-    /* CTA Final */
-    .cta-final{padding:50px 16px}
+    /* ── CTA FINAL ── */
+    .cta-final{padding:40px 16px}
     .cta-final .btn-primary,.cta-final .btn-outline{width:100%;max-width:320px}
 
-    /* Why page */
-    .why-hero{padding:40px 16px 30px}
-    .why-section{margin:30px 0}
-    .why-highlight-box{flex-direction:column;gap:10px;padding:18px}
-    .proof-grid{grid-template-columns:1fr}
-    .equation-box{padding:20px 14px}
+    /* ── WHY PAGE ── */
+    .why-hero{padding:40px 16px 24px}
+    .why-section{margin:24px 0}
+    .why-section-icon{font-size:32px}
+    .why-highlight-box{flex-direction:column;gap:10px;padding:16px}
+    .why-highlight-icon{font-size:24px}
+    .proof-grid{grid-template-columns:1fr;gap:12px}
+    .proof-card{padding:18px}
+    .proof-icon{font-size:26px}
+    .equation-box{padding:18px 12px}
     .equation-line{flex-direction:column;gap:8px}
     .eq-formula{gap:6px}
-    .eq-part{padding:6px 12px;font-size:13px}
-    .eq-result.great{font-size:22px;padding:6px 18px}
-    .evo-flow{flex-direction:column}
+    .eq-part{padding:6px 10px;font-size:12px}
+    .eq-op{font-size:16px}
+    .eq-result{font-size:13px;padding:6px 14px}
+    .eq-result.great{font-size:20px;padding:6px 16px}
+    .evo-flow{flex-direction:column;align-items:center}
     .evo-flow-step{width:100%;max-width:400px}
     .evo-flow-arrow{display:none}
     .island-comparison{flex-direction:column}
@@ -532,32 +585,44 @@ footer{text-align:center;padding:30px 20px;color:#30363d;border-top:1px solid #1
     .powers-grid{grid-template-columns:1fr}
     .alpha-comparison{flex-direction:column}
     .alpha-card{min-width:0}
-    .sed-agents{font-size:10px}
-    .scary-quote{padding:20px}
-    .why-cta .hero-buttons{flex-direction:column;align-items:center}
+    .sed-agents{font-size:9px}
+    .scary-quote{padding:16px}
+    .scary-quote p{font-size:16px}
+    .nature-step{padding:8px 12px}
+    .why-cta{padding:30px 16px}
+    .why-cta .hero-buttons{flex-direction:column;align-items:center;gap:10px}
     .why-cta .hero-buttons .btn-primary,
     .why-cta .hero-buttons .btn-outline{width:100%;max-width:320px}
+
+    /* ── FOOTER ── */
+    footer{padding:24px 16px;font-size:12px}
 }
 
 /* ============================================================
    RESPONSIVE — SMALL PHONES (max-width: 480px)
    ============================================================ */
 @media(max-width:480px){
-    .hero-stats{flex-direction:column;align-items:stretch;gap:8px}
-    .stat-box{max-width:none;padding:14px;text-align:center}
+    .hero{padding:40px 14px 30px}
+    .hero-stats{flex-direction:column;align-items:stretch;gap:6px}
+    .stat-box{max-width:none;padding:12px;text-align:center}
+    .stat-number{font-size:20px}
     .hero-badge{font-size:10px;padding:4px 10px}
-    .top-cards{gap:10px}
-    .top-card{width:100%}
+    .top-cards{gap:8px}
+    .top-card{width:100%;padding:14px}
     .detail-stats{grid-template-columns:1fr}
-    .challenge-meta{gap:8px}
+    .challenge-meta{gap:6px}
     .podium-card{width:100%}
-    .eq-label{text-align:center;min-width:auto;font-size:14px}
+    .eq-label{text-align:center;min-width:auto;font-size:13px}
     .model-tags{gap:6px}
-    .model-tag{padding:6px 12px;font-size:12px}
-    .island-dot{padding:5px 10px;font-size:11px}
-    .nature-step{padding:8px 10px;gap:8px;margin-left:6px}
-    .nature-step span:last-child{font-size:13px}
+    .model-tag{padding:5px 10px;font-size:11px}
+    .island-dot{padding:4px 8px;font-size:10px}
+    .nature-step{padding:8px 10px;gap:8px;margin-left:4px}
+    .nature-step span:last-child{font-size:12px}
     .profile-stats-grid{grid-template-columns:1fr}
+    .agent-step{padding:14px}
+    .llm-card{padding:16px}
+    .llm-card h3{font-size:15px;padding-right:50px}
+    .btn-download{padding:12px 20px;font-size:15px;width:100%;text-align:center}
 }
 
 /* ============================================================
@@ -627,11 +692,13 @@ body.rtl .model-tags{flex-direction:row-reverse}
     body.rtl .navbar{flex-direction:row-reverse}
     body.rtl .nav-links{flex-direction:column}
     body.rtl .nav-links.active{flex-direction:column}
+    body.rtl .hamburger{order:-1}
     body.rtl .steps,body.rtl .hero-stats,body.rtl .hero-buttons,body.rtl .podium,body.rtl .evo-flow,body.rtl .why-comparison,body.rtl .island-comparison{flex-direction:column}
     body.rtl .equation-line,body.rtl .why-highlight-box,body.rtl .profile-actions,body.rtl .improvement-banner{flex-direction:column}
     body.rtl .why-cta .hero-buttons{flex-direction:column}
+    body.rtl .top-cards{flex-direction:row;flex-wrap:wrap}
 }
 @media(max-width:480px){
-    body.rtl .nature-step{margin-right:6px}
+    body.rtl .nature-step{margin-right:4px}
     body.rtl .top-cards{flex-direction:column}
 }
