@@ -4,132 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile — SwarmSolve</title>
-    <link rel="stylesheet" href="/static/style.css?v=6">
+    <link rel="stylesheet" href="/static/style.css?v=7">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 @media(max-width:768px){
-.hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:300;position:relative}
-.hamburger span{display:block;width:24px;height:2.5px;background:#c9d1d9;margin:5px 0;border-radius:2px;transition:all .3s ease}
-.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
-.hamburger.active span:nth-child(2){opacity:0}
-.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
-.nav-links{display:none!important;position:fixed;top:0;left:0;right:0;bottom:0;background:#060911f7;flex-direction:column;justify-content:center;align-items:center;gap:10px;z-index:250;padding:80px 24px 40px;overflow-y:auto}
-.nav-links.active{display:flex!important}
-.nav-links a,.nav-links button{font-size:19px!important;padding:15px 32px!important;min-height:52px;display:flex!important;align-items:center;justify-content:center;width:100%;max-width:300px;border-radius:12px}
-.nav-links .btn-google{font-size:17px!important;padding:14px 28px!important;border-radius:12px;justify-content:center;width:100%;max-width:300px}
-.nav-links .nav-why-btn{font-size:15px!important;padding:12px 24px!important;margin-top:6px}
-.nav-links .nav-cta-small{font-size:17px!important;padding:14px 24px!important;border-radius:12px;width:100%;max-width:300px}
-.nav-links .lang-toggle{font-size:16px!important;padding:12px 28px!important;margin-top:4px;width:100%;max-width:300px}
-}
-</style>
-<style>
-/* ===== MOBILE SIDEBAR DRAWER ===== */
-@media(max-width:768px){
-.hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:400;position:relative;background:none;border:none;cursor:pointer;padding:8px}
+.hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:300;position:relative;background:none;border:none;cursor:pointer;padding:8px}
 .hamburger span{display:block;width:22px;height:2px;background:#c9d1d9;margin:4px 0;border-radius:2px;transition:.3s}
 .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
 .hamburger.active span:nth-child(2){opacity:0}
 .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
-
-/* Overlay behind sidebar */
-.nav-sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:300;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.nav-sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:300;backdrop-filter:blur(4px)}
 .nav-sidebar-overlay.active{display:block}
-
-/* Sidebar panel */
-.nav-links{
-display:flex;
-position:fixed!important;
-top:0!important;
-right:-280px!important;
-width:270px!important;
-height:100vh!important;
-height:100dvh!important;
-background:#0d1117!important;
-border-left:1px solid #161b22!important;
-flex-direction:column!important;
-align-items:stretch!important;
-justify-content:flex-start!important;
-padding:70px 20px 30px!important;
-gap:4px!important;
-z-index:350!important;
-overflow-y:auto!important;
-transition:right .3s cubic-bezier(.4,0,.2,1)!important;
-box-shadow:-4px 0 24px rgba(0,0,0,.4)!important;
-}
+.nav-links{display:flex;position:fixed!important;top:0!important;right:-280px!important;width:270px!important;height:100vh!important;background:#0d1117!important;border-left:1px solid #161b22!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;padding:70px 20px 30px!important;gap:4px!important;z-index:350!important;overflow-y:auto!important;transition:right .3s cubic-bezier(.4,0,.2,1)!important;box-shadow:-4px 0 24px rgba(0,0,0,.4)!important}
 .nav-links.active{right:0!important}
-
-/* RTL: slide from left */
-body.rtl .nav-links{right:auto!important;left:-280px!important;border-left:none!important;border-right:1px solid #161b22!important;box-shadow:4px 0 24px rgba(0,0,0,.4)!important;transition:left .3s cubic-bezier(.4,0,.2,1)!important}
+body.rtl .nav-links{right:auto!important;left:-280px!important;border-left:none!important;border-right:1px solid #161b22!important;transition:left .3s cubic-bezier(.4,0,.2,1)!important}
 body.rtl .nav-links.active{left:0!important}
+.nav-links a,.nav-links button{font-size:15px!important;padding:13px 16px!important;min-height:46px;display:flex!important;align-items:center!important;width:100%!important;border-radius:10px!important;color:#c9d1d9!important;border:none;cursor:pointer;background:transparent}
+.nav-links .btn-google{background:#fff!important;color:#333!important}
+}
+@media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
 
-/* Menu items */
-.nav-links a,.nav-links button{
-font-size:15px!important;
-padding:13px 16px!important;
-min-height:46px;
-display:flex!important;
-align-items:center!important;
-justify-content:flex-start!important;
-width:100%!important;
-border-radius:10px!important;
-color:#c9d1d9!important;
-transition:background .15s!important;
-text-decoration:none!important;
-border:none;
-cursor:pointer;
-background:transparent;
-}
-body.rtl .nav-links a,body.rtl .nav-links button{justify-content:flex-end!important}
-.nav-links a:hover,.nav-links button:hover{background:#161b22!important}
-.nav-links .btn-google{
-font-size:14px!important;
-padding:12px 16px!important;
-border-radius:10px!important;
-justify-content:center!important;
-background:#fff!important;
-color:#333!important;
-margin-top:4px;
-}
-.nav-links .nav-why-btn{font-size:13px!important;padding:11px 16px!important;margin-top:8px;opacity:.8}
-.nav-links .nav-cta-small{
-font-size:14px!important;
-padding:12px 16px!important;
-border-radius:10px!important;
-background:#22d3ee15!important;
-color:#22d3ee!important;
-border:1px solid #22d3ee30!important;
-justify-content:center!important;
-margin-top:4px;
-}
-.nav-links .lang-toggle{
-font-size:14px!important;
-padding:11px 16px!important;
-margin-top:8px;
-width:100%!important;
-text-align:center!important;
-justify-content:center!important;
-}
+/* ===== PROFILE PAGE STYLES ===== */
+.profile-container{max-width:800px;margin:0 auto;padding:30px 20px 60px}
 
-/* Sidebar brand label at top */
-.nav-links::before{
-content:"☰ Menu";
-display:block;
-font-size:13px;
-font-weight:700;
-color:#6e7681;
-text-transform:uppercase;
-letter-spacing:1px;
-padding:0 16px 12px;
-border-bottom:1px solid #161b22;
-margin-bottom:8px;
-}
-body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
-}
+/* Profile Header Card */
+.profile-card{background:#0d1117;border:1px solid #161b22;border-radius:20px;padding:0;overflow:hidden;margin-bottom:24px}
+.profile-cover{height:120px;background:linear-gradient(135deg,#22d3ee20,#818cf820,#a78bfa20);position:relative}
+.profile-header{display:flex;align-items:flex-end;gap:20px;padding:0 28px;margin-top:-50px;position:relative;z-index:2}
+.avatar-wrapper{position:relative;flex-shrink:0}
+.avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;object-fit:cover;background:#161b22;display:block}
+.avatar-placeholder{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:40px;color:#060911;font-weight:800}
+.avatar-upload-btn{position:absolute;bottom:2px;right:2px;width:32px;height:32px;background:#22d3ee;border-radius:50%;border:3px solid #0d1117;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:14px}
+.avatar-upload-btn:hover{transform:scale(1.1)}
+.avatar-upload-btn input{display:none}
+.profile-header-info{padding-bottom:16px;flex:1;min-width:0}
+.profile-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-email{font-size:13px;color:#6e7681}
+.profile-badge-row{display:flex;align-items:center;gap:8px;margin-top:6px}
 
-/* Desktop: hide hamburger and overlay */
-@media(min-width:769px){
-.hamburger{display:none!important}
-.nav-sidebar-overlay{display:none!important}
+/* Profile Body */
+.profile-body{padding:20px 28px 28px}
+
+/* Stats Grid */
+.profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.p-stat{background:#161b22;border-radius:12px;padding:16px;text-align:center;border:1px solid #21262d}
+.p-stat-num{display:block;font-size:24px;font-weight:800;color:#22d3ee;font-family:'JetBrains Mono',monospace}
+.p-stat-label{font-size:11px;color:#6e7681;margin-top:4px}
+
+/* Info Section */
+.profile-info{margin-bottom:24px}
+.profile-info-title{font-size:16px;font-weight:700;color:#f0f6fc;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.btn-edit{background:#161b22;color:#22d3ee;border:1px solid #22d3ee40;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-edit:hover{background:#22d3ee20}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-item{background:#161b22;border-radius:10px;padding:14px 16px;border:1px solid #21262d}
+.info-item.full-width{grid-column:1/-1}
+.info-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.info-value{font-size:15px;color:#f0f6fc;word-break:break-word}
+.info-value a{color:#22d3ee}
+.info-value.empty{color:#30363d;font-style:italic}
+
+/* Edit Mode */
+.edit-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:500;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(4px)}
+.edit-overlay.active{display:flex}
+.edit-modal{background:#0d1117;border:1px solid #161b22;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:28px}
+.edit-modal h2{font-size:20px;font-weight:800;color:#f0f6fc;margin-bottom:20px}
+.edit-group{margin-bottom:16px}
+.edit-group label{display:block;font-size:13px;font-weight:600;color:#8b949e;margin-bottom:6px}
+.edit-group input,.edit-group textarea{width:100%;background:#161b22;border:1px solid #21262d;color:#f0f6fc;padding:12px 14px;border-radius:8px;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;transition:.2s;-webkit-appearance:none}
+.edit-group input:focus,.edit-group textarea:focus{outline:none;border-color:#22d3ee}
+.edit-buttons{display:flex;gap:10px;margin-top:20px}
+.btn-save{flex:1;background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;padding:12px;border-radius:8px;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:.2s}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px #22d3ee30}
+.btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-cancel{flex:1;background:#161b22;color:#c9d1d9;padding:12px;border-radius:8px;font-size:15px;font-weight:600;border:1px solid #21262d;cursor:pointer;transition:.2s}
+.btn-cancel:hover{border-color:#30363d}
+
+/* Actions */
+.profile-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-logout{background:none;border:1.5px solid #f8717140;color:#f87171;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block}
+.btn-logout:hover{background:#f8717120}
+
+/* Toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:#34d399;color:#060911;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;z-index:600;transition:transform .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Mobile */
+@media(max-width:768px){
+    .profile-header{flex-direction:column;align-items:center;text-align:center;padding:0 20px;margin-top:-40px}
+    .profile-header-info{padding-bottom:0}
+    .profile-name{font-size:20px;white-space:normal}
+    .profile-badge-row{justify-content:center}
+    .profile-body{padding:16px 20px 24px}
+    .profile-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+    .p-stat-num{font-size:20px}
+    .info-grid{grid-template-columns:1fr}
+    .edit-modal{padding:20px;margin:10px}
+    .profile-actions{flex-direction:column}
+    .profile-actions a,.profile-actions button{width:100%;text-align:center}
+    .avatar-img,.avatar-placeholder{width:90px;height:90px}
+}
+@media(max-width:480px){
+    .profile-stats{grid-template-columns:1fr}
+    .profile-cover{height:90px}
 }
 </style>
 </head>
@@ -143,82 +120,238 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
             <a href="/leaderboard" data-i18n="nav.leaderboard">Leaderboard</a>
             <button id="lang-toggle" class="lang-toggle">عربي</button>
             <a href="/new-agent" class="nav-cta-small" data-i18n="nav.newAgent">+ New Agent</a>
-            <a href="/profile" class="nav-user">👤 {{ user.username }}</a>
+            <a href="/profile" class="nav-user">👤 {{ user.username or user.name }}</a>
             <a href="/why" class="nav-why-btn" data-i18n="nav.why">Why Collective Evolution?</a>
         </div>
     </nav>
 
-    <div class="profile-page">
-        <h1 data-i18n="profile.title">Your Profile</h1>
-        <p class="section-desc" data-i18n="profile.desc">This is your public page — companies and recruiters can see it</p>
+    <div class="profile-container">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-cover"></div>
+            <div class="profile-header">
+                <div class="avatar-wrapper">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" alt="Avatar" class="avatar-img" id="avatar-display">
+                    {% else %}
+                        <div class="avatar-placeholder" id="avatar-display">{{ (user.name or 'U')[0] | upper }}</div>
+                    {% endif %}
+                    <label class="avatar-upload-btn" title="Change photo">
+                        📷
+                        <input type="file" id="avatar-input" accept="image/*">
+                    </label>
+                </div>
+                <div class="profile-header-info">
+                    <div class="profile-name" id="display-name">{{ user.username or user.name or 'New User' }}</div>
+                    <div class="profile-email">{{ user.email }}</div>
+                    <div class="profile-badge-row">
+                        <span class="badge {{ (user.badge or 'EvoRookie') | lower }}">{{ user.badge or 'EvoRookie' }}</span>
+                    </div>
+                </div>
+            </div>
 
-        <form method="POST" class="profile-form">
-            <div class="form-group">
-                <label data-i18n="profile.username">Username *</label>
-                <input type="text" name="username" value="{{ user.username }}" required data-i18n-ph="profile.usernamePh" placeholder="Choose a username">
-            </div>
-            <div class="form-group">
-                <label>GitHub <span class="optional" data-i18n="profile.optional">(optional)</span></label>
-                <input type="text" name="github" value="{{ user.get('github','') }}" data-i18n-ph="profile.githubPh" placeholder="github.com/yourusername">
-            </div>
-            <div class="form-group">
-                <label>LinkedIn <span class="optional" data-i18n="profile.optional">(optional)</span></label>
-                <input type="text" name="linkedin" value="{{ user.get('linkedin','') }}" data-i18n-ph="profile.linkedinPh" placeholder="linkedin.com/in/yourusername">
-            </div>
-            <div class="form-group">
-                <label><span data-i18n="profile.bio">Bio</span> <span class="optional" data-i18n="profile.optional">(optional)</span></label>
-                <textarea name="bio" rows="3" data-i18n-ph="profile.bioPh" placeholder="Tell the world about yourself — what models do you use? what's your specialty?">{{ user.get('bio','') }}</textarea>
-            </div>
-            <button type="submit" class="btn-primary" data-i18n="profile.save">Save Profile</button>
-        </form>
+            <div class="profile-body">
+                <!-- Stats -->
+                <div class="profile-stats">
+                    <div class="p-stat">
+                        <span class="p-stat-num">{{ user.agents_count or 0 }}</span>
+                        <span class="p-stat-label" data-i18n="profile.agents">Agents</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="p-stat-num">{{ user.total_improvements or 0 }}</span>
+                        <span class="p-stat-label" data-i18n="profile.improvements">Improvements</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="p-stat-num">{{ user.biggest_jump or '—' }}</span>
+                        <span class="p-stat-label" data-i18n="profile.bestJump">Best Jump</span>
+                    </div>
+                    <div class="p-stat">
+                        <span class="p-stat-num">{{ user.challenges_won or 0 }}</span>
+                        <span class="p-stat-label" data-i18n="profile.wins">Wins</span>
+                    </div>
+                </div>
 
-        <div class="profile-stats-section">
-            <h2 data-i18n="profile.statsTitle">Your Stats</h2>
-            <div class="profile-stats-grid">
-                <div class="ps-card">
-                    <span class="ps-num">{{ user.get('agents', 0) }}</span>
-                    <span class="ps-label" data-i18n="profile.agents">Agents</span>
+                <!-- Info -->
+                <div class="profile-info">
+                    <div class="profile-info-title">
+                        <span data-i18n="profile.aboutTitle">About</span>
+                        <button class="btn-edit" onclick="openEdit()" data-i18n="profile.editBtn">✏️ Edit</button>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Username</div>
+                            <div class="info-value" id="show-username">{{ user.username or '—' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label" data-i18n="profile.fullName">Full Name</div>
+                            <div class="info-value" id="show-fullname">{{ user.name or '—' }}</div>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Bio</div>
+                            <div class="info-value {% if not user.bio %}empty{% endif %}" id="show-bio">{{ user.bio or 'No bio yet — tell the world about yourself' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">GitHub</div>
+                            <div class="info-value {% if not user.github %}empty{% endif %}" id="show-github">
+                                {% if user.github %}<a href="https://{{ user.github }}" target="_blank">{{ user.github }}</a>{% else %}Not set{% endif %}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">LinkedIn</div>
+                            <div class="info-value {% if not user.linkedin %}empty{% endif %}" id="show-linkedin">
+                                {% if user.linkedin %}<a href="https://{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>{% else %}Not set{% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="ps-card">
-                    <span class="ps-num">0</span>
-                    <span class="ps-label" data-i18n="profile.improvements">Improvements</span>
-                </div>
-                <div class="ps-card">
-                    <span class="ps-num">—</span>
-                    <span class="ps-label" data-i18n="profile.bestJump">Best Jump</span>
-                </div>
-                <div class="ps-card">
-                    <span class="ps-num badge evorookie">{{ user.get('badge','EvoRookie') }}</span>
-                    <span class="ps-label" data-i18n="profile.badge">Badge</span>
+
+                <!-- Actions -->
+                <div class="profile-actions">
+                    <a href="/new-agent" class="btn-primary" data-i18n="profile.createAgent">+ Create Agent</a>
+                    <a href="/logout" class="btn-logout" data-i18n="profile.logout">Log Out</a>
                 </div>
             </div>
-        </div>
-
-        <div class="profile-actions">
-            <a href="/new-agent" class="btn-primary" data-i18n="profile.createFirst">+ Create Your First Agent</a>
-            <a href="/logout" class="btn-danger" data-i18n="profile.logout">Log Out</a>
         </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div class="edit-overlay" id="edit-overlay">
+        <div class="edit-modal">
+            <h2 data-i18n="profile.editTitle">Edit Profile</h2>
+            <div class="edit-group">
+                <label>Username</label>
+                <input type="text" id="edit-username" value="{{ user.username or '' }}" placeholder="Choose a username">
+            </div>
+            <div class="edit-group">
+                <label data-i18n="profile.fullName">Full Name</label>
+                <input type="text" id="edit-fullname" value="{{ user.name or '' }}" placeholder="Your full name">
+            </div>
+            <div class="edit-group">
+                <label>Bio</label>
+                <textarea id="edit-bio" rows="3" placeholder="Tell the world about yourself">{{ user.bio or '' }}</textarea>
+            </div>
+            <div class="edit-group">
+                <label>GitHub</label>
+                <input type="text" id="edit-github" value="{{ user.github or '' }}" placeholder="github.com/username">
+            </div>
+            <div class="edit-group">
+                <label>LinkedIn</label>
+                <input type="text" id="edit-linkedin" value="{{ user.linkedin or '' }}" placeholder="linkedin.com/in/username">
+            </div>
+            <div class="edit-buttons">
+                <button class="btn-save" id="btn-save" onclick="saveProfile()">Save</button>
+                <button class="btn-cancel" onclick="closeEdit()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Profile updated!</div>
 
     <footer>
         <p data-i18n="footer.short">SwarmSolve — Open Source Iterative Algorithm Optimization</p>
     </footer>
 
-    <script src="/static/lang.js?v=6"></script>
-<script>
-// Sidebar drawer toggle
-document.addEventListener("DOMContentLoaded",function(){
-var h=document.getElementById("hamburger");
-var n=document.getElementById("nav-links");
-var o=document.getElementById("nav-sidebar-overlay");
-if(!h||!n)return;
-function openMenu(){h.classList.add("active");n.classList.add("active");if(o)o.classList.add("active");document.body.style.overflow="hidden";}
-function closeMenu(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}
-h.addEventListener("click",function(e){e.stopPropagation();n.classList.contains("active")?closeMenu():openMenu();});
-if(o)o.addEventListener("click",closeMenu);
-n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",closeMenu);});
-document.addEventListener("keydown",function(e){if(e.key==="Escape")closeMenu();});
-});
-</script>
+    <script src="/static/lang.js?v=7"></script>
+    <script>
+    // Sidebar menu
+    document.addEventListener("DOMContentLoaded",function(){
+        var h=document.getElementById("hamburger");
+        var n=document.getElementById("nav-links");
+        var o=document.getElementById("nav-sidebar-overlay");
+        if(h&&n){
+            h.addEventListener("click",function(e){e.stopPropagation();n.classList.toggle("active");h.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});
+            if(o)o.addEventListener("click",function(){h.classList.remove("active");n.classList.remove("active");o.classList.remove("active");document.body.style.overflow="";});
+            n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";});});
+        }
+    });
+
+    // Edit modal
+    function openEdit(){document.getElementById("edit-overlay").classList.add("active");document.body.style.overflow="hidden";}
+    function closeEdit(){document.getElementById("edit-overlay").classList.remove("active");document.body.style.overflow="";}
+    document.getElementById("edit-overlay").addEventListener("click",function(e){if(e.target===this)closeEdit();});
+
+    // Save profile
+    function saveProfile(){
+        var btn=document.getElementById("btn-save");
+        btn.disabled=true;btn.textContent="Saving...";
+        var data={
+            username:document.getElementById("edit-username").value.trim(),
+            full_name:document.getElementById("edit-fullname").value.trim(),
+            bio:document.getElementById("edit-bio").value.trim(),
+            github:document.getElementById("edit-github").value.trim(),
+            linkedin:document.getElementById("edit-linkedin").value.trim()
+        };
+        fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+        .then(function(r){return r.json();})
+        .then(function(d){
+            if(d.ok){
+                // Update display
+                document.getElementById("show-username").textContent=data.username||"—";
+                document.getElementById("show-fullname").textContent=data.full_name||"—";
+                var bioEl=document.getElementById("show-bio");
+                bioEl.textContent=data.bio||"No bio yet";
+                bioEl.className="info-value"+(data.bio?"":" empty");
+                document.getElementById("display-name").textContent=data.username||data.full_name||"User";
+                showToast("Profile updated!");
+                closeEdit();
+            } else {
+                showToast("Error: "+d.error);
+            }
+            btn.disabled=false;btn.textContent="Save";
+        })
+        .catch(function(){btn.disabled=false;btn.textContent="Save";showToast("Network error");});
+    }
+
+    // Avatar upload
+    document.getElementById("avatar-input").addEventListener("change",function(e){
+        var file=e.target.files[0];
+        if(!file)return;
+        if(file.size>2*1024*1024){showToast("Image too large (max 2MB)");return;}
+
+        // Upload to Supabase Storage
+        var userId="{{user.id}}";
+        var ext=file.name.split(".").pop();
+        var fileName=userId+"/avatar."+ext;
+        var supabaseUrl="{{supabase_url}}";
+        var supabaseKey="{{supabase_key}}";
+
+        fetch(supabaseUrl+"/storage/v1/object/avatars/"+fileName,{
+            method:"POST",
+            headers:{"apikey":supabaseKey,"Authorization":"Bearer "+supabaseKey,"Content-Type":file.type,"x-upsert":"true"},
+            body:file
+        })
+        .then(function(r){
+            if(!r.ok)throw new Error("Upload failed");
+            var publicUrl=supabaseUrl+"/storage/v1/object/public/avatars/"+fileName+"?t="+Date.now();
+            // Update profile with new avatar URL
+            return fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({avatar_url:publicUrl})});
+        })
+        .then(function(r){return r.json();})
+        .then(function(d){
+            if(d.ok){
+                // Update display
+                var display=document.getElementById("avatar-display");
+                if(display.tagName==="IMG"){
+                    display.src=supabaseUrl+"/storage/v1/object/public/avatars/"+fileName+"?t="+Date.now();
+                } else {
+                    var img=document.createElement("img");
+                    img.src=supabaseUrl+"/storage/v1/object/public/avatars/"+fileName+"?t="+Date.now();
+                    img.className="avatar-img";img.id="avatar-display";
+                    display.parentNode.replaceChild(img,display);
+                }
+                showToast("Photo updated!");
+            }
+        })
+        .catch(function(err){showToast("Upload failed: "+err.message);});
+    });
+
+    // Toast
+    function showToast(msg){
+        var t=document.getElementById("toast");
+        t.textContent=msg;t.classList.add("show");
+        setTimeout(function(){t.classList.remove("show");},3000);
+    }
+    </script>
 </body>
 </html>

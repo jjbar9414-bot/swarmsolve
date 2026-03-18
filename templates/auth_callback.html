@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing in... — SwarmSolve</title>
+    <link rel="stylesheet" href="/static/style.css?v=7">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px}
+        .auth-spinner{width:48px;height:48px;border:3px solid #161b22;border-top-color:#22d3ee;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .auth-text{color:#8b949e;font-size:16px}
+        .auth-error{color:#f87171;display:none;margin-top:16px;font-size:14px}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand"><span class="brand-icon">🧬</span> SwarmSolve</a>
+    </nav>
+
+    <div class="auth-loading">
+        <div class="auth-spinner"></div>
+        <div class="auth-text" id="auth-status">Signing you in...</div>
+        <div class="auth-error" id="auth-error">Something went wrong. <a href="/login" style="color:#22d3ee">Try again</a></div>
+    </div>
+
+    <script>
+    (function() {
+        // Supabase sends tokens in the URL hash fragment
+        var hash = window.location.hash.substring(1);
+        if (!hash) {
+            // Maybe tokens are in query params (some flows)
+            hash = window.location.search.substring(1);
+        }
+
+        var params = new URLSearchParams(hash);
+        var accessToken = params.get("access_token");
+        var refreshToken = params.get("refresh_token");
+
+        if (!accessToken) {
+            document.getElementById("auth-status").style.display = "none";
+            document.getElementById("auth-error").style.display = "block";
+            document.querySelector(".auth-spinner").style.display = "none";
+            return;
+        }
+
+        // Send token to server to create session
+        fetch("/auth/set-session", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                access_token: accessToken,
+                refresh_token: refreshToken
+            })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                window.location.href = "/profile";
+            } else {
+                throw new Error(data.error || "Failed");
+            }
+        })
+        .catch(function(err) {
+            document.getElementById("auth-status").style.display = "none";
+            document.getElementById("auth-error").style.display = "block";
+            document.querySelector(".auth-spinner").style.display = "none";
+        });
+    })();
+    </script>
+</body>
+</html>

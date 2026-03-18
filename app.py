@@ -1,10 +1,56 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file
-import os, io, json
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
+import os, io, json, requests
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "swarmsolve_dev_key_2026")
 
-# ===== Fake Data =====
+# ===== Supabase Config =====
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://bfvmheqcwaqojyidqceu.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdm1oZXFjd2Fxb2p5aWRxY2V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4Mjc3ODAsImV4cCI6MjA4OTQwMzc4MH0._msqBmI8SrDMmzdc76c5f-MkP4owZENIEnqaCnxSHeg")
+
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json"
+}
+
+def supabase_headers(access_token=None):
+    h = {"apikey": SUPABASE_KEY, "Content-Type": "application/json"}
+    if access_token:
+        h["Authorization"] = f"Bearer {access_token}"
+    else:
+        h["Authorization"] = f"Bearer {SUPABASE_KEY}"
+    return h
+
+
+def get_profile(user_id, access_token=None):
+    """Get user profile from Supabase"""
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/profiles?id=eq.{user_id}&select=*",
+        headers=supabase_headers(access_token)
+    )
+    if r.status_code == 200 and r.json():
+        return r.json()[0]
+    return None
+
+
+def update_profile(user_id, data, access_token=None):
+    """Update user profile in Supabase"""
+    h = supabase_headers(access_token)
+    h["Prefer"] = "return=representation"
+    r = requests.patch(
+        f"{SUPABASE_URL}/rest/v1/profiles?id=eq.{user_id}",
+        headers=h,
+        json=data
+    )
+    return r.status_code == 200
+
+
+def get_current_user():
+    """Get current logged-in user from session"""
+    return session.get("user")
+
+
+# ===== Fake Data (temporary until DB is ready) =====
 challenges = [
     {
         "id": 1, "title": "Fastest Sorting Algorithm",
@@ -32,7 +78,7 @@ challenges = [
     },
 ]
 
-leaderboard = [
+leaderboard_data = [
     {"rank": 1, "username": "Ahmed_AI", "avatar": "🧠", "agents": 5, "total_improvements": 34, "biggest_jump": 450,
      "badge": "EvoGrandmaster", "challenges_won": 8, "github": "github.com/ahmed", "country": "🇮🇶"},
     {"rank": 2, "username": "Sara_ML", "avatar": "⚡", "agents": 3, "total_improvements": 28, "biggest_jump": 380,
@@ -51,9 +97,6 @@ leaderboard = [
      "badge": "EvoRookie", "challenges_won": 0, "github": "", "country": "🇯🇵"},
 ]
 
-# Fake logged-in user
-fake_user = None
-
 
 # ===== Routes =====
 
@@ -63,17 +106,18 @@ def home():
     stats = {
         "total_agents": sum(c["agents_count"] for c in challenges),
         "active_challenges": len(active),
-        "total_improvements": sum(u["total_improvements"] for u in leaderboard),
-        "total_users": len(leaderboard)
+        "total_improvements": sum(u["total_improvements"] for u in leaderboard_data),
+        "total_users": len(leaderboard_data)
     }
-    return render_template("index.html", challenges=challenges, leaderboard=leaderboard[:3], stats=stats,
-                           user=session.get("user"))
+    return render_template("index.html", challenges=challenges, leaderboard=leaderboard_data[:3], stats=stats,
+                           user=get_current_user())
 
 
 @app.route("/challenge/<int:cid>")
 def challenge_detail(cid):
     ch = next((c for c in challenges if c["id"] == cid), None)
-    if not ch: return "Challenge not found", 404
+    if not ch:
+        return "Challenge not found", 404
     evo = [
         {"round": 1, "score": ch["initial_score"], "agent": "—", "jump": 0, "time": "00:00"},
         {"round": 5, "score": int(ch["initial_score"] + (ch["best_score"] - ch["initial_score"]) * 0.2),
@@ -87,246 +131,209 @@ def challenge_detail(cid):
         {"round": ch["rounds"], "score": ch["best_score"], "agent": "Ahmed_AI",
          "jump": int((ch["best_score"] - ch["initial_score"]) * 0.1), "time": "05:33"},
     ]
-    return render_template("challenge.html", challenge=ch, evolution_log=evo, user=session.get("user"))
+    return render_template("challenge.html", challenge=ch, evolution_log=evo, user=get_current_user())
 
 
 @app.route("/leaderboard")
 def leaderboard_page():
-    return render_template("leaderboard.html", leaderboard=leaderboard, user=session.get("user"))
+    return render_template("leaderboard.html", leaderboard=leaderboard_data, user=get_current_user())
 
 
 @app.route("/why")
 def why_page():
-    return render_template("why.html", user=session.get("user"))
+    return render_template("why.html", user=get_current_user())
 
+
+# ===== AUTH: Google Login via Supabase =====
 
 @app.route("/login")
 def login():
-    # Fake Google login
+    """Redirect to Supabase Google OAuth"""
+    # Build the redirect URL back to our app
+    redirect_to = request.host_url.rstrip("/") + "/auth/callback"
+    # Supabase OAuth URL
+    auth_url = f"{SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to={redirect_to}"
+    return redirect(auth_url)
+
+
+@app.route("/auth/callback")
+def auth_callback():
+    """Handle OAuth callback from Supabase"""
+    # Supabase sends tokens as URL fragment (#), but we handle via query params
+    # The actual token exchange happens client-side, so we render a page that extracts the hash
+    return render_template("auth_callback.html")
+
+
+@app.route("/auth/set-session", methods=["POST"])
+def set_session():
+    """Receive tokens from client-side JS and create server session"""
+    data = request.get_json()
+    access_token = data.get("access_token")
+    if not access_token:
+        return jsonify({"error": "No token"}), 400
+
+    # Get user info from Supabase
+    r = requests.get(
+        f"{SUPABASE_URL}/auth/v1/user",
+        headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {access_token}"}
+    )
+    if r.status_code != 200:
+        return jsonify({"error": "Invalid token"}), 401
+
+    user_data = r.json()
+    user_id = user_data["id"]
+    meta = user_data.get("user_metadata", {})
+
+    # Get or create profile
+    profile = get_profile(user_id, access_token)
+
+    # Store in session
     session["user"] = {
-        "name": "You",
-        "email": "you@gmail.com",
-        "username": "NewUser_01",
-        "agents": 0,
-        "badge": "EvoRookie"
+        "id": user_id,
+        "email": user_data.get("email", ""),
+        "name": meta.get("full_name", ""),
+        "avatar_url": meta.get("avatar_url", ""),
+        "username": profile.get("username", "") if profile else "",
+        "bio": profile.get("bio", "") if profile else "",
+        "github": profile.get("github", "") if profile else "",
+        "linkedin": profile.get("linkedin", "") if profile else "",
+        "badge": profile.get("badge", "EvoRookie") if profile else "EvoRookie",
+        "agents_count": profile.get("agents_count", 0) if profile else 0,
+        "total_improvements": profile.get("total_improvements", 0) if profile else 0,
+        "biggest_jump": profile.get("biggest_jump", 0) if profile else 0,
+        "challenges_won": profile.get("challenges_won", 0) if profile else 0,
     }
-    return redirect(url_for("profile"))
+    session["access_token"] = access_token
+    session.modified = True
+
+    return jsonify({"ok": True})
 
 
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
+    session.clear()
     return redirect(url_for("home"))
 
 
-@app.route("/profile", methods=["GET", "POST"])
+# ===== PROFILE =====
+
+@app.route("/profile")
 def profile():
-    if not session.get("user"):
+    user = get_current_user()
+    if not user:
         return redirect(url_for("login"))
-    if request.method == "POST":
-        user = session["user"]
-        user["username"] = request.form.get("username", user["username"])
-        user["github"] = request.form.get("github", "")
-        user["linkedin"] = request.form.get("linkedin", "")
-        user["bio"] = request.form.get("bio", "")
+    # Refresh profile from DB
+    profile = get_profile(user["id"], session.get("access_token"))
+    if profile:
+        user.update({
+            "username": profile.get("username", ""),
+            "bio": profile.get("bio", ""),
+            "github": profile.get("github", ""),
+            "linkedin": profile.get("linkedin", ""),
+            "avatar_url": profile.get("avatar_url", user.get("avatar_url", "")),
+            "badge": profile.get("badge", "EvoRookie"),
+            "agents_count": profile.get("agents_count", 0),
+            "total_improvements": profile.get("total_improvements", 0),
+            "biggest_jump": profile.get("biggest_jump", 0),
+            "challenges_won": profile.get("challenges_won", 0),
+        })
         session["user"] = user
         session.modified = True
-    return render_template("profile.html", user=session["user"])
+    return render_template("profile.html", user=user, supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY)
 
+
+@app.route("/profile/update", methods=["POST"])
+def profile_update():
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json()
+    update_data = {}
+    for field in ["username", "bio", "github", "linkedin", "full_name", "avatar_url"]:
+        if field in data:
+            update_data[field] = data[field]
+
+    if update_data:
+        update_data["updated_at"] = "now()"
+        success = update_profile(user["id"], update_data, session.get("access_token"))
+        if success:
+            # Update session too
+            for k, v in update_data.items():
+                if k in user:
+                    user[k] = v
+            session["user"] = user
+            session.modified = True
+            return jsonify({"ok": True})
+        return jsonify({"error": "Update failed"}), 500
+
+    return jsonify({"error": "No data"}), 400
+
+
+# ===== OTHER PAGES =====
 
 @app.route("/new-agent")
 def new_agent():
-    if not session.get("user"):
+    if not get_current_user():
         return redirect(url_for("login"))
-    return render_template("new_agent.html", user=session["user"])
+    return render_template("new_agent.html", user=get_current_user())
 
 
 @app.route("/download-template")
 def download_template():
     template_code = '''#!/usr/bin/env python3
 """
-╔═══════════════════════════════════════════════════════╗
-║           SwarmSolve Agent Template v1.0              ║
-║   Build your AI agent and compete with the world!     ║
-╚═══════════════════════════════════════════════════════╝
+SwarmSolve Agent Template v1.0
+Build your AI agent and compete with the world!
 
 QUICK START:
 1. Choose your LLM (see options below)
-2. Set your API key (or use free local model)
+2. Set your API key
 3. Run: python swarmsolve_agent.py
-4. Watch your agent compete on the leaderboard!
-
-FREE OPTIONS (zero cost):
-- Ollama + Llama 3.1: Install from ollama.com, run "ollama pull llama3.1"
-- Google Colab: Upload this file and run for free
-- Hugging Face: Use free inference API
-
-PAID OPTIONS (cheap):
-- GPT-4o-mini: ~$0.001 per attempt ($1 = 1000 attempts)
-- Claude Haiku: ~$0.001 per attempt
-- Gemini Flash: ~$0.0005 per attempt ($1 = 2000 attempts)
 """
 
-import requests
-import time
-import json
+import requests, time
 
-# ====================================================
-# CONFIGURATION — Change these!
-# ====================================================
+SWARMSOLVE_URL = "https://swarmsolve.vercel.app/api"
+AGENT_API_KEY = "YOUR_SWARMSOLVE_API_KEY"
 
-SWARMSOLVE_URL = "https://swarmsolve.com/api"  # Platform API
-AGENT_API_KEY = "YOUR_SWARMSOLVE_API_KEY"       # Get from your profile
-
-# Choose ONE of these LLM options:
-
-# --- Option 1: FREE — Ollama (local, no cost) ---
 LLM_PROVIDER = "ollama"
 LLM_MODEL = "llama3.1"
 LLM_API_URL = "http://localhost:11434/api/generate"
-LLM_API_KEY = ""  # Not needed for Ollama
+LLM_API_KEY = ""
 
-# --- Option 2: OpenAI (GPT-4o-mini = very cheap) ---
-# LLM_PROVIDER = "openai"
-# LLM_MODEL = "gpt-4o-mini"
-# LLM_API_URL = "https://api.openai.com/v1/chat/completions"
-# LLM_API_KEY = "sk-YOUR-OPENAI-KEY"
-
-# --- Option 3: Google Gemini (very cheap) ---
-# LLM_PROVIDER = "gemini"
-# LLM_MODEL = "gemini-2.0-flash"
-# LLM_API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-# LLM_API_KEY = "YOUR-GEMINI-KEY"
-
-# --- Option 4: Anthropic Claude (cheap) ---
-# LLM_PROVIDER = "anthropic"
-# LLM_MODEL = "claude-haiku-4-5-20251001"
-# LLM_API_URL = "https://api.anthropic.com/v1/messages"
-# LLM_API_KEY = "sk-ant-YOUR-KEY"
-
-# Agent settings
-CHALLENGE_ID = 1          # Which challenge to work on
-MAX_ATTEMPTS = 100        # Max attempts before stopping
-WAIT_SECONDS = 60         # Seconds between attempts
-AGENT_NAME = "MyAgent_01" # Your agent's display name
-
-# ====================================================
-# LLM COMMUNICATION
-# ====================================================
+CHALLENGE_ID = 1
+MAX_ATTEMPTS = 100
+WAIT_SECONDS = 60
+AGENT_NAME = "MyAgent_01"
 
 def ask_llm(prompt):
-    """Send a prompt to your chosen LLM and get a response."""
-
     if LLM_PROVIDER == "ollama":
-        response = requests.post(LLM_API_URL, json={
-            "model": LLM_MODEL,
-            "prompt": prompt,
-            "stream": False
-        })
-        return response.json()["response"]
-
+        r = requests.post(LLM_API_URL, json={"model": LLM_MODEL, "prompt": prompt, "stream": False})
+        return r.json()["response"]
     elif LLM_PROVIDER == "openai":
-        response = requests.post(LLM_API_URL, 
+        r = requests.post("https://api.openai.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {LLM_API_KEY}"},
-            json={
-                "model": LLM_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.7
-            })
-        return response.json()["choices"][0]["message"]["content"]
-
-    elif LLM_PROVIDER == "gemini":
-        url = f"{LLM_API_URL}/{LLM_MODEL}:generateContent?key={LLM_API_KEY}"
-        response = requests.post(url, json={
-            "contents": [{"parts": [{"text": prompt}]}]
-        })
-        return response.json()["candidates"][0]["content"]["parts"][0]["text"]
-
-    elif LLM_PROVIDER == "anthropic":
-        response = requests.post(LLM_API_URL,
-            headers={
-                "x-api-key": LLM_API_KEY,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
-            },
-            json={
-                "model": LLM_MODEL,
-                "max_tokens": 4096,
-                "messages": [{"role": "user", "content": prompt}]
-            })
-        return response.json()["content"][0]["text"]
-
-# ====================================================
-# MAIN AGENT LOOP
-# ====================================================
+            json={"model": LLM_MODEL, "messages": [{"role": "user", "content": prompt}]})
+        return r.json()["choices"][0]["message"]["content"]
 
 def run_agent():
-    print(f"")
-    print(f"  🧬 SwarmSolve Agent: {AGENT_NAME}")
-    print(f"  📡 LLM: {LLM_PROVIDER} / {LLM_MODEL}")
-    print(f"  🎯 Challenge: #{CHALLENGE_ID}")
-    print(f"  🔄 Max attempts: {MAX_ATTEMPTS}")
-    print(f"  {'='*45}")
-    print()
-
+    print(f"  SwarmSolve Agent: {AGENT_NAME}")
+    print(f"  LLM: {LLM_PROVIDER} / {LLM_MODEL}")
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            # Step 1: Get current challenge and best solution
-            print(f"  [{attempt}/{MAX_ATTEMPTS}] Fetching challenge...")
-            resp = requests.get(
-                f"{SWARMSOLVE_URL}/challenge/{CHALLENGE_ID}",
-                headers={"Authorization": f"Bearer {AGENT_API_KEY}"}
-            )
+            resp = requests.get(f"{SWARMSOLVE_URL}/challenge/{CHALLENGE_ID}",
+                headers={"Authorization": f"Bearer {AGENT_API_KEY}"})
             data = resp.json()
-            problem = data["description"]
-            best_code = data["best_solution"]
-            best_score = data["best_score"]
-
-            # Step 2: Ask LLM to improve
-            print(f"  [{attempt}/{MAX_ATTEMPTS}] Current best: {best_score} | Asking LLM...")
-            prompt = f"""You are an expert algorithm optimizer competing in SwarmSolve.
-
-CHALLENGE: {problem}
-
-CURRENT BEST SOLUTION (score: {best_score}):
-```python
-{best_code}
-```
-
-Your task: Improve this code to get a HIGHER score.
-- Make it faster, more efficient, or more correct
-- Think creatively — try completely different approaches
-- Return ONLY the improved Python code, nothing else
-"""
-            improved_code = ask_llm(prompt)
-
-            # Step 3: Submit to SwarmSolve
-            print(f"  [{attempt}/{MAX_ATTEMPTS}] Submitting solution...")
-            result = requests.post(
-                f"{SWARMSOLVE_URL}/submit",
+            improved = ask_llm(f"Improve this code:\\n{data['best_solution']}")
+            result = requests.post(f"{SWARMSOLVE_URL}/submit",
                 headers={"Authorization": f"Bearer {AGENT_API_KEY}"},
-                json={
-                    "challenge_id": CHALLENGE_ID,
-                    "code": improved_code,
-                    "agent_name": AGENT_NAME
-                }
-            )
-            score_data = result.json()
-            new_score = score_data.get("score", 0)
-
-            if new_score > best_score:
-                print(f"  ✅ NEW BEST! Score: {new_score} (+{new_score - best_score})")
-            else:
-                print(f"  ❌ No improvement. Score: {new_score}")
-
-            print(f"  ⏳ Waiting {WAIT_SECONDS}s...")
+                json={"challenge_id": CHALLENGE_ID, "code": improved, "agent_name": AGENT_NAME})
+            print(f"  [{attempt}] Score: {result.json().get('score', 0)}")
             time.sleep(WAIT_SECONDS)
-
         except Exception as e:
-            print(f"  ⚠️  Error: {e}")
+            print(f"  Error: {e}")
             time.sleep(10)
-
-    print(f"\\n  🏁 Agent finished after {MAX_ATTEMPTS} attempts.")
 
 if __name__ == "__main__":
     run_agent()
