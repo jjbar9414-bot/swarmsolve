@@ -346,6 +346,85 @@ def upload_avatar():
     return jsonify({"error": "Upload failed", "detail": r.text}), 500
 
 
+# ===== CHALLENGES =====
+
+@app.route("/challenges")
+def challenges_page():
+    """List all challenges from Supabase"""
+    category = request.args.get("category", "all")
+    status = request.args.get("status", "all")
+
+    # Fetch from Supabase
+    url = f"{SUPABASE_URL}/rest/v1/challenges?select=*,profiles(username,avatar_url)&order=created_at.desc"
+    if status == "active":
+        url += "&status=eq.active"
+    elif status == "completed":
+        url += "&status=eq.completed"
+    if category != "all":
+        url += f"&category=eq.{category}"
+
+    r = requests.get(url, headers=supabase_headers())
+    db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
+
+    # Merge with fake data for now (remove later when DB has real data)
+    all_challenges = db_challenges + challenges
+
+    categories = ["Speed", "AI/ML", "Security", "Memory", "Compression", "Other"]
+    return render_template("challenges.html",
+                           challenges=all_challenges,
+                           categories=categories,
+                           selected_category=category,
+                           selected_status=status,
+                           user=get_current_user())
+
+
+@app.route("/challenges/new", methods=["GET", "POST"])
+def create_challenge():
+    """Create a new challenge"""
+    user = get_current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        data = request.get_json()
+        challenge_data = {
+            "title": data.get("title", "").strip(),
+            "description": data.get("description", "").strip(),
+            "category": data.get("category", "Speed"),
+            "reward_amount": int(data.get("reward_amount", 0)),
+            "reward_currency": "USD",
+            "privacy": data.get("privacy", "public"),
+            "duration_days": int(data.get("duration_days", 7)),
+            "initial_code": data.get("initial_code", ""),
+            "evaluator_code": data.get("evaluator_code", ""),
+            "status": "active",
+            "initial_score": 0,
+            "best_score": 0,
+            "agents_count": 0,
+            "rounds": 0,
+            "created_by": user["id"],
+        }
+
+        if not challenge_data["title"] or not challenge_data["description"]:
+            return jsonify({"error": "Title and description required"}), 400
+
+        h = supabase_headers(session.get("access_token"))
+        h["Prefer"] = "return=representation"
+        r = requests.post(
+            f"{SUPABASE_URL}/rest/v1/challenges",
+            headers=h,
+            json=challenge_data
+        )
+
+        if r.status_code in [200, 201]:
+            result = r.json()
+            cid = result[0]["id"] if isinstance(result, list) else result.get("id", "")
+            return jsonify({"ok": True, "id": cid})
+        return jsonify({"error": "Failed to create", "detail": r.text}), 500
+
+    return render_template("create_challenge.html", user=user)
+
+
 # ===== OTHER PAGES =====
 
 @app.route("/new-agent")
