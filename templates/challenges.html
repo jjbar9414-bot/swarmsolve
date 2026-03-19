@@ -23,6 +23,15 @@ body.rtl .nav-links.active{left:0!important}
 .nav-links .btn-google{background:#fff!important;color:#333!important}
 }
 @media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
+/* Active nav link */
+.nav-group-links a.nav-active{color:#22d3ee!important;font-weight:600!important;position:relative}
+.nav-group-links a.nav-active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#22d3ee;border-radius:2px}
+@media(max-width:768px){
+.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}
+body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}
+.nav-group-links a.nav-active::after{display:none}
+}
+
 
 /* Challenges page */
 .ch-page{max-width:1100px;margin:0 auto;padding:30px 20px 60px}
@@ -90,6 +99,15 @@ body.rtl .nav-links.active{left:0!important}
 .nav-links .lang-toggle{justify-content:center!important;width:100%!important}
 }
 @media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
+/* Active nav link */
+.nav-group-links a.nav-active{color:#22d3ee!important;font-weight:600!important;position:relative}
+.nav-group-links a.nav-active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#22d3ee;border-radius:2px}
+@media(max-width:768px){
+.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}
+body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}
+.nav-group-links a.nav-active::after{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -230,5 +248,19 @@ body.rtl .nav-links.active{left:0!important}
         document.getElementById("ch-grid").style.display = visible === 0 ? "none" : "";
     }
     </script>
+<script>
+// Highlight active nav link
+(function(){
+var p=window.location.pathname;
+var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/new-agent':'/challenges','/profile':'/profile'};
+var seg='/'+p.split('/').filter(Boolean)[0]||'/';
+if(seg==='/'){seg=p;}
+var target=map[seg]||seg;
+document.querySelectorAll('.nav-group-links a').forEach(function(a){
+var h=a.getAttribute('href');
+if(h===target)a.classList.add('nav-active');
+});
+})();
+</script>
 </body>
 </html>
