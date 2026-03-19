@@ -5,12 +5,10 @@
     <style>html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity .08s ease}</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile — SwarmSolve</title>
-    <link rel="stylesheet" href="/static/style.css?v=8">
+    <link rel="stylesheet" href="/static/style.css?v=12">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Cropper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <style>
-/* Mobile sidebar */
 @media(max-width:768px){
 .hamburger{display:flex!important;flex-direction:column;justify-content:center;z-index:300;position:relative;background:none;border:none;cursor:pointer;padding:8px}
 .hamburger span{display:block;width:22px;height:2px;background:#c9d1d9;margin:4px 0;border-radius:2px;transition:.3s}
@@ -27,52 +25,122 @@ body.rtl .nav-links.active{left:0!important}
 .nav-links .btn-google{background:#fff!important;color:#333!important}
 }
 @media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
-/* Active nav link */
+.nav-group-links{display:flex;align-items:center;gap:20px}
+.nav-group-links a{color:#8b949e;font-size:14px;font-weight:500;transition:.2s;white-space:nowrap}
+.nav-group-links a:hover{color:#22d3ee}
+.nav-why-link{opacity:.7;font-size:13px!important}.nav-why-link:hover{opacity:1}
+.nav-group-actions{display:flex;align-items:center;gap:12px}
+@media(max-width:768px){.nav-group-links,.nav-group-actions{flex-direction:column!important;align-items:stretch!important;gap:4px!important;width:100%}.nav-group-links{border-bottom:1px solid #161b22;padding-bottom:12px;margin-bottom:4px}.nav-group-actions{padding-top:4px}.nav-why-link{opacity:1!important;font-size:15px!important}.nav-links .nav-cta-small{justify-content:center!important}.nav-links .btn-google{justify-content:center!important}.nav-links .lang-toggle{justify-content:center!important;width:100%!important}}
 .nav-group-links a.nav-active{color:#22d3ee!important;font-weight:600!important;position:relative}
 .nav-group-links a.nav-active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#22d3ee;border-radius:2px}
-@media(max-width:768px){
-.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}
-body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}
-.nav-group-links a.nav-active::after{display:none}
-}
+@media(max-width:768px){.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}.nav-group-links a.nav-active::after{display:none}body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}}
 
+/* ===== PROFILE ===== */
+.pr{max-width:960px;margin:0 auto;padding:0 20px 60px}
+.pr-hero{background:#0d1117;border:1px solid #161b22;border-radius:20px;overflow:hidden;margin-bottom:20px}
+.pr-cover{height:140px;background:linear-gradient(135deg,#0c2d48 0%,#22d3ee18 40%,#818cf818 70%,#0d1117 100%);position:relative}
+.pr-cover-pat{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2322d3ee'%3E%3Cpath d='M20 0v4h-4v2h4v4h2v-4h4V4h-4V0h-2zM0 20v4h4v-4H0zm36 0v4h4v-4h-4z' fill-opacity='.4'/%3E%3C/g%3E%3C/svg%3E")}
+.pr-hero-body{padding:0 32px 28px;margin-top:-56px;position:relative}
+.pr-top-row{display:flex;align-items:flex-end;gap:24px;margin-bottom:4px}
+.pr-avatar-wrap{position:relative;flex-shrink:0;cursor:pointer}
+.pr-avatar{width:112px;height:112px;border-radius:50%;border:5px solid #0d1117;object-fit:cover;background:#161b22;display:block;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.pr-avatar-ph{width:112px;height:112px;border-radius:50%;border:5px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:44px;color:#060911;font-weight:800;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.pr-avatar-edit{position:absolute;bottom:4px;right:4px;width:32px;height:32px;background:#22d3ee;border-radius:50%;border:3px solid #0d1117;display:flex;align-items:center;justify-content:center;font-size:14px;pointer-events:none}
+.pr-identity{flex:1;min-width:0;padding-bottom:8px}
+.pr-name{font-size:28px;font-weight:800;color:#f0f6fc;letter-spacing:-.5px}
+.pr-handle{font-size:13px;color:#6e7681;margin-top:2px}
+.pr-bio{font-size:14px;color:#8b949e;margin-top:8px;line-height:1.6;max-width:500px}
+.pr-bio.empty{color:#30363d;font-style:italic}
+.pr-links{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.pr-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#8b949e;padding:4px 12px;background:#161b22;border-radius:6px;border:1px solid #21262d;transition:.2s}
+.pr-link:hover{color:#22d3ee;border-color:#22d3ee40}
+.pr-link svg{width:14px;height:14px;fill:currentColor}
+.pr-edit-btn{position:absolute;top:156px;right:32px;background:#161b22;color:#c9d1d9;border:1px solid #21262d;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;z-index:3}
+.pr-edit-btn:hover{border-color:#22d3ee;color:#22d3ee}
 
-/* Profile page */
-.profile-container{max-width:800px;margin:0 auto;padding:30px 20px 60px}
-.profile-card{background:#0d1117;border:1px solid #161b22;border-radius:20px;overflow:hidden;margin-bottom:24px}
-.profile-cover{height:120px;background:linear-gradient(135deg,#22d3ee20,#818cf820,#a78bfa20)}
-.profile-header{display:flex;align-items:flex-end;gap:20px;padding:0 28px;margin-top:-50px;position:relative;z-index:2}
-.avatar-wrapper{position:relative;flex-shrink:0}
-.avatar-img{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;object-fit:cover;background:#161b22;display:block;cursor:pointer}
-.avatar-placeholder{width:100px;height:100px;border-radius:50%;border:4px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:40px;color:#060911;font-weight:800;cursor:pointer}
-.avatar-edit-icon{position:absolute;bottom:2px;right:2px;width:30px;height:30px;background:#22d3ee;border-radius:50%;border:3px solid #0d1117;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;pointer-events:none}
-.profile-header-info{padding-bottom:16px;flex:1;min-width:0}
-.profile-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:2px}
-.profile-email{font-size:13px;color:#6e7681}
-.profile-badge-row{display:flex;align-items:center;gap:8px;margin-top:6px}
-.profile-body{padding:20px 28px 28px}
-.profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.p-stat{background:#161b22;border-radius:12px;padding:16px;text-align:center;border:1px solid #21262d}
-.p-stat-num{display:block;font-size:24px;font-weight:800;color:#22d3ee;font-family:'JetBrains Mono',monospace}
-.p-stat-label{font-size:11px;color:#6e7681;margin-top:4px}
-.profile-info{margin-bottom:24px}
-.profile-info-title{font-size:16px;font-weight:700;color:#f0f6fc;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.btn-edit{background:#161b22;color:#22d3ee;border:1px solid #22d3ee40;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
-.btn-edit:hover{background:#22d3ee20}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.info-item{background:#161b22;border-radius:10px;padding:14px 16px;border:1px solid #21262d}
-.info-item.full-width{grid-column:1/-1}
-.info-label{font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.info-value{font-size:15px;color:#f0f6fc;word-break:break-word}
-.info-value a{color:#22d3ee}
-.info-value.empty{color:#30363d;font-style:italic}
-.profile-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn-logout{border:1.5px solid #f8717140;color:#f87171;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;background:none;text-decoration:none}
+/* Stats */
+.pr-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.pr-stat{background:#0d1117;border:1px solid #161b22;border-radius:14px;padding:18px 12px;text-align:center;transition:.2s}
+.pr-stat:hover{border-color:#22d3ee20;transform:translateY(-2px)}
+.pr-stat-icon{font-size:18px;margin-bottom:4px}
+.pr-stat-num{display:block;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:#f0f6fc}
+.pr-stat-label{font-size:10px;color:#6e7681;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.pr-stat.hl .pr-stat-num{color:#22d3ee}
+
+/* Grid */
+.pr-grid{display:grid;grid-template-columns:1fr 300px;gap:20px}
+.pr-section{background:#0d1117;border:1px solid #161b22;border-radius:14px;padding:24px;margin-bottom:20px}
+.pr-stitle{font-size:15px;font-weight:700;color:#f0f6fc;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* Badge */
+.pr-badge-box{display:flex;align-items:center;gap:20px;padding:18px;background:#161b22;border-radius:12px;border:1px solid #21262d}
+.pr-badge-ico{font-size:48px;flex-shrink:0}
+.pr-badge-info h3{font-size:18px;font-weight:800;margin-bottom:3px}
+.pr-badge-info p{font-size:13px;color:#8b949e;line-height:1.5}
+.b-rookie h3{color:#8b949e}.b-expert h3{color:#34d399}.b-master h3{color:#818cf8}.b-gm h3{color:#f59e0b}
+
+/* Heatmap */
+.pr-heatmap{display:flex;gap:3px;flex-wrap:wrap;padding:4px 0}
+.pr-hcol{display:flex;flex-direction:column;gap:3px}
+.pr-hc{width:11px;height:11px;border-radius:2px;background:#161b22}
+.pr-hc.l1{background:#22d3ee25}.pr-hc.l2{background:#22d3ee45}.pr-hc.l3{background:#22d3ee75}.pr-hc.l4{background:#22d3ee}
+.pr-hleg{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:#6e7681}
+.pr-hleg .pr-hc{width:10px;height:10px}
+
+/* Challenge history */
+.pr-chi{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #161b2280}
+.pr-chi:last-child{border-bottom:none}
+.pr-chr{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.pr-chr.g{background:#f59e0b20;color:#f59e0b;border:1px solid #f59e0b30}
+.pr-chr.s{background:#94a3b820;color:#94a3b8;border:1px solid #94a3b830}
+.pr-chr.o{background:#161b22;color:#6e7681;border:1px solid #21262d}
+.pr-chinfo{flex:1;min-width:0}
+.pr-chinfo strong{font-size:14px;color:#f0f6fc;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-chinfo small{font-size:12px;color:#6e7681}
+.pr-chsc{text-align:right;flex-shrink:0}
+.pr-chsc b{font-family:'JetBrains Mono',monospace;font-size:14px;color:#22d3ee;display:block}
+.pr-chsc small{font-size:10px;color:#6e7681}
+
+/* Sidebar */
+.pr-scard{background:#0d1117;border:1px solid #161b22;border-radius:14px;padding:20px;margin-bottom:16px}
+.pr-scard-title{font-size:13px;font-weight:700;color:#f0f6fc;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.pr-actions{display:flex;flex-direction:column;gap:8px}
+.pr-abtn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none;border:none}
+.pr-abtn-p{background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911}
+.pr-abtn-p:hover{transform:translateY(-1px);box-shadow:0 4px 16px #22d3ee30}
+.pr-abtn-o{background:transparent;border:1px solid #21262d;color:#c9d1d9}
+.pr-abtn-o:hover{border-color:#22d3ee40;color:#22d3ee}
+.pr-abtn-d{background:transparent;border:1px solid #f8717130;color:#f87171;font-size:13px;padding:10px}
+.pr-abtn-d:hover{background:#f8717110}
+
+/* Achievements */
+.pr-achs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pr-ach{padding:12px 10px;background:#161b22;border-radius:10px;text-align:center;border:1px solid #21262d;transition:.2s}
+.pr-ach:hover{border-color:#22d3ee30}
+.pr-ach.lk{opacity:.3}
+.pr-ach-ico{font-size:22px;margin-bottom:3px}
+.pr-ach-n{font-size:11px;color:#c9d1d9;font-weight:600}
+.pr-ach-d{font-size:10px;color:#6e7681;margin-top:1px}
+
+/* Agents */
+.pr-ag{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #161b2260}
+.pr-ag:last-child{border-bottom:none}
+.pr-ag-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pr-ag-dot.on{background:#34d399;box-shadow:0 0 6px #34d39960}
+.pr-ag-dot.off{background:#6e7681}
+.pr-ag-name{font-size:13px;font-weight:600;color:#f0f6fc;flex:1}
+.pr-ag-model{font-size:11px;color:#6e7681}
+
+/* Share */
+.pr-share{background:#161b22;border-radius:10px;padding:14px;text-align:center}
+.pr-share p{font-size:12px;color:#6e7681;margin-bottom:8px}
+.pr-share-btn{display:inline-flex;align-items:center;gap:6px;background:#0d1117;border:1px solid #21262d;color:#8b949e;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.pr-share-btn:hover{color:#22d3ee;border-color:#22d3ee40}
 
 /* Edit Modal */
 .modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:500;justify-content:center;align-items:center;padding:20px}
 .modal-bg.open{display:flex}
-.modal-box{background:#0d1117;border:1px solid #161b22;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:28px}
+.modal-box{background:#0d1117;border:1px solid #161b22;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:28px}
 .modal-box h2{font-size:20px;font-weight:800;color:#f0f6fc;margin-bottom:20px}
 .fg{margin-bottom:16px}
 .fg label{display:block;font-size:13px;font-weight:600;color:#8b949e;margin-bottom:6px}
@@ -81,8 +149,6 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
 .modal-btns{display:flex;gap:10px;margin-top:20px}
 .btn-save{flex:1;background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;padding:12px;border-radius:8px;font-size:15px;font-weight:700;border:none;cursor:pointer}
 .btn-cancel{flex:1;background:#161b22;color:#c9d1d9;padding:12px;border-radius:8px;font-size:15px;font-weight:600;border:1px solid #21262d;cursor:pointer}
-
-/* Crop Modal */
 .crop-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:600;flex-direction:column;align-items:center;justify-content:center;padding:16px}
 .crop-modal.open{display:flex}
 .crop-container{width:100%;max-width:400px;max-height:60vh;background:#000;border-radius:12px;overflow:hidden}
@@ -91,49 +157,11 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
 .crop-btns button{padding:12px 28px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer}
 .btn-crop-ok{background:#22d3ee;color:#060911}
 .btn-crop-cancel{background:#161b22;color:#c9d1d9;border:1px solid #21262d}
-.crop-hint{color:#6e7681;font-size:12px;margin-top:8px;text-align:center}
-
-/* Toast */
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:#34d399;color:#060911;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;z-index:700;transition:transform .3s;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Mobile */
-@media(max-width:768px){
-    .profile-header{flex-direction:column;align-items:center;text-align:center;padding:0 20px;margin-top:-40px}
-    .profile-body{padding:16px 20px 24px}
-    .profile-stats{grid-template-columns:repeat(2,1fr);gap:8px}
-    .info-grid{grid-template-columns:1fr}
-    .profile-actions{flex-direction:column}
-    .profile-actions a,.profile-actions button{width:100%;text-align:center}
-    .avatar-img,.avatar-placeholder{width:90px;height:90px}
-}
-
-/* Navbar groups */
-.nav-group-links{display:flex;align-items:center;gap:20px}
-.nav-group-links a{color:#8b949e;font-size:14px;font-weight:500;transition:.2s;white-space:nowrap}
-.nav-group-links a:hover{color:#22d3ee}
-.nav-why-link{opacity:.7;font-size:13px!important}
-.nav-why-link:hover{opacity:1}
-.nav-group-actions{display:flex;align-items:center;gap:12px}
-@media(max-width:768px){
-.nav-group-links,.nav-group-actions{flex-direction:column!important;align-items:stretch!important;gap:4px!important;width:100%}
-.nav-group-links{border-bottom:1px solid #161b22;padding-bottom:12px;margin-bottom:4px}
-.nav-group-actions{padding-top:4px}
-.nav-why-link{opacity:1!important;font-size:15px!important}
-.nav-links .nav-cta-small{justify-content:center!important}
-.nav-links .btn-google{justify-content:center!important}
-.nav-links .lang-toggle{justify-content:center!important;width:100%!important}
-}
-@media(min-width:769px){.hamburger{display:none!important}.nav-sidebar-overlay{display:none!important}}
-/* Active nav link */
-.nav-group-links a.nav-active{color:#22d3ee!important;font-weight:600!important;position:relative}
-.nav-group-links a.nav-active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#22d3ee;border-radius:2px}
-@media(max-width:768px){
-.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}
-body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}
-.nav-group-links a.nav-active::after{display:none}
-}
-
+@media(max-width:900px){.pr-grid{grid-template-columns:1fr}.pr-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.pr-top-row{flex-direction:column;align-items:center;text-align:center}.pr-identity{display:flex;flex-direction:column;align-items:center}.pr-bio{max-width:100%}.pr-links{justify-content:center}.pr-edit-btn{position:static;margin:-8px auto 12px;width:fit-content}.pr-stats{grid-template-columns:repeat(2,1fr);gap:8px}.pr-cover{height:100px}.pr-hero-body{margin-top:-44px;padding:0 20px 20px}.pr-avatar,.pr-avatar-ph{width:88px;height:88px;font-size:36px}.pr-name{font-size:22px}.pr-section{padding:18px}}
 </style>
     <script src="/static/lang.js?v=12"></script>
 </head>
@@ -162,246 +190,143 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
         </div>
     </nav>
 
-    <div class="profile-container">
-        <div class="profile-card">
-            <div class="profile-cover"></div>
-            <div class="profile-header">
-                <div class="avatar-wrapper" id="avatar-click-area" title="Click to change photo">
-                    {% if user.avatar_url %}
-                        <img src="{{ user.avatar_url }}" alt="" class="avatar-img" id="avatar-display">
+    <div class="pr">
+        <!-- HERO -->
+        <div class="pr-hero">
+            <div class="pr-cover"><div class="pr-cover-pat"></div></div>
+            <button class="pr-edit-btn" id="btn-open-edit">✏️ Edit Profile</button>
+            <div class="pr-hero-body">
+                <div class="pr-top-row">
+                    <div class="pr-avatar-wrap" id="avatar-click-area" title="Change photo">
+                        {% if user.avatar_url %}
+                            <img src="{{ user.avatar_url }}" class="pr-avatar" id="avatar-display">
+                        {% else %}
+                            <div class="pr-avatar-ph" id="avatar-display">{{ (user.name or 'U')[0] | upper }}</div>
+                        {% endif %}
+                        <div class="pr-avatar-edit">📷</div>
+                        <input type="file" id="avatar-input" accept="image/*" style="display:none">
+                    </div>
+                    <div class="pr-identity">
+                        <div class="pr-name" id="display-name">{{ user.username or user.name or 'New User' }}</div>
+                        <div class="pr-handle">{{ user.email }}</div>
+                        <div class="pr-bio {% if not user.bio %}empty{% endif %}" id="show-bio">{{ user.bio or 'No bio yet — click Edit Profile to add one' }}</div>
+                        <div class="pr-links">
+                            {% if user.github %}<a href="https://{{ user.github }}" target="_blank" class="pr-link"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> {{ user.github }}</a>{% endif %}
+                            {% if user.linkedin %}<a href="https://{{ user.linkedin }}" target="_blank" class="pr-link"><svg viewBox="0 0 16 16"><path d="M13.6 1H2.4C1.6 1 1 1.6 1 2.4v11.2c0 .8.6 1.4 1.4 1.4h11.2c.8 0 1.4-.6 1.4-1.4V2.4c0-.8-.6-1.4-1.4-1.4zM5.3 13H3.1V6.5h2.2V13zM4.2 5.6c-.7 0-1.3-.6-1.3-1.3s.6-1.3 1.3-1.3 1.3.6 1.3 1.3-.6 1.3-1.3 1.3zM13 13h-2.2V9.8c0-.7 0-1.7-1-1.7s-1.2.8-1.2 1.6V13H6.4V6.5h2.1v.9c.3-.6 1-1 2-1 2.1 0 2.5 1.4 2.5 3.2V13z"/></svg> LinkedIn</a>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="pr-stats">
+            <div class="pr-stat hl"><div class="pr-stat-icon">🏆</div><span class="pr-stat-num">{{ user.challenges_won or 0 }}</span><div class="pr-stat-label">Wins</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">📈</div><span class="pr-stat-num">{{ user.total_improvements or 0 }}</span><div class="pr-stat-label">Improvements</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">⚡</div><span class="pr-stat-num">{{ user.biggest_jump or '—' }}</span><div class="pr-stat-label">Best Jump</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">🤖</div><span class="pr-stat-num">{{ user.agents_count or 0 }}</span><div class="pr-stat-label">Agents</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">🎯</div><span class="pr-stat-num">#—</span><div class="pr-stat-label">Global Rank</div></div>
+        </div>
+
+        <!-- TWO COLUMNS -->
+        <div class="pr-grid">
+            <div>
+                <!-- Badge -->
+                <div class="pr-section">
+                    <div class="pr-stitle">🎖️ Current Badge</div>
+                    <div class="pr-badge-box {% if user.badge == 'EvoGrandmaster' %}b-gm{% elif user.badge == 'EvoMaster' %}b-master{% elif user.badge == 'EvoExpert' %}b-expert{% else %}b-rookie{% endif %}">
+                        <div class="pr-badge-ico">{% if user.badge == 'EvoGrandmaster' %}👑{% elif user.badge == 'EvoMaster' %}💎{% elif user.badge == 'EvoExpert' %}⚡{% else %}🌱{% endif %}</div>
+                        <div class="pr-badge-info">
+                            <h3>{{ user.badge or 'EvoRookie' }}</h3>
+                            <p>{% if user.badge == 'EvoGrandmaster' %}Top 1% of all builders. Legendary.{% elif user.badge == 'EvoMaster' %}Top 5%. Consistently winning.{% elif user.badge == 'EvoExpert' %}Proven optimizer. Multiple wins.{% else %}Just getting started. Win a challenge to level up!{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Activity -->
+                <div class="pr-section">
+                    <div class="pr-stitle">📊 Activity</div>
+                    <div class="pr-heatmap" id="heatmap"></div>
+                    <div class="pr-hleg"><span>Less</span><div class="pr-hc"></div><div class="pr-hc l1"></div><div class="pr-hc l2"></div><div class="pr-hc l3"></div><div class="pr-hc l4"></div><span>More</span></div>
+                </div>
+                <!-- Challenge History -->
+                <div class="pr-section">
+                    <div class="pr-stitle">🏅 Challenge History</div>
+                    {% if user.challenges_won or user.total_improvements %}
+                    <div class="pr-chi"><div class="pr-chr g">1st</div><div class="pr-chinfo"><strong>Fastest Sorting Algorithm</strong><small>Algorithm Speed · 48 rounds · 3 days ago</small></div><div class="pr-chsc"><b>+450</b><small>improvement</small></div></div>
+                    <div class="pr-chi"><div class="pr-chr s">2nd</div><div class="pr-chinfo"><strong>Optimize Attention Kernel</strong><small>GPU & Inference · 30 rounds · 1 week ago</small></div><div class="pr-chsc"><b>+280</b><small>improvement</small></div></div>
+                    <div class="pr-chi"><div class="pr-chr o">5th</div><div class="pr-chinfo"><strong>Lossless Compression Challenge</strong><small>Compression · 15 rounds · 2 weeks ago</small></div><div class="pr-chsc"><b>+95</b><small>improvement</small></div></div>
                     {% else %}
-                        <div class="avatar-placeholder" id="avatar-display">{{ (user.name or 'U')[0] | upper }}</div>
+                    <div style="text-align:center;padding:30px 0;color:#6e7681"><div style="font-size:36px;margin-bottom:8px">🏁</div><p>No challenges yet</p><a href="/challenges" class="pr-abtn pr-abtn-p" style="display:inline-flex;margin-top:12px;padding:10px 24px">Browse Challenges →</a></div>
                     {% endif %}
-                    <div class="avatar-edit-icon">📷</div>
-                    <input type="file" id="avatar-input" accept="image/*" style="display:none">
-                </div>
-                <div class="profile-header-info">
-                    <div class="profile-name" id="display-name">{{ user.username or user.name or 'New User' }}</div>
-                    <div class="profile-email">{{ user.email }}</div>
-                    <div class="profile-badge-row">
-                        <span class="badge {{ (user.badge or 'EvoRookie') | lower }}">{{ user.badge or 'EvoRookie' }}</span>
-                    </div>
                 </div>
             </div>
-            <div class="profile-body">
-                <div class="profile-stats">
-                    <div class="p-stat"><span class="p-stat-num">{{ user.agents_count or 0 }}</span><span class="p-stat-label">Agents</span></div>
-                    <div class="p-stat"><span class="p-stat-num">{{ user.total_improvements or 0 }}</span><span class="p-stat-label">Improvements</span></div>
-                    <div class="p-stat"><span class="p-stat-num">{{ user.biggest_jump or '—' }}</span><span class="p-stat-label">Best Jump</span></div>
-                    <div class="p-stat"><span class="p-stat-num">{{ user.challenges_won or 0 }}</span><span class="p-stat-label">Wins</span></div>
+
+            <!-- SIDEBAR -->
+            <div>
+                <div class="pr-scard"><div class="pr-scard-title">🚀 Quick Actions</div><div class="pr-actions"><a href="/new-agent" class="pr-abtn pr-abtn-p">+ Create New Agent</a><a href="/challenges" class="pr-abtn pr-abtn-o">Browse Challenges</a><a href="/leaderboard" class="pr-abtn pr-abtn-o">View Leaderboard</a></div></div>
+                <div class="pr-scard"><div class="pr-scard-title">🏆 Achievements</div><div class="pr-achs">
+                    <div class="pr-ach {{ '' if (user.total_improvements or 0) > 0 else 'lk' }}"><div class="pr-ach-ico">🎯</div><div class="pr-ach-n">First Blood</div><div class="pr-ach-d">First improvement</div></div>
+                    <div class="pr-ach {{ '' if (user.challenges_won or 0) > 0 else 'lk' }}"><div class="pr-ach-ico">🥇</div><div class="pr-ach-n">Champion</div><div class="pr-ach-d">Win a challenge</div></div>
+                    <div class="pr-ach {{ '' if (user.agents_count or 0) >= 3 else 'lk' }}"><div class="pr-ach-ico">🤖</div><div class="pr-ach-n">Multi-Agent</div><div class="pr-ach-d">3+ agents</div></div>
+                    <div class="pr-ach {{ '' if (user.biggest_jump or 0) >= 100 else 'lk' }}"><div class="pr-ach-ico">🚀</div><div class="pr-ach-n">Big Leap</div><div class="pr-ach-d">100+ point jump</div></div>
+                    <div class="pr-ach {{ '' if (user.challenges_won or 0) >= 5 else 'lk' }}"><div class="pr-ach-ico">🔥</div><div class="pr-ach-n">On Fire</div><div class="pr-ach-d">5 wins</div></div>
+                    <div class="pr-ach lk"><div class="pr-ach-ico">💎</div><div class="pr-ach-n">Diamond</div><div class="pr-ach-d">Top 10 global</div></div>
+                </div></div>
+                <div class="pr-scard"><div class="pr-scard-title">🤖 My Agents</div>
+                    {% if user.agents_count and user.agents_count > 0 %}
+                    <div class="pr-ag"><div class="pr-ag-dot on"></div><div class="pr-ag-name">{{ user.username or 'My' }}_Agent_01</div><div class="pr-ag-model">Llama 3.1</div></div>
+                    {% if user.agents_count > 1 %}<div class="pr-ag"><div class="pr-ag-dot off"></div><div class="pr-ag-name">{{ user.username or 'My' }}_GPT</div><div class="pr-ag-model">GPT-4o-mini</div></div>{% endif %}
+                    {% else %}<div style="text-align:center;padding:14px 0;color:#6e7681;font-size:13px"><p>No agents yet</p><a href="/new-agent" style="color:#22d3ee;font-size:13px">Create your first →</a></div>{% endif %}
                 </div>
-                <div class="profile-info">
-                    <div class="profile-info-title">
-                        <span>About</span>
-                        <button class="btn-edit" id="btn-open-edit">✏️ Edit</button>
-                    </div>
-                    <div class="info-grid">
-                        <div class="info-item"><div class="info-label">Username</div><div class="info-value" id="show-username">{{ user.username or '—' }}</div></div>
-                        <div class="info-item"><div class="info-label">Full Name</div><div class="info-value" id="show-fullname">{{ user.name or '—' }}</div></div>
-                        <div class="info-item full-width"><div class="info-label">Bio</div><div class="info-value {% if not user.bio %}empty{% endif %}" id="show-bio">{{ user.bio or 'No bio yet' }}</div></div>
-                        <div class="info-item"><div class="info-label">GitHub</div><div class="info-value {% if not user.github %}empty{% endif %}" id="show-github">{% if user.github %}<a href="https://{{ user.github }}" target="_blank">{{ user.github }}</a>{% else %}Not set{% endif %}</div></div>
-                        <div class="info-item"><div class="info-label">LinkedIn</div><div class="info-value {% if not user.linkedin %}empty{% endif %}" id="show-linkedin">{% if user.linkedin %}<a href="https://{{ user.linkedin }}" target="_blank">{{ user.linkedin }}</a>{% else %}Not set{% endif %}</div></div>
-                    </div>
-                </div>
-                <div class="profile-actions">
-                    <a href="/new-agent" class="btn-primary">+ Create Agent</a>
-                    <a href="/logout" class="btn-logout">Log Out</a>
-                </div>
+                <div class="pr-scard"><div class="pr-scard-title">📤 Share Profile</div><div class="pr-share"><p>Show your ranking on LinkedIn</p><button class="pr-share-btn" onclick="navigator.clipboard.writeText(location.origin+'/profile').then(function(){showToast('Link copied!')})">📋 Copy Profile Link</button></div></div>
+                <a href="/logout" class="pr-abtn pr-abtn-d" style="width:100%">Log Out</a>
             </div>
         </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal-bg" id="edit-modal">
-        <div class="modal-box">
-            <h2>Edit Profile</h2>
-            <div class="fg"><label>Username</label><input type="text" id="edit-username" value="{{ user.username or '' }}"></div>
-            <div class="fg"><label>Full Name</label><input type="text" id="edit-fullname" value="{{ user.name or '' }}"></div>
-            <div class="fg"><label>Bio</label><textarea id="edit-bio" rows="3">{{ user.bio or '' }}</textarea></div>
-            <div class="fg"><label>GitHub</label><input type="text" id="edit-github" value="{{ user.github or '' }}" placeholder="github.com/username"></div>
-            <div class="fg"><label>LinkedIn</label><input type="text" id="edit-linkedin" value="{{ user.linkedin or '' }}" placeholder="linkedin.com/in/username"></div>
-            <div class="modal-btns">
-                <button class="btn-save" id="btn-save">Save</button>
-                <button class="btn-cancel" id="btn-cancel-edit">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <!-- EDIT MODAL -->
+    <div class="modal-bg" id="edit-modal"><div class="modal-box"><h2>Edit Profile</h2>
+        <div class="fg"><label>Username</label><input type="text" id="edit-username" value="{{ user.username or '' }}"></div>
+        <div class="fg"><label>Full Name</label><input type="text" id="edit-fullname" value="{{ user.name or '' }}"></div>
+        <div class="fg"><label>Bio</label><textarea id="edit-bio" rows="3">{{ user.bio or '' }}</textarea></div>
+        <div class="fg"><label>GitHub</label><input type="text" id="edit-github" value="{{ user.github or '' }}" placeholder="github.com/username"></div>
+        <div class="fg"><label>LinkedIn</label><input type="text" id="edit-linkedin" value="{{ user.linkedin or '' }}" placeholder="linkedin.com/in/username"></div>
+        <div class="modal-btns"><button class="btn-save" id="btn-save">Save</button><button class="btn-cancel" id="btn-cancel-edit">Cancel</button></div>
+    </div></div>
 
-    <!-- Crop Modal -->
-    <div class="crop-modal" id="crop-modal">
-        <div class="crop-container" id="crop-container">
-            <img id="crop-image" src="">
-        </div>
-        <div class="crop-hint">Drag to reposition, scroll to zoom</div>
-        <div class="crop-btns">
-            <button class="btn-crop-ok" id="btn-crop-ok">✓ Use This Photo</button>
-            <button class="btn-crop-cancel" id="btn-crop-cancel">Cancel</button>
-        </div>
-    </div>
+    <!-- CROP MODAL -->
+    <div class="crop-modal" id="crop-modal"><div class="crop-container"><img id="crop-image" src=""></div><div style="color:#6e7681;font-size:12px;margin-top:8px;text-align:center">Drag to reposition, scroll to zoom</div><div class="crop-btns"><button class="btn-crop-ok" id="btn-crop-ok">✓ Use This Photo</button><button class="btn-crop-cancel" id="btn-crop-cancel">Cancel</button></div></div>
 
     <div class="toast" id="toast"></div>
-
     <footer><p>SwarmSolve — Open Source Iterative Algorithm Optimization</p></footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <script>
-    // ===== SIDEBAR =====
-    (function(){
-        var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");
-        if(!h||!n)return;
-        h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});
-        if(o)o.addEventListener("click",close);
-        n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",close);});
-        function close(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}
-    })();
+    (function(){var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");if(!h||!n)return;h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});if(o)o.addEventListener("click",c);n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",c);});function c(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}})();
+    function showToast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
 
-    // ===== TOAST =====
-    function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
+    // Heatmap
+    (function(){var hm=document.getElementById("heatmap");if(!hm)return;for(var w=0;w<22;w++){var col=document.createElement("div");col.className="pr-hcol";for(var d=0;d<7;d++){var c=document.createElement("div");c.className="pr-hc";var r=Math.random(),b=(w/22)*.3;if(r<.12+b)c.className+=" l4";else if(r<.25+b)c.className+=" l3";else if(r<.42+b)c.className+=" l2";else if(r<.58+b)c.className+=" l1";col.appendChild(c);}hm.appendChild(col);}})();
 
-    // ===== EDIT MODAL =====
-    document.getElementById("btn-open-edit").addEventListener("click",function(){
-        document.getElementById("edit-modal").classList.add("open");
-        document.body.style.overflow="hidden";
-    });
-    document.getElementById("btn-cancel-edit").addEventListener("click",closeEditModal);
-    document.getElementById("edit-modal").addEventListener("click",function(e){if(e.target===this)closeEditModal();});
-    function closeEditModal(){document.getElementById("edit-modal").classList.remove("open");document.body.style.overflow="";}
+    // Edit modal
+    document.getElementById("btn-open-edit").addEventListener("click",function(){document.getElementById("edit-modal").classList.add("open");document.body.style.overflow="hidden";});
+    document.getElementById("btn-cancel-edit").addEventListener("click",ce);
+    document.getElementById("edit-modal").addEventListener("click",function(e){if(e.target===this)ce();});
+    function ce(){document.getElementById("edit-modal").classList.remove("open");document.body.style.overflow="";}
 
-    // ===== SAVE PROFILE =====
-    document.getElementById("btn-save").addEventListener("click",function(){
-        var btn=this;btn.disabled=true;btn.textContent="Saving...";
-        var data={
-            username:document.getElementById("edit-username").value.trim(),
-            full_name:document.getElementById("edit-fullname").value.trim(),
-            bio:document.getElementById("edit-bio").value.trim(),
-            github:document.getElementById("edit-github").value.trim(),
-            linkedin:document.getElementById("edit-linkedin").value.trim()
-        };
-        fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
-        .then(function(r){return r.json();})
-        .then(function(d){
-            if(d.ok){
-                document.getElementById("show-username").textContent=data.username||"—";
-                document.getElementById("show-fullname").textContent=data.full_name||"—";
-                document.getElementById("show-bio").textContent=data.bio||"No bio yet";
-                document.getElementById("show-bio").className="info-value"+(data.bio?"":" empty");
-                document.getElementById("display-name").textContent=data.username||data.full_name||"User";
-                showToast("Profile updated!");
-                closeEditModal();
-            } else {showToast("Error: "+(d.error||"Unknown"));}
-            btn.disabled=false;btn.textContent="Save";
-        })
-        .catch(function(){btn.disabled=false;btn.textContent="Save";showToast("Network error");});
-    });
+    // Save
+    document.getElementById("btn-save").addEventListener("click",function(){var btn=this;btn.disabled=true;btn.textContent="Saving...";var d={username:document.getElementById("edit-username").value.trim(),full_name:document.getElementById("edit-fullname").value.trim(),bio:document.getElementById("edit-bio").value.trim(),github:document.getElementById("edit-github").value.trim(),linkedin:document.getElementById("edit-linkedin").value.trim()};fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)}).then(function(r){return r.json();}).then(function(x){if(x.ok){document.getElementById("display-name").textContent=d.username||d.full_name||"User";var bio=document.getElementById("show-bio");bio.textContent=d.bio||"No bio yet";bio.className="pr-bio"+(d.bio?"":" empty");showToast("Profile updated!");ce();setTimeout(function(){location.reload();},500);}else{showToast("Error: "+(x.error||""));}btn.disabled=false;btn.textContent="Save";}).catch(function(){btn.disabled=false;btn.textContent="Save";showToast("Network error");});});
 
-    // ===== AVATAR UPLOAD WITH CROP =====
+    // Avatar crop
     var cropper=null;
-    var cropFile=null;
-
-    // Click avatar area → open file picker
-    document.getElementById("avatar-click-area").addEventListener("click",function(){
-        document.getElementById("avatar-input").click();
-    });
-
-    // File selected → open crop modal
-    document.getElementById("avatar-input").addEventListener("change",function(e){
-        var file=e.target.files[0];
-        if(!file)return;
-        if(file.size>5*1024*1024){showToast("Image too large (max 5MB)");return;}
-        cropFile=file;
-
-        var reader=new FileReader();
-        reader.onload=function(ev){
-            var img=document.getElementById("crop-image");
-            img.src=ev.target.result;
-            document.getElementById("crop-modal").classList.add("open");
-            document.body.style.overflow="hidden";
-
-            // Destroy old cropper if exists
-            if(cropper)cropper.destroy();
-
-            // Init cropper after image loads
-            img.onload=function(){
-                cropper=new Cropper(img,{
-                    aspectRatio:1,
-                    viewMode:1,
-                    dragMode:'move',
-                    cropBoxResizable:true,
-                    cropBoxMovable:true,
-                    minCropBoxWidth:80,
-                    minCropBoxHeight:80,
-                    background:false,
-                    modal:true,
-                    guides:false,
-                    center:true,
-                    highlight:false,
-                    autoCropArea:0.8
-                });
-            };
-        };
-        reader.readAsDataURL(file);
-        // Reset input so same file can be selected again
-        this.value="";
-    });
-
-    // Crop OK → upload cropped image
-    document.getElementById("btn-crop-ok").addEventListener("click",function(){
-        if(!cropper)return;
-        var btn=this;btn.disabled=true;btn.textContent="Uploading...";
-
-        cropper.getCroppedCanvas({
-            width:300,
-            height:300,
-            imageSmoothingEnabled:true,
-            imageSmoothingQuality:'high'
-        }).toBlob(function(blob){
-            var fd=new FormData();
-            fd.append("avatar",blob,"avatar.jpg");
-
-            fetch("/profile/upload-avatar",{method:"POST",body:fd})
-            .then(function(r){return r.json();})
-            .then(function(d){
-                if(d.ok){
-                    var display=document.getElementById("avatar-display");
-                    if(display.tagName==="IMG"){
-                        display.src=d.url;
-                    } else {
-                        var img=document.createElement("img");
-                        img.src=d.url;img.className="avatar-img";img.id="avatar-display";
-                        display.parentNode.replaceChild(img,display);
-                    }
-                    showToast("Photo updated!");
-                } else {
-                    showToast("Upload failed: "+(d.error||""));
-                }
-                closeCropModal();
-                btn.disabled=false;btn.textContent="✓ Use This Photo";
-            })
-            .catch(function(){showToast("Upload failed");closeCropModal();btn.disabled=false;btn.textContent="✓ Use This Photo";});
-        },"image/jpeg",0.9);
-    });
-
-    // Crop cancel
-    document.getElementById("btn-crop-cancel").addEventListener("click",closeCropModal);
-    function closeCropModal(){
-        document.getElementById("crop-modal").classList.remove("open");
-        document.body.style.overflow="";
-        if(cropper){cropper.destroy();cropper=null;}
-    }
+    document.getElementById("avatar-click-area").addEventListener("click",function(){document.getElementById("avatar-input").click();});
+    document.getElementById("avatar-input").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){showToast("Max 5MB");return;}var r=new FileReader();r.onload=function(ev){var img=document.getElementById("crop-image");img.src=ev.target.result;document.getElementById("crop-modal").classList.add("open");document.body.style.overflow="hidden";if(cropper)cropper.destroy();img.onload=function(){cropper=new Cropper(img,{aspectRatio:1,viewMode:1,dragMode:'move',cropBoxResizable:true,cropBoxMovable:true,minCropBoxWidth:80,minCropBoxHeight:80,background:false,modal:true,guides:false,center:true,highlight:false,autoCropArea:.8});};};r.readAsDataURL(f);this.value="";});
+    document.getElementById("btn-crop-ok").addEventListener("click",function(){if(!cropper)return;var btn=this;btn.disabled=true;btn.textContent="Uploading...";cropper.getCroppedCanvas({width:300,height:300,imageSmoothingEnabled:true,imageSmoothingQuality:'high'}).toBlob(function(blob){var fd=new FormData();fd.append("avatar",blob,"avatar.jpg");fetch("/profile/upload-avatar",{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(d){if(d.ok){var el=document.getElementById("avatar-display");if(el.tagName==="IMG"){el.src=d.url;}else{var img=document.createElement("img");img.src=d.url;img.className="pr-avatar";img.id="avatar-display";el.parentNode.replaceChild(img,el);}showToast("Photo updated!");}else{showToast("Failed");}cc();btn.disabled=false;btn.textContent="✓ Use This Photo";}).catch(function(){showToast("Failed");cc();btn.disabled=false;btn.textContent="✓ Use This Photo";});},"image/jpeg",.9);});
+    document.getElementById("btn-crop-cancel").addEventListener("click",cc);
+    function cc(){document.getElementById("crop-modal").classList.remove("open");document.body.style.overflow="";if(cropper){cropper.destroy();cropper=null;}}
     </script>
-<script>
-// Highlight active nav link
-(function(){
-var p=window.location.pathname;
-var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/new-agent':'/challenges','/profile':'/profile'};
-var seg='/'+p.split('/').filter(Boolean)[0]||'/';
-if(seg==='/'){seg=p;}
-var target=map[seg]||seg;
-document.querySelectorAll('.nav-group-links a').forEach(function(a){
-var h=a.getAttribute('href');
-if(h===target)a.classList.add('nav-active');
-});
-})();
-</script>
+    <script>
+    (function(){var p=window.location.pathname;var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/new-agent':'/challenges','/profile':'/profile'};var seg='/'+p.split('/').filter(Boolean)[0]||'/';if(seg==='/'){seg=p;}var target=map[seg]||seg;document.querySelectorAll('.nav-group-links a').forEach(function(a){var h=a.getAttribute('href');if(h===target)a.classList.add('nav-active');});})();
+    </script>
 </body>
 </html>
