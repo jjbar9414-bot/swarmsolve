@@ -491,7 +491,9 @@ function applyLang(lang) {
   const dir = lang === "ar" ? "rtl" : "ltr";
   document.documentElement.setAttribute("dir", dir);
   document.documentElement.setAttribute("lang", lang);
-  document.body.classList.toggle("rtl", lang === "ar");
+  if (document.body) {
+    document.body.classList.toggle("rtl", lang === "ar");
+  }
 
   // Translate all elements with data-i18n
   document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -524,10 +526,24 @@ function applyLang(lang) {
   }
 }
 
-// Initialize on page load
+// ===== EARLY: Set dir/lang on <html> BEFORE page renders =====
+// This runs immediately when lang.js is loaded (before DOMContentLoaded)
+(function() {
+  const lang = getCurrentLang();
+  const dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.setAttribute("dir", dir);
+  document.documentElement.setAttribute("lang", lang);
+  // Hide body until translation is done (prevents English flash)
+  document.documentElement.classList.add("i18n-loading");
+})();
+
+// ===== ON DOM READY: Translate + reveal =====
 document.addEventListener("DOMContentLoaded", () => {
   const lang = getCurrentLang();
   applyLang(lang);
+
+  // Reveal the page now that translation is applied
+  document.documentElement.classList.remove("i18n-loading");
 
   // Add click handler for toggle button
   const toggleBtn = document.getElementById("lang-toggle");
@@ -538,5 +554,4 @@ document.addEventListener("DOMContentLoaded", () => {
       setLang(current === "en" ? "ar" : "en");
     });
   }
-
 });

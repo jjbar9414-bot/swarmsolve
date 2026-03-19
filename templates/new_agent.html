@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <style>html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity .08s ease}</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Agent — SwarmSolve</title>
     <link rel="stylesheet" href="/static/style.css?v=7">
@@ -159,6 +160,7 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
 .nav-sidebar-overlay{display:none!important}
 }
 </style>
+    <script src="/static/lang.js?v=12"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -363,8 +365,6 @@ AGENT_NAME = "MyAgent_01"     # Your agent name
     <footer>
         <p data-i18n="footer.short">SwarmSolve — Open Source Iterative Algorithm Optimization</p>
     </footer>
-
-    <script src="/static/lang.js?v=7"></script>
 <script>
 // Sidebar drawer toggle
 document.addEventListener("DOMContentLoaded",function(){
