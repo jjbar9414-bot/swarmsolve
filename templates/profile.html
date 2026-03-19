@@ -199,9 +199,9 @@ body.rtl .nav-links.active{left:0!important}
                 <div class="pr-top-row">
                     <div class="pr-avatar-wrap" id="avatar-click-area" title="Change photo">
                         {% if user.avatar_url %}
-                            <img src="{{ user.avatar_url }}" class="pr-avatar" id="avatar-display">
+                            <img src="{{ user.avatar_url }}" class="pr-avatar" id="avatar-display-img">
                         {% else %}
-                            <div class="pr-avatar-ph" id="avatar-display">{{ (user.name or 'U')[0] | upper }}</div>
+                            <div class="pr-avatar-ph" id="avatar-display-ph">{{ (user.name or 'U')[0] | upper }}</div>
                         {% endif %}
                         <div class="pr-avatar-edit">📷</div>
                         <input type="file" id="avatar-input" accept="image/*" style="display:none">
@@ -321,7 +321,7 @@ body.rtl .nav-links.active{left:0!important}
     var cropper=null;
     document.getElementById("avatar-click-area").addEventListener("click",function(){document.getElementById("avatar-input").click();});
     document.getElementById("avatar-input").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){showToast("Max 5MB");return;}var r=new FileReader();r.onload=function(ev){var img=document.getElementById("crop-image");img.src=ev.target.result;document.getElementById("crop-modal").classList.add("open");document.body.style.overflow="hidden";if(cropper)cropper.destroy();img.onload=function(){cropper=new Cropper(img,{aspectRatio:1,viewMode:1,dragMode:'move',cropBoxResizable:true,cropBoxMovable:true,minCropBoxWidth:80,minCropBoxHeight:80,background:false,modal:true,guides:false,center:true,highlight:false,autoCropArea:.8});};};r.readAsDataURL(f);this.value="";});
-    document.getElementById("btn-crop-ok").addEventListener("click",function(){if(!cropper)return;var btn=this;btn.disabled=true;btn.textContent="Uploading...";cropper.getCroppedCanvas({width:300,height:300,imageSmoothingEnabled:true,imageSmoothingQuality:'high'}).toBlob(function(blob){var fd=new FormData();fd.append("avatar",blob,"avatar.jpg");fetch("/profile/upload-avatar",{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(d){if(d.ok){var el=document.getElementById("avatar-display");if(el.tagName==="IMG"){el.src=d.url;}else{var img=document.createElement("img");img.src=d.url;img.className="pr-avatar";img.id="avatar-display";el.parentNode.replaceChild(img,el);}showToast("Photo updated!");}else{showToast("Failed");}cc();btn.disabled=false;btn.textContent="✓ Use This Photo";}).catch(function(){showToast("Failed");cc();btn.disabled=false;btn.textContent="✓ Use This Photo";});},"image/jpeg",.9);});
+    document.getElementById("btn-crop-ok").addEventListener("click",function(){if(!cropper)return;var btn=this;btn.disabled=true;btn.textContent="Uploading...";cropper.getCroppedCanvas({width:300,height:300,imageSmoothingEnabled:true,imageSmoothingQuality:'high'}).toBlob(function(blob){var fd=new FormData();fd.append("avatar",blob,"avatar.jpg");fetch("/profile/upload-avatar",{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(d){if(d.ok){var el=document.getElementById("avatar-display-img")||document.getElementById("avatar-display-ph");if(el.tagName==="IMG"){el.src=d.url;}else{var img=document.createElement("img");img.src=d.url;img.className="pr-avatar";img.id="avatar-display-img";el.parentNode.replaceChild(img,el);}showToast("Photo updated!");}else{showToast("Failed");}cc();btn.disabled=false;btn.textContent="✓ Use This Photo";}).catch(function(){showToast("Failed");cc();btn.disabled=false;btn.textContent="✓ Use This Photo";});},"image/jpeg",.9);});
     document.getElementById("btn-crop-cancel").addEventListener("click",cc);
     function cc(){document.getElementById("crop-modal").classList.remove("open");document.body.style.overflow="";if(cropper){cropper.destroy();cropper=null;}}
     </script>
