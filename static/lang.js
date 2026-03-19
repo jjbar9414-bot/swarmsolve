@@ -7,6 +7,7 @@ const translations = {
   // ===== NAVBAR =====
   "nav.home": { en: "Home", ar: "الرئيسية" },
   "nav.leaderboard": { en: "Leaderboard", ar: "لوحة الترتيب" },
+  "nav.challenges": { en: "Challenges", ar: "المهام" },
   "nav.newAgent": { en: "+ New Agent", ar: "+ وكيل جديد" },
   "nav.signIn": { en: "Sign in", ar: "تسجيل الدخول" },
   "nav.signInGoogle": { en: "Sign in with Google", ar: "تسجيل بحساب Google" },
