@@ -1,8 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 import os, io, json, requests
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "swarmsolve_dev_key_2026")
+app.permanent_session_lifetime = timedelta(days=30)
+
+# Session cookie settings — persist across browser restarts
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_NAME"] = "swarmsolve_session"
+# Use secure cookies only in production (HTTPS)
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"
+# Don't expire cookie when browser closes
+app.config["SESSION_PERMANENT"] = True
 
 # ===== Supabase Config =====
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://bfvmheqcwaqojyidqceu.supabase.co")
@@ -48,6 +59,12 @@ def update_profile(user_id, data, access_token=None):
 def get_current_user():
     """Get current logged-in user from session"""
     return session.get("user")
+
+
+@app.before_request
+def make_session_permanent():
+    """Ensure every session is marked as permanent so it persists across browser restarts"""
+    session.permanent = True
 
 
 # ===== Fake Data (temporary until DB is ready) =====
@@ -217,6 +234,7 @@ def set_session():
     profile = get_profile(user_id, access_token)
 
     # Store in session
+    session.permanent = True
     session["user"] = {
         "id": user_id,
         "email": user_data.get("email", ""),
