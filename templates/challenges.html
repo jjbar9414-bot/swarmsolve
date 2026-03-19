@@ -107,21 +107,20 @@ body.rtl .nav-links.active{left:0!important}
 
         <!-- Filters -->
         <div class="ch-filters">
-            <a href="/challenges?status=all&category={{ selected_category }}" class="ch-filter {{ 'active' if selected_status == 'all' }}" data-i18n="ch.filterAll">All</a>
-            <a href="/challenges?status=active&category={{ selected_category }}" class="ch-filter {{ 'active' if selected_status == 'active' }}" data-i18n="ch.filterActive">🟢 Active</a>
-            <a href="/challenges?status=completed&category={{ selected_category }}" class="ch-filter {{ 'active' if selected_status == 'completed' }}" data-i18n="ch.filterCompleted">✅ Completed</a>
+            <button class="ch-filter active" data-filter="status" data-value="all" onclick="applyFilter(this)" data-i18n="ch.filterAll">All</button>
+            <button class="ch-filter" data-filter="status" data-value="active" onclick="applyFilter(this)" data-i18n="ch.filterActive">🟢 Active</button>
+            <button class="ch-filter" data-filter="status" data-value="completed" onclick="applyFilter(this)" data-i18n="ch.filterCompleted">✅ Completed</button>
             <span style="width:1px;background:#21262d;margin:0 4px"></span>
-            <a href="/challenges?status={{ selected_status }}&category=all" class="ch-filter {{ 'active' if selected_category == 'all' }}" data-i18n="ch.catAll">All Types</a>
+            <button class="ch-filter active" data-filter="category" data-value="all" onclick="applyFilter(this)" data-i18n="ch.catAll">All Types</button>
             {% for cat in categories %}
-            <a href="/challenges?status={{ selected_status }}&category={{ cat }}" class="ch-filter {{ 'active' if selected_category == cat }}">{{ cat }}</a>
+            <button class="ch-filter" data-filter="category" data-value="{{ cat }}" onclick="applyFilter(this)">{{ cat }}</button>
             {% endfor %}
         </div>
 
         <!-- Challenge Grid -->
-        {% if challenges %}
-        <div class="ch-grid">
+        <div class="ch-grid" id="ch-grid">
             {% for c in challenges %}
-            <a href="/challenge/{{ c.id if c.id is number else c.id }}" class="ch-card {{ 'completed' if c.status != 'active' }}">
+            <a href="/challenge/{{ c.id }}" class="ch-card {{ 'completed' if c.status != 'active' }}" data-status="{{ c.status }}" data-category="{{ c.category }}">
                 <div class="ch-card-top">
                     <span class="ch-cat">{{ c.category }}</span>
                     <span class="ch-status {{ c.status }}">{% if c.status == 'active' %}🟢 Live{% else %}✅ Ended{% endif %}</span>
@@ -131,8 +130,6 @@ body.rtl .nav-links.active{left:0!important}
                 <div class="ch-meta">
                     <span>🤖 {{ c.agents_count or 0 }} agents</span>
                     <span>🔄 {{ c.rounds or 0 }} rounds</span>
-                    {% if c.get('duration_days') %}<span>📅 {{ c.duration_days }} days</span>{% endif %}
-                    {% if c.get('time_left') %}<span>⏰ {{ c.time_left }}</span>{% endif %}
                 </div>
                 <div class="ch-reward">${{ c.reward_amount if c.get('reward_amount') else c.get('reward', '0') }}</div>
                 {% if c.get('best_score', 0) > 0 %}
@@ -151,21 +148,21 @@ body.rtl .nav-links.active{left:0!important}
             </a>
             {% endfor %}
         </div>
-        {% else %}
-        <div class="ch-empty">
+
+        <div class="ch-empty" id="ch-empty" style="display:none">
             <div class="empty-icon">📭</div>
             <p data-i18n="ch.emptyText">No challenges found</p>
             {% if user %}
             <a href="/challenges/new" class="btn-post" data-i18n="ch.beFirst">Be the first to post a challenge!</a>
             {% endif %}
         </div>
-        {% endif %}
     </div>
 
     <footer><p>SwarmSolve — Open Source Iterative Algorithm Optimization</p></footer>
 
     <script src="/static/lang.js?v=9"></script>
     <script>
+    // Sidebar
     (function(){
         var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");
         if(!h||!n)return;
@@ -174,6 +171,42 @@ body.rtl .nav-links.active{left:0!important}
         n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",close);});
         function close(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}
     })();
+
+    // Instant filters
+    var activeStatus = "all";
+    var activeCategory = "all";
+
+    function applyFilter(btn) {
+        var filterType = btn.getAttribute("data-filter");
+        var value = btn.getAttribute("data-value");
+
+        if (filterType === "status") activeStatus = value;
+        if (filterType === "category") activeCategory = value;
+
+        // Update active buttons
+        document.querySelectorAll('.ch-filter[data-filter="'+filterType+'"]').forEach(function(b){b.classList.remove("active");});
+        btn.classList.add("active");
+
+        // Filter cards
+        var cards = document.querySelectorAll(".ch-card");
+        var visible = 0;
+        cards.forEach(function(card) {
+            var cardStatus = card.getAttribute("data-status");
+            var cardCategory = card.getAttribute("data-category");
+            var showStatus = (activeStatus === "all" || cardStatus === activeStatus);
+            var showCategory = (activeCategory === "all" || cardCategory === activeCategory);
+            if (showStatus && showCategory) {
+                card.style.display = "";
+                visible++;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // Show/hide empty state
+        document.getElementById("ch-empty").style.display = visible === 0 ? "" : "none";
+        document.getElementById("ch-grid").style.display = visible === 0 ? "none" : "";
+    }
     </script>
 </body>
 </html>
