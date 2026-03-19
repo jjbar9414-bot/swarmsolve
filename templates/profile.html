@@ -62,6 +62,7 @@ body.rtl .nav-links.active{left:0!important}
 .av-dialog-danger:hover{background:#f8717108!important;color:#f87171!important}
 .av-dialog-cancel{color:#6e7681!important;font-weight:600}
 .av-dialog-cancel:hover{background:#ffffff06!important;color:#8b949e!important}
+.av-needs-photo.av-hidden{display:none}
 
 /* Fullscreen viewer */
 .av-fullscreen{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:800;justify-content:center;align-items:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -235,13 +236,9 @@ body.modal-open{position:fixed;width:100%;left:0}
     <div class="av-dialog-bg" id="av-dialog">
         <div class="av-dialog">
             <div class="av-dialog-header" data-i18n="pr.avTitle">Profile Photo</div>
-            {% if user.avatar_url %}
-            <button class="av-dialog-btn" id="av-view"><span>🔍</span> <span data-i18n="pr.avView">View Photo</span></button>
-            {% endif %}
+            <button class="av-dialog-btn av-needs-photo" id="av-view"><span>🔍</span> <span data-i18n="pr.avView">View Photo</span></button>
             <button class="av-dialog-btn" id="av-change"><span>📷</span> <span data-i18n="pr.avChange">Change Photo</span></button>
-            {% if user.avatar_url %}
-            <button class="av-dialog-btn av-dialog-danger" id="av-delete"><span>🗑️</span> <span data-i18n="pr.avDelete">Remove Photo</span></button>
-            {% endif %}
+            <button class="av-dialog-btn av-dialog-danger av-needs-photo" id="av-delete"><span>🗑️</span> <span data-i18n="pr.avDelete">Remove Photo</span></button>
             <button class="av-dialog-btn av-dialog-cancel" id="av-cancel" data-i18n="pr.avCancel">Cancel</button>
         </div>
     </div>
@@ -366,7 +363,9 @@ body.modal-open{position:fixed;width:100%;left:0}
     var cropper=null;
     // ===== AVATAR DIALOG =====
     var avDlg=document.getElementById("av-dialog");
-    function openAvDlg(){avDlg.classList.add("open");var st=window.scrollY;document.body.style.top=(-st)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st;}
+    function hasPhoto(){return !!document.getElementById("avatar-display-img");}
+    function updateAvBtns(){document.querySelectorAll('.av-needs-photo').forEach(function(b){b.classList.toggle('av-hidden',!hasPhoto());});}
+    function openAvDlg(){updateAvBtns();avDlg.classList.add("open");var st=window.scrollY;document.body.style.top=(-st)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st;}
     function closeAvDlg(){avDlg.classList.remove("open");document.body.classList.remove('modal-open');document.documentElement.classList.remove('modal-open');var st=parseInt(document.body.dataset.scrollY||'0');document.body.style.top='';window.scrollTo(0,st);}
 
     document.getElementById("avatar-click-area").addEventListener("click",function(e){e.stopPropagation();openAvDlg();});
@@ -374,15 +373,14 @@ body.modal-open{position:fixed;width:100%;left:0}
     avDlg.addEventListener("click",function(e){if(e.target===this)closeAvDlg();});
 
     // View fullscreen
-    var avView=document.getElementById("av-view");
-    if(avView){avView.addEventListener("click",function(){
+    document.getElementById("av-view").addEventListener("click",function(){
         closeAvDlg();
         var img=document.getElementById("avatar-display-img");
         if(!img)return;
         document.getElementById("av-fs-img").src=img.src;
         document.getElementById("av-fullscreen").classList.add("open");
         var st=window.scrollY;document.body.style.top=(-st)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st;
-    });}
+    });
     document.getElementById("av-fs-close").addEventListener("click",function(){
         document.getElementById("av-fullscreen").classList.remove("open");
         document.body.classList.remove('modal-open');document.documentElement.classList.remove('modal-open');var st=parseInt(document.body.dataset.scrollY||'0');document.body.style.top='';window.scrollTo(0,st);
@@ -398,8 +396,7 @@ body.modal-open{position:fixed;width:100%;left:0}
     });
 
     // Delete photo
-    var avDel=document.getElementById("av-delete");
-    if(avDel){avDel.addEventListener("click",function(){
+    document.getElementById("av-delete").addEventListener("click",function(){
         closeAvDlg();
         if(!confirm("Remove your profile photo?"))return;
         fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({avatar_url:""})})
@@ -414,10 +411,9 @@ body.modal-open{position:fixed;width:100%;left:0}
                     el.parentNode.replaceChild(ph,el);
                 }
                 showToast("Photo removed");
-                setTimeout(function(){location.reload();},500);
             }else{showToast("Error");}
         });
-    });}
+    });
 
     // File input change (crop)
     document.getElementById("avatar-input").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){showToast("Max 5MB");return;}var r=new FileReader();r.onload=function(ev){var img=document.getElementById("crop-image");img.src=ev.target.result;document.getElementById("crop-modal").classList.add("open");var st2=window.scrollY;document.body.style.top=(-st2)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st2;if(cropper)cropper.destroy();img.onload=function(){cropper=new Cropper(img,{aspectRatio:1,viewMode:1,dragMode:'move',cropBoxResizable:true,cropBoxMovable:true,minCropBoxWidth:80,minCropBoxHeight:80,background:false,modal:true,guides:false,center:true,highlight:false,autoCropArea:.8});};};r.readAsDataURL(f);this.value="";});
