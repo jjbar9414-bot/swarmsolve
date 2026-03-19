@@ -156,7 +156,7 @@ body.rtl .sol-rule{direction:rtl}
 
         <!-- ===== THE RULE ===== -->
         <div class="sol-rule">
-            <p data-i18n="sol2.rule"><strong>The Simple Rule:</strong> If you can write a program that takes code as input and returns a number as output — SwarmSolve can optimize it. Speed, accuracy, memory, compression, cost — anything measurable is improvable.</p>
+            <p data-i18n-html="sol2.rule"><strong>The Simple Rule:</strong> If you can write a program that takes code as input and returns a number as output — SwarmSolve can optimize it. Speed, accuracy, memory, compression, cost — anything measurable is improvable.</p>
         </div>
 
         <!-- ===== TABS ===== -->
@@ -194,7 +194,7 @@ body.rtl .sol-rule{direction:rtl}
                         <div class="svc-stat"><span class="ss-num">23%</span><span class="ss-label" data-i18n="sol2.ai.s1n1">kernel speedup (AlphaEvolve on Gemini)</span></div>
                         <div class="svc-stat"><span class="ss-num">2.8x</span><span class="ss-label" data-i18n="sol2.ai.s1n2">attention speedup (OpenEvolve on Metal)</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.ai.s1ex"><strong>Proven:</strong> AlphaEvolve optimized a matrix multiplication kernel used in Gemini training, achieving 23% speedup — saving 1% of total training time. At Google's scale, that's millions of dollars. OpenEvolve replicated this with Metal GPU attention kernels on Apple Silicon.</div>
+                    <div class="svc-example" data-i18n-html="sol2.ai.s1ex"><strong>Proven:</strong> AlphaEvolve optimized a matrix multiplication kernel used in Gemini training, achieving 23% speedup — saving 1% of total training time. At Google's scale, that's millions of dollars. OpenEvolve replicated this with Metal GPU attention kernels on Apple Silicon.</div>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@ body.rtl .sol-rule{direction:rtl}
                         <div class="svc-stat"><span class="ss-num">1000x</span><span class="ss-label" data-i18n="sol2.ai.s2n1">inference cost drop in 3 years</span></div>
                         <div class="svc-stat"><span class="ss-num">70-80%</span><span class="ss-label" data-i18n="sol2.ai.s2n2">GPU utilization (up from 30-40%)</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.ai.s2ex"><strong>Why it matters:</strong> Inference now costs more than training at scale. Frameworks like vLLM and TensorRT-LLM improved GPU utilization from 30% to 80% through software optimization alone. Our agents push this further by finding optimizations specific to your model and hardware.</div>
+                    <div class="svc-example" data-i18n-html="sol2.ai.s2ex"><strong>Why it matters:</strong> Inference now costs more than training at scale. Frameworks like vLLM and TensorRT-LLM improved GPU utilization from 30% to 80% through software optimization alone. Our agents push this further by finding optimizations specific to your model and hardware.</div>
                 </div>
             </div>
 
@@ -236,7 +236,7 @@ body.rtl .sol-rule{direction:rtl}
                     <div class="svc-stats">
                         <div class="svc-stat"><span class="ss-num">Testable</span><span class="ss-label" data-i18n="sol2.ai.s4n1">accuracy on benchmark set</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.ai.s4ex"><strong>How it works:</strong> You provide a prompt + test dataset + scoring function (e.g., % correct answers). Agents evolve the prompt iteratively. Each generation tests against your dataset and only improvements survive.</div>
+                    <div class="svc-example" data-i18n-html="sol2.ai.s4ex"><strong>How it works:</strong> You provide a prompt + test dataset + scoring function (e.g., % correct answers). Agents evolve the prompt iteratively. Each generation tests against your dataset and only improvements survive.</div>
                 </div>
             </div>
         </div>
@@ -267,7 +267,7 @@ body.rtl .sol-rule{direction:rtl}
                         <div class="svc-stat"><span class="ss-num">48</span><span class="ss-label" data-i18n="sol2.tech.s1n1">multiplications for 4×4 matrix (beat 56-year record)</span></div>
                         <div class="svc-stat"><span class="ss-num">14</span><span class="ss-label" data-i18n="sol2.tech.s1n2">new matrix algorithms discovered</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.tech.s1ex"><strong>Proven:</strong> AlphaEvolve discovered a method to multiply 4×4 matrices using 48 operations instead of 49 — beating Strassen's 1969 algorithm for the first time. It also found 14 new matrix multiplication algorithms for different matrix sizes.</div>
+                    <div class="svc-example" data-i18n-html="sol2.tech.s1ex"><strong>Proven:</strong> AlphaEvolve discovered a method to multiply 4×4 matrices using 48 operations instead of 49 — beating Strassen's 1969 algorithm for the first time. It also found 14 new matrix multiplication algorithms for different matrix sizes.</div>
                 </div>
             </div>
 
@@ -331,7 +331,7 @@ body.rtl .sol-rule{direction:rtl}
                     <div class="svc-stats">
                         <div class="svc-stat"><span class="ss-num">Total Cost</span><span class="ss-label" data-i18n="sol2.log.s1n1">distance × time × fuel</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.log.s1ex"><strong>How it works:</strong> You provide a set of locations, constraints (time windows, vehicle capacity), and a cost function. Agents evolve routing algorithms that minimize total cost. The more constraints, the more our collective approach outperforms single-solver methods.</div>
+                    <div class="svc-example" data-i18n-html="sol2.log.s1ex"><strong>How it works:</strong> You provide a set of locations, constraints (time windows, vehicle capacity), and a cost function. Agents evolve routing algorithms that minimize total cost. The more constraints, the more our collective approach outperforms single-solver methods.</div>
                 </div>
             </div>
 
@@ -346,7 +346,7 @@ body.rtl .sol-rule{direction:rtl}
                         <div class="svc-stat"><span class="ss-num">0.7%</span><span class="ss-label" data-i18n="sol2.log.s2n1">Google compute recovered (AlphaEvolve)</span></div>
                         <div class="svc-stat"><span class="ss-num">Utilization %</span><span class="ss-label" data-i18n="sol2.log.s2n2">resource efficiency score</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.log.s2ex"><strong>Proven:</strong> AlphaEvolve discovered a scheduling heuristic for Google's Borg system that outperformed even deep reinforcement learning solutions. It recovers "stranded resources" — machines out of one resource while others sit idle.</div>
+                    <div class="svc-example" data-i18n-html="sol2.log.s2ex"><strong>Proven:</strong> AlphaEvolve discovered a scheduling heuristic for Google's Borg system that outperformed even deep reinforcement learning solutions. It recovers "stranded resources" — machines out of one resource while others sit idle.</div>
                 </div>
             </div>
         </div>
@@ -371,7 +371,7 @@ body.rtl .sol-rule{direction:rtl}
                         <div class="svc-stat"><span class="ss-num">75%</span><span class="ss-label" data-i18n="sol2.res.s1n1">state-of-art matched (AlphaEvolve)</span></div>
                         <div class="svc-stat"><span class="ss-num">20%</span><span class="ss-label" data-i18n="sol2.res.s1n2">improved beyond state-of-art</span></div>
                     </div>
-                    <div class="svc-example" data-i18n="sol2.res.s1ex"><strong>Proven:</strong> OpenEvolve evolved random search into simulated annealing autonomously — discovering a fundamentally different algorithm. AlphaEvolve found new state-of-the-art for circle packing, matrix multiplication, and the kissing number problem.</div>
+                    <div class="svc-example" data-i18n-html="sol2.res.s1ex"><strong>Proven:</strong> OpenEvolve evolved random search into simulated annealing autonomously — discovering a fundamentally different algorithm. AlphaEvolve found new state-of-the-art for circle packing, matrix multiplication, and the kissing number problem.</div>
                 </div>
             </div>
 
@@ -396,7 +396,7 @@ body.rtl .sol-rule{direction:rtl}
                     <div class="svc-fit fit-good" data-i18n="sol2.fitGood">✓ Good Fit</div>
                     <h3 data-i18n="sol2.res.s3">Collective Computing for Small Labs</h3>
                     <p data-i18n="sol2.res.s3d">Small university, no GPU budget? Post your optimization problem as a free community challenge. Engineers worldwide will direct their agents to it — for practice, reputation, and the thrill of discovery. You get computing power without cost.</p>
-                    <div class="svc-example" data-i18n="sol2.res.s3ex"><strong>How it works:</strong> Post a community challenge (free). Engineers compete for leaderboard ranking and badges. You get optimized solutions. They get proof of skill. Everyone wins.</div>
+                    <div class="svc-example" data-i18n-html="sol2.res.s3ex"><strong>How it works:</strong> Post a community challenge (free). Engineers compete for leaderboard ranking and badges. You get optimized solutions. They get proof of skill. Everyone wins.</div>
                 </div>
             </div>
         </div>
@@ -489,11 +489,11 @@ body.rtl .sol-rule{direction:rtl}
             <h3 data-i18n="sol2.honestTitle">🚫 What We Don't Do (Yet)</h3>
             <p data-i18n="sol2.honestDesc">We believe in transparency. These are problems people ask about that don't fit our model today:</p>
             <ul class="honest-list">
-                <li><span class="h-icon">❌</span><span data-i18n="sol2.h1"><strong>Cloud cost management</strong> — Cloud waste is mostly about unused resources and provisioning, not code optimization. Use FinOps tools like CloudHealth or Kubecost instead.</span></li>
-                <li><span class="h-icon">❌</span><span data-i18n="sol2.h2"><strong>Regulated data optimization</strong> — Healthcare (HIPAA) and banking (PCI DSS) data can't be shared on a platform. We'll build private isolated environments for this — but not yet.</span></li>
-                <li><span class="h-icon">❌</span><span data-i18n="sol2.h3"><strong>SQL query optimization</strong> — Database queries depend on your specific schema, indexes, and data distribution. This requires context we can't abstract away.</span></li>
-                <li><span class="h-icon">❌</span><span data-i18n="sol2.h4"><strong>Prediction models</strong> — Demand forecasting, delivery ETAs, and similar ML tasks need your historical data. They're training problems, not algorithm optimization problems.</span></li>
-                <li><span class="h-icon">❌</span><span data-i18n="sol2.h5"><strong>"Reduce hallucinations"</strong> — LLM accuracy is a research problem with no clear evaluator function. We optimize code, not model weights.</span></li>
+                <li><span class="h-icon">❌</span><span data-i18n-html="sol2.h1"><strong>Cloud cost management</strong> — Cloud waste is mostly about unused resources and provisioning, not code optimization. Use FinOps tools like CloudHealth or Kubecost instead.</span></li>
+                <li><span class="h-icon">❌</span><span data-i18n-html="sol2.h2"><strong>Regulated data optimization</strong> — Healthcare (HIPAA) and banking (PCI DSS) data can't be shared on a platform. We'll build private isolated environments for this — but not yet.</span></li>
+                <li><span class="h-icon">❌</span><span data-i18n-html="sol2.h3"><strong>SQL query optimization</strong> — Database queries depend on your specific schema, indexes, and data distribution. This requires context we can't abstract away.</span></li>
+                <li><span class="h-icon">❌</span><span data-i18n-html="sol2.h4"><strong>Prediction models</strong> — Demand forecasting, delivery ETAs, and similar ML tasks need your historical data. They're training problems, not algorithm optimization problems.</span></li>
+                <li><span class="h-icon">❌</span><span data-i18n-html="sol2.h5"><strong>"Reduce hallucinations"</strong> — LLM accuracy is a research problem with no clear evaluator function. We optimize code, not model weights.</span></li>
             </ul>
         </div>
 
