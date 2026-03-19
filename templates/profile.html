@@ -48,16 +48,20 @@ body.rtl .nav-links.active{left:0!important}
 .pr-avatar-ph{width:112px;height:112px;border-radius:50%;border:5px solid #0d1117;background:linear-gradient(135deg,#22d3ee,#818cf8);display:flex;align-items:center;justify-content:center;font-size:44px;color:#060911;font-weight:800;box-shadow:0 4px 24px rgba(0,0,0,.4);transition:.2s}
 .pr-avatar-ph:hover{border-color:#22d3ee60;transform:scale(1.03)}
 
-/* Avatar dropdown menu */
-.av-menu{display:none;position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#161b22;border:1px solid #30363d;border-radius:12px;padding:6px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:50;animation:avMenuIn .15s ease}
-.av-menu.open{display:block}
-@keyframes avMenuIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.av-menu::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:12px;height:12px;background:#161b22;border-left:1px solid #30363d;border-top:1px solid #30363d;rotate:45deg;border-radius:2px 0 0 0}
-.av-menu-item{display:flex;align-items:center;gap:8px;width:100%;padding:10px 14px;background:none;border:none;color:#c9d1d9;font-size:14px;font-weight:500;cursor:pointer;border-radius:8px;transition:.15s;text-align:left;font-family:inherit}
-body.rtl .av-menu-item{text-align:right}
-.av-menu-item:hover{background:#22d3ee12;color:#f0f6fc}
-.av-menu-danger{color:#f87171}
-.av-menu-danger:hover{background:#f8717112;color:#f87171}
+/* Avatar options dialog (Instagram style) */
+.av-dialog-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:600;justify-content:center;align-items:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.av-dialog-bg.open{display:flex}
+.av-dialog{background:#161b22;border:1px solid #30363d;border-radius:16px;width:90%;max-width:340px;overflow:hidden;animation:avDlgIn .2s ease;box-shadow:0 16px 48px rgba(0,0,0,.5)}
+@keyframes avDlgIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.av-dialog-header{padding:18px 20px;text-align:center;font-size:16px;font-weight:700;color:#f0f6fc;border-bottom:1px solid #21262d}
+.av-dialog-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px 20px;background:none;border:none;border-bottom:1px solid #21262d;color:#c9d1d9;font-size:15px;font-weight:500;cursor:pointer;transition:.15s;font-family:inherit}
+.av-dialog-btn:last-child{border-bottom:none}
+.av-dialog-btn:hover{background:#22d3ee08;color:#f0f6fc}
+.av-dialog-btn:active{background:#22d3ee15}
+.av-dialog-danger{color:#f87171!important}
+.av-dialog-danger:hover{background:#f8717108!important;color:#f87171!important}
+.av-dialog-cancel{color:#6e7681!important;font-weight:600}
+.av-dialog-cancel:hover{background:#ffffff06!important;color:#8b949e!important}
 
 /* Fullscreen viewer */
 .av-fullscreen{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:800;justify-content:center;align-items:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -225,17 +229,22 @@ body.modal-open{position:fixed;width:100%;left:0}
                             <div class="pr-avatar-ph" id="avatar-display-ph">{{ (user.name or 'U')[0] | upper }}</div>
                         {% endif %}
                         <input type="file" id="avatar-input" accept="image/*" style="display:none">
-                        <!-- Avatar dropdown menu -->
-                        <div class="av-menu" id="av-menu">
-                            {% if user.avatar_url %}
-                            <button class="av-menu-item" id="av-view" data-i18n="pr.avView">🔍 View Photo</button>
-                            {% endif %}
-                            <button class="av-menu-item" id="av-change" data-i18n="pr.avChange">📷 Change Photo</button>
-                            {% if user.avatar_url %}
-                            <button class="av-menu-item av-menu-danger" id="av-delete" data-i18n="pr.avDelete">🗑️ Remove Photo</button>
-                            {% endif %}
-                        </div>
                     </div>
+
+    <!-- Avatar options dialog (Instagram style) -->
+    <div class="av-dialog-bg" id="av-dialog">
+        <div class="av-dialog">
+            <div class="av-dialog-header" data-i18n="pr.avTitle">Profile Photo</div>
+            {% if user.avatar_url %}
+            <button class="av-dialog-btn" id="av-view"><span>🔍</span> <span data-i18n="pr.avView">View Photo</span></button>
+            {% endif %}
+            <button class="av-dialog-btn" id="av-change"><span>📷</span> <span data-i18n="pr.avChange">Change Photo</span></button>
+            {% if user.avatar_url %}
+            <button class="av-dialog-btn av-dialog-danger" id="av-delete"><span>🗑️</span> <span data-i18n="pr.avDelete">Remove Photo</span></button>
+            {% endif %}
+            <button class="av-dialog-btn av-dialog-cancel" id="av-cancel" data-i18n="pr.avCancel">Cancel</button>
+        </div>
+    </div>
                     <div class="pr-identity">
                         <div class="pr-name" id="display-name">{{ user.username or user.name or 'New User' }}</div>
                         <div class="pr-handle">{{ user.email }}</div>
@@ -355,20 +364,19 @@ body.modal-open{position:fixed;width:100%;left:0}
 
     // Avatar crop
     var cropper=null;
-    // ===== AVATAR MENU =====
-    var avMenu=document.getElementById("av-menu");
-    document.getElementById("avatar-click-area").addEventListener("click",function(e){
-        if(e.target.closest('.av-menu'))return;
-        e.stopPropagation();
-        avMenu.classList.toggle("open");
-    });
-    document.addEventListener("click",function(){avMenu.classList.remove("open");});
-    avMenu.addEventListener("click",function(e){e.stopPropagation();});
+    // ===== AVATAR DIALOG =====
+    var avDlg=document.getElementById("av-dialog");
+    function openAvDlg(){avDlg.classList.add("open");var st=window.scrollY;document.body.style.top=(-st)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st;}
+    function closeAvDlg(){avDlg.classList.remove("open");document.body.classList.remove('modal-open');document.documentElement.classList.remove('modal-open');var st=parseInt(document.body.dataset.scrollY||'0');document.body.style.top='';window.scrollTo(0,st);}
+
+    document.getElementById("avatar-click-area").addEventListener("click",function(e){e.stopPropagation();openAvDlg();});
+    document.getElementById("av-cancel").addEventListener("click",closeAvDlg);
+    avDlg.addEventListener("click",function(e){if(e.target===this)closeAvDlg();});
 
     // View fullscreen
     var avView=document.getElementById("av-view");
     if(avView){avView.addEventListener("click",function(){
-        avMenu.classList.remove("open");
+        closeAvDlg();
         var img=document.getElementById("avatar-display-img");
         if(!img)return;
         document.getElementById("av-fs-img").src=img.src;
@@ -385,14 +393,14 @@ body.modal-open{position:fixed;width:100%;left:0}
 
     // Change photo
     document.getElementById("av-change").addEventListener("click",function(){
-        avMenu.classList.remove("open");
+        closeAvDlg();
         document.getElementById("avatar-input").click();
     });
 
     // Delete photo
     var avDel=document.getElementById("av-delete");
     if(avDel){avDel.addEventListener("click",function(){
-        avMenu.classList.remove("open");
+        closeAvDlg();
         if(!confirm("Remove your profile photo?"))return;
         fetch("/profile/update",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({avatar_url:""})})
         .then(function(r){return r.json();})
