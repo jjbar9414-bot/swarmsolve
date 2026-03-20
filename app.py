@@ -281,6 +281,11 @@ def why_page():
     return render_template("why.html", user=get_current_user())
 
 
+@app.route("/how-it-works")
+def how_it_works_page():
+    return render_template("how-it-works.html", user=get_current_user())
+
+
 @app.route("/solutions")
 def solutions_page():
     return render_template("solutions.html", user=get_current_user())
