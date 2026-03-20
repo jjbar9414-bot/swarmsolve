@@ -36,6 +36,13 @@ body.rtl .nav-links.active{left:0!important}
 .nav-group-actions{display:flex;align-items:center;gap:12px}
 .nav-why-link{opacity:.7;font-size:13px!important}
 .nav-why-link:hover{opacity:1}
+.nav-group-links a.nav-active{color:#22d3ee!important;font-weight:600!important;position:relative}
+.nav-group-links a.nav-active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#22d3ee;border-radius:2px}
+@media(max-width:768px){
+.nav-group-links a.nav-active{background:#22d3ee12!important;border-left:3px solid #22d3ee}
+body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #22d3ee}
+.nav-group-links a.nav-active::after{display:none}
+}
 
 /* How It Works page */
 .hiw{max-width:820px;margin:0 auto;padding:20px 20px 80px;overflow-x:hidden}
@@ -553,7 +560,17 @@ body.rtl .tl-item::before{left:auto;right:-24px}
     </div>
 
     <script>
-    (function(){var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");if(!h||!n)return;h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});if(o)o.addEventListener("click",c);n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",c);});function c(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}})();
+    (function(){var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");if(!h||!n)return;h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});if(o)o.addEventListener("click",c);n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",c);});function c(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}
+    var p=window.location.pathname;
+    var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/how-it-works':'/how-it-works','/new-agent':'/challenges','/profile':'/profile'};
+    var seg='/'+p.split('/').filter(Boolean)[0]||'/';
+    if(seg==='/'){seg=p;}
+    var target=map[seg]||seg;
+    document.querySelectorAll('.nav-group-links a').forEach(function(a){
+    var href=a.getAttribute('href');
+    if(href===target)a.classList.add('nav-active');
+    });
+    })();
     </script>
 </body>
 </html>

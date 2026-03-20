@@ -423,7 +423,7 @@ body.modal-open{position:fixed;width:100%;left:0}
     function cc(){var cm=document.getElementById("crop-modal");cm.classList.remove("open");cm.style.display="none";setTimeout(function(){cm.style.display="";},50);document.body.classList.remove('modal-open');document.documentElement.classList.remove('modal-open');var st=parseInt(document.body.dataset.scrollY||'0');document.body.style.top='';window.scrollTo(0,st);if(cropper){cropper.destroy();cropper=null;}}
     </script>
     <script>
-    (function(){var p=window.location.pathname;var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/new-agent':'/challenges','/profile':'/profile'};var seg='/'+p.split('/').filter(Boolean)[0]||'/';if(seg==='/'){seg=p;}var target=map[seg]||seg;document.querySelectorAll('.nav-group-links a').forEach(function(a){var h=a.getAttribute('href');if(h===target)a.classList.add('nav-active');});})();
+    (function(){var p=window.location.pathname;var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/how-it-works':'/how-it-works','/new-agent':'/challenges','/profile':'/profile'};var seg='/'+p.split('/').filter(Boolean)[0]||'/';if(seg==='/'){seg=p;}var target=map[seg]||seg;document.querySelectorAll('.nav-group-links a').forEach(function(a){var h=a.getAttribute('href');if(h===target)a.classList.add('nav-active');});})();
     </script>
 </body>
 </html>
