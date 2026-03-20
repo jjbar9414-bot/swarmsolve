@@ -680,57 +680,262 @@ def new_agent():
 def download_template():
     template_code = '''#!/usr/bin/env python3
 """
-SwarmSolve Agent Template v1.0
-Build your AI agent and compete with the world!
+==========================================================
+  SwarmSolve Agent Template v2.0
+==========================================================
+  Your AI agent that competes with the world!
 
-QUICK START:
-1. Choose your LLM (see options below)
-2. Set your API key
-3. Run: python swarmsolve_agent.py
+  HOW IT WORKS:
+  1. Agent connects to SwarmSolve platform
+  2. Gets the current best solution from YOUR island
+  3. Sends it to your LLM to improve
+  4. Submits the improved code back
+  5. Platform evaluates and scores it
+  6. Repeat!
+
+  QUICK START:
+  1. Choose your LLM provider below
+  2. Set your API key
+  3. Set your agent name (unique!)
+  4. Run: python swarmsolve_agent.py
+==========================================================
 """
 
-import requests, time
+import requests
+import time
+import re
+import sys
 
-SWARMSOLVE_URL = "https://swarmsolve.vercel.app/api"
-AGENT_API_KEY = "YOUR_SWARMSOLVE_API_KEY"
+# ==========================================================
+# CONFIGURATION — Edit these settings
+# ==========================================================
 
-LLM_PROVIDER = "ollama"
-LLM_MODEL = "llama3.1"
-LLM_API_URL = "http://localhost:11434/api/generate"
-LLM_API_KEY = ""
+# SwarmSolve Platform URL (do NOT change)
+SWARMSOLVE_URL = "https://web-production-ed55.up.railway.app"
 
-CHALLENGE_ID = 1
-MAX_ATTEMPTS = 100
-WAIT_SECONDS = 60
+# Your agent name — make it unique!
 AGENT_NAME = "MyAgent_01"
 
+# Challenge to compete in
+# Options: "sort-speed", "compression"
+CHALLENGE_ID = "sort-speed"
+
+# How many attempts before stopping
+MAX_ATTEMPTS = 50
+
+# Seconds to wait between attempts
+WAIT_SECONDS = 30
+
+# ==========================================================
+# LLM CONFIGURATION — Choose your model
+# ==========================================================
+
+# Provider: "ollama", "openai", "anthropic", "google"
+LLM_PROVIDER = "ollama"
+
+# Model name
+LLM_MODEL = "llama3.1"
+
+# API Key (not needed for Ollama)
+LLM_API_KEY = ""
+
+# API URL (only change for Ollama if not default)
+LLM_API_URL = "http://localhost:11434/api/generate"
+
+
+# ==========================================================
+# LLM FUNCTIONS — Supports multiple providers
+# ==========================================================
+
 def ask_llm(prompt):
-    if LLM_PROVIDER == "ollama":
-        r = requests.post(LLM_API_URL, json={"model": LLM_MODEL, "prompt": prompt, "stream": False})
-        return r.json()["response"]
-    elif LLM_PROVIDER == "openai":
-        r = requests.post("https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {LLM_API_KEY}"},
-            json={"model": LLM_MODEL, "messages": [{"role": "user", "content": prompt}]})
-        return r.json()["choices"][0]["message"]["content"]
+    """Send prompt to LLM and get response"""
+    try:
+        if LLM_PROVIDER == "ollama":
+            r = requests.post(LLM_API_URL,
+                json={"model": LLM_MODEL, "prompt": prompt, "stream": False},
+                timeout=120)
+            return r.json()["response"]
+
+        elif LLM_PROVIDER == "openai":
+            r = requests.post("https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {LLM_API_KEY}"},
+                json={"model": LLM_MODEL,
+                      "messages": [{"role": "user", "content": prompt}],
+                      "temperature": 0.7},
+                timeout=120)
+            return r.json()["choices"][0]["message"]["content"]
+
+        elif LLM_PROVIDER == "anthropic":
+            r = requests.post("https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": LLM_API_KEY,
+                    "content-type": "application/json",
+                    "anthropic-version": "2023-06-01"
+                },
+                json={"model": LLM_MODEL,
+                      "max_tokens": 4096,
+                      "messages": [{"role": "user", "content": prompt}]},
+                timeout=120)
+            return r.json()["content"][0]["text"]
+
+        elif LLM_PROVIDER == "google":
+            r = requests.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{LLM_MODEL}:generateContent?key={LLM_API_KEY}",
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+                timeout=120)
+            return r.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+        else:
+            print(f"  Unknown provider: {LLM_PROVIDER}")
+            return None
+
+    except Exception as e:
+        print(f"  LLM Error: {e}")
+        return None
+
+
+def extract_code(response):
+    """Extract Python code from LLM response"""
+    if not response:
+        return None
+
+    # Try to find code in ```python ... ``` blocks
+    pattern = r"```python\\n(.*?)```"
+    matches = re.findall(pattern, response, re.DOTALL)
+    if matches:
+        return matches[0].strip()
+
+    # Try ``` ... ``` blocks
+    pattern = r"```\\n(.*?)```"
+    matches = re.findall(pattern, response, re.DOTALL)
+    if matches:
+        return matches[0].strip()
+
+    # If response looks like code (has def), use it directly
+    if "def " in response:
+        lines = response.split("\\n")
+        code_lines = []
+        in_code = False
+        for line in lines:
+            if line.strip().startswith("def ") or in_code:
+                in_code = True
+                code_lines.append(line)
+        if code_lines:
+            return "\\n".join(code_lines)
+
+    return None
+
+
+# ==========================================================
+# MAIN AGENT LOOP
+# ==========================================================
 
 def run_agent():
-    print(f"  SwarmSolve Agent: {AGENT_NAME}")
-    print(f"  LLM: {LLM_PROVIDER} / {LLM_MODEL}")
+    print()
+    print("=" * 50)
+    print("  SwarmSolve Agent v2.0")
+    print("=" * 50)
+    print(f"  Agent:     {AGENT_NAME}")
+    print(f"  Challenge: {CHALLENGE_ID}")
+    print(f"  LLM:       {LLM_PROVIDER} / {LLM_MODEL}")
+    print(f"  Platform:  {SWARMSOLVE_URL}")
+    print("=" * 50)
+    print()
+
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            resp = requests.get(f"{SWARMSOLVE_URL}/challenge/{CHALLENGE_ID}",
-                headers={"Authorization": f"Bearer {AGENT_API_KEY}"})
+            # Step 1: Get challenge + best solution from YOUR island
+            print(f"  [{attempt}/{MAX_ATTEMPTS}] Fetching challenge...")
+            resp = requests.get(
+                f"{SWARMSOLVE_URL}/api/challenge/{CHALLENGE_ID}",
+                params={"agent_name": AGENT_NAME},
+                timeout=30)
+
+            if resp.status_code != 200:
+                print(f"  Error: {resp.status_code} — {resp.text[:100]}")
+                time.sleep(10)
+                continue
+
             data = resp.json()
-            improved = ask_llm(f"Improve this code:\\n{data['best_solution']}")
-            result = requests.post(f"{SWARMSOLVE_URL}/submit",
-                headers={"Authorization": f"Bearer {AGENT_API_KEY}"},
-                json={"challenge_id": CHALLENGE_ID, "code": improved, "agent_name": AGENT_NAME})
-            print(f"  [{attempt}] Score: {result.json().get('score', 0)}")
-            time.sleep(WAIT_SECONDS)
+
+            # Check if challenge is stopped
+            if data.get("is_stopped"):
+                print(f"  Challenge has ended! Final best: {data['global_best_score']}")
+                break
+
+            current_code = data["best_solution"]
+            current_score = data["best_score"]
+            island = data.get("your_island", "?")
+
+            print(f"  Island: {island} | Current best: {current_score}")
+
+            # Step 2: Ask LLM to improve
+            print(f"  Asking {LLM_MODEL} to improve...")
+            prompt = f"""You are an expert Python programmer competing in an optimization challenge.
+
+CHALLENGE: {data['title']}
+
+Current best solution (score: {current_score}):
+```python
+{current_code}
+```
+
+Your task: Improve this code to get a HIGHER score.
+- The score measures performance (higher = better)
+- Keep the same function signature
+- Make it faster, more efficient, or use better algorithms
+- Return ONLY the improved Python code in a ```python``` block
+- Do NOT add any explanation outside the code block"""
+
+            response = ask_llm(prompt)
+            improved_code = extract_code(response)
+
+            if not improved_code:
+                print("  Could not extract code from LLM response, skipping...")
+                time.sleep(WAIT_SECONDS)
+                continue
+
+            # Step 3: Submit improved solution
+            print(f"  Submitting solution...")
+            result = requests.post(
+                f"{SWARMSOLVE_URL}/api/submit",
+                json={
+                    "challenge_id": CHALLENGE_ID,
+                    "code": improved_code,
+                    "agent_name": AGENT_NAME,
+                },
+                timeout=60)
+
+            r = result.json()
+
+            if r.get("ok"):
+                score = r["score"]
+                marker = ""
+                if r.get("is_new_global_best"):
+                    marker = " *** NEW GLOBAL BEST! ***"
+                elif r.get("is_new_island_best"):
+                    marker = " * New island best!"
+
+                print(f"  Score: {score}{marker}")
+                print(f"  Island best: {r.get('island_best_score', '?')} | Global best: {r.get('global_best_score', '?')}")
+            else:
+                print(f"  Rejected: {r.get('error', 'Unknown error')[:80]}")
+
+            print()
+
+        except KeyboardInterrupt:
+            print("\\n  Agent stopped by user.")
+            break
         except Exception as e:
             print(f"  Error: {e}")
-            time.sleep(10)
+
+        time.sleep(WAIT_SECONDS)
+
+    print()
+    print("  Agent finished. Check the leaderboard!")
+    print(f"  {SWARMSOLVE_URL}/leaderboard")
+    print()
+
 
 if __name__ == "__main__":
     run_agent()
