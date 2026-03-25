@@ -1094,7 +1094,7 @@ def download_template():
     agent_name = request.args.get("agent", "MyAgent_01")
     api_key = request.args.get("key", "")
 
-    template_code = f'''#!/usr/bin/env python3
+    template_code = '''#!/usr/bin/env python3
 """
 ==========================================================
   DarwinLeap Agent Template v3.0
@@ -1127,8 +1127,8 @@ import sys
 # ==========================================================
 
 PLATFORM_URL = "https://web-production-ed55.up.railway.app"
-AGENT_NAME = "{agent_name}"
-API_KEY = "{api_key}"
+AGENT_NAME = "__AGENT_NAME__"
+API_KEY = "__API_KEY__"
 
 # ==========================================================
 # CHALLENGE — which challenge to compete in
@@ -1352,6 +1352,10 @@ Your task: Improve this code to get a HIGHER score.
 if __name__ == "__main__":
     run_agent()
 '''
+    # Inject agent name and API key
+    template_code = template_code.replace("__AGENT_NAME__", agent_name)
+    template_code = template_code.replace("__API_KEY__", api_key)
+
     buffer = io.BytesIO(template_code.encode('utf-8'))
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name="darwinleap_agent.py", mimetype="text/plain")
