@@ -1154,37 +1154,38 @@ def api_submit_solution():
     if len(code) > 50000:
         return jsonify({"error": "Code too long (max 50000 characters)"}), 400
 
-    # Verify API key if provided
+    # API key is REQUIRED
+    if not api_key:
+        return jsonify({"error": "API key is required. Create an agent at /new-agent to get one."}), 401
+
+    # Verify API key — must match agent name
     user_id = None
-    if api_key:
-        try:
-            r = requests.get(
-                f"{SUPABASE_URL}/rest/v1/agents?description=eq.{api_key}&name=eq.{agent_name}&select=user_id,id",
-                headers=supabase_headers(),
-                timeout=5
-            )
-            agents = r.json() if r.status_code == 200 else []
-            if agents:
-                user_id = agents[0].get("user_id")
-                # Update submission count
-                agent_id = agents[0].get("id")
-                try:
-                    requests.patch(
-                        f"{SUPABASE_URL}/rest/v1/agents?id=eq.{agent_id}",
-                        headers=supabase_headers(),
-                        json={"total_submissions": agents[0].get("total_submissions", 0) + 1 if "total_submissions" in agents[0] else 1},
-                        timeout=3
-                    )
-                except:
-                    pass
-            else:
-                return jsonify({"error": "Invalid API key or agent name mismatch"}), 401
-        except Exception as e:
-            print(f"[AUTH] Key verification error: {e}")
-    else:
-        # No API key — try session
-        user = get_current_user()
-        user_id = user["id"] if user else None
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/agents?description=eq.{api_key}&name=eq.{agent_name}&select=user_id,id,total_submissions",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        agents = r.json() if r.status_code == 200 else []
+        if agents:
+            user_id = agents[0].get("user_id")
+            # Update submission count
+            agent_id = agents[0].get("id")
+            current_count = agents[0].get("total_submissions", 0) or 0
+            try:
+                requests.patch(
+                    f"{SUPABASE_URL}/rest/v1/agents?id=eq.{agent_id}",
+                    headers=supabase_headers(),
+                    json={"total_submissions": current_count + 1},
+                    timeout=3
+                )
+            except:
+                pass
+        else:
+            return jsonify({"error": "Invalid API key or agent name mismatch"}), 401
+    except Exception as e:
+        print(f"[AUTH] Key verification error: {e}")
+        return jsonify({"error": "Authentication service error. Try again."}), 500
 
     result = challenge_manager.submit_solution(
         challenge_id=challenge_id,
