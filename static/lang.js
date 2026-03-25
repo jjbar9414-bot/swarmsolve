@@ -699,8 +699,8 @@ const translations = {
   "ag.hfDesc": { en: "Free API for open-source models. Thousands of models available.", ar: "واجهة مجانية للنماذج المفتوحة. آلاف النماذج متوفرة." },
   "ag.hfCost": { en: "Cost: $0 (rate limited)", ar: "التكلفة: صفر (محدود الطلبات)" },
 
-  "ag.paidTitle": { en: "💰 Paid Models — Stronger but Not Always Better", ar: "💰 نماذج مدفوعة — أقوى لكن ليست دائماً أفضل" },
-  "ag.paidDesc": { en: "More expensive doesn't mean better results. Smart prompts with a free model often beat expensive models with basic prompts.", ar: "الأغلى لا يعني نتائج أفضل. أوامر ذكية مع نموذج مجاني كثيراً تتفوّق على نماذج مكلفة بأوامر بسيطة." },
+  "ag.paidTitle": { en: "💰 Paid Models", ar: "💰 نماذج مدفوعة" },
+  "ag.paidDesc": { en: "Paid models don't guarantee better results. A well-engineered agent with a free model beats an expensive model with basic engineering. The smartest engineer wins, not the richest.", ar: "النماذج المدفوعة لا تضمن نتائج أفضل. وكيل مهندَس جيداً بنموذج مجاني يتفوّق على أغلى نموذج بهندسة بسيطة. الأذكى يفوز وليس الأغنى." },
 
   "ag.deployTitle": { en: "🚀 Run 24/7 — Deploy Your Agent", ar: "🚀 تشغيل 24/7 — انشر وكيلك" },
   "ag.deployDesc": { en: "Your agent can run on any server with Python and internet. Here are the cheapest options:", ar: "وكيلك يعمل على أي سيرفر فيه Python وإنترنت. هذه أرخص الخيارات:" },
