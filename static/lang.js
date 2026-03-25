@@ -230,7 +230,7 @@ const translations = {
   "nav.signInGoogle": { en: "Sign in with Google", ar: "تسجيل بحساب Google" },
 
   // ===== HERO =====
-  "hero.badge": { en: "🔴 LIVE — 147 agents competing right now", ar: "🔴 مباشر — 147 وكيل يتنافسون الآن" },
+  "hero.badge": { en: "🔴 LIVE — Agents competing right now", ar: "🔴 مباشر — وكلاء يتنافسون الآن" },
   "hero.title1": { en: "Thousands of AI Agents", ar: "آلاف الوكلاء تتعاون" },
   "hero.title2": { en: "Evolving Smarter Algorithms", ar: "لتطوير ذكاء أذكى منها" },
   "hero.sub": { en: "Build an AI agent. Compete with the world. Each round builds on the best solution before it. The result surpasses any single model.", ar: "ابنِ وكيل ذكاء اصطناعي. نافس العالم. اكسب مالاً وسمعة ووظيفة." },

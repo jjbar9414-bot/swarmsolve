@@ -67,83 +67,11 @@ def make_session_permanent():
     session.permanent = True
 
 
-# ===== Fake Data (temporary until DB is ready) =====
-challenges = [
-    {
-        "id": 1, "title": "Fastest Sorting Algorithm",
-        "description": "Optimize a sorting algorithm to be as fast as possible on 1 million random integers. The evaluator measures wall-clock time and verifies output correctness.",
-        "status": "active", "agents_count": 147, "best_score": 1850, "initial_score": 200,
-        "time_left": "18h remaining", "reward": "$500", "rounds": 48, "category": "Algorithm Speed"
-    },
-    {
-        "id": 2, "title": "Optimize Attention Kernel",
-        "description": "Speed up the transformer attention mechanism CUDA kernel. Evaluator measures tokens/sec on a standard benchmark while verifying numerical accuracy within 1e-5 tolerance.",
-        "status": "active", "agents_count": 89, "best_score": 920, "initial_score": 100,
-        "time_left": "3 days left", "reward": "$1,000", "rounds": 30, "category": "GPU & Inference"
-    },
-    {
-        "id": 3, "title": "Circle Packing n=26",
-        "description": "Pack 26 circles of varying sizes into a unit square to maximize the sum of their radii. A classic open math problem — AlphaEvolve found state-of-the-art here.",
-        "status": "active", "agents_count": 213, "best_score": 2400, "initial_score": 800,
-        "time_left": "6 days left", "reward": "$750", "rounds": 92, "category": "Math & Discovery"
-    },
-    {
-        "id": 4, "title": "Lossless Compression Challenge",
-        "description": "Maximize compression ratio on a standard text corpus while maintaining perfect data integrity. Score = original_size / compressed_size.",
-        "status": "active", "agents_count": 56, "best_score": 670, "initial_score": 100,
-        "time_left": "5 days left", "reward": "$300", "rounds": 15, "category": "Compression"
-    },
-    {
-        "id": 5, "title": "Vehicle Routing Optimization",
-        "description": "Minimize total distance for 50 delivery stops with time windows and capacity constraints. Classic TSP variant — the evaluator scores total route cost.",
-        "status": "active", "agents_count": 72, "best_score": 1540, "initial_score": 300,
-        "time_left": "4 days left", "reward": "$400", "rounds": 35, "category": "Scheduling"
-    },
-    {
-        "id": 6, "title": "Prompt Optimization: Math Reasoning",
-        "description": "Evolve the best system prompt for GPT-4o-mini to solve GSM8K math problems. Evaluator scores % correct answers on a held-out test set of 200 problems.",
-        "status": "completed", "agents_count": 98, "best_score": 1890, "initial_score": 400,
-        "time_left": "Ended", "reward": "$200", "rounds": 60, "category": "Prompts"
-    },
-    {
-        "id": 7, "title": "Matrix Multiply 4×4 Complex",
-        "description": "Find an algorithm to multiply two 4×4 complex-valued matrices using the fewest scalar multiplications. AlphaEvolve achieved 48 — can you beat it?",
-        "status": "active", "agents_count": 34, "best_score": 480, "initial_score": 49,
-        "time_left": "12 days left", "reward": "$2,000", "rounds": 18, "category": "Math & Discovery"
-    },
-    {
-        "id": 8, "title": "Reduce Peak RAM: JSON Parser",
-        "description": "Optimize a JSON parser to minimize peak memory usage while processing a 500MB file. Evaluator measures max RSS and verifies output correctness.",
-        "status": "completed", "agents_count": 45, "best_score": 1200, "initial_score": 200,
-        "time_left": "Ended", "reward": "$250", "rounds": 40, "category": "Memory"
-    },
-]
-
-leaderboard_data = [
-    {"rank": 1, "username": "Ahmed_AI", "avatar": "🧠", "agents": 5, "total_improvements": 34, "biggest_jump": 450,
-     "badge": "EvoGrandmaster", "challenges_won": 8, "github": "github.com/ahmed", "country": "🇮🇶"},
-    {"rank": 2, "username": "Sara_ML", "avatar": "⚡", "agents": 3, "total_improvements": 28, "biggest_jump": 380,
-     "badge": "EvoMaster", "challenges_won": 5, "github": "github.com/sara", "country": "🇩🇪"},
-    {"rank": 3, "username": "Khalid_Dev", "avatar": "🔥", "agents": 8, "total_improvements": 22, "biggest_jump": 290,
-     "badge": "EvoMaster", "challenges_won": 4, "github": "github.com/khalid", "country": "🇯🇵"},
-    {"rank": 4, "username": "Nora_Code", "avatar": "💎", "agents": 2, "total_improvements": 15, "biggest_jump": 210,
-     "badge": "EvoExpert", "challenges_won": 2, "github": "", "country": "🇺🇸"},
-    {"rank": 5, "username": "Ali_Hack", "avatar": "🚀", "agents": 4, "total_improvements": 12, "biggest_jump": 180,
-     "badge": "EvoExpert", "challenges_won": 1, "github": "github.com/ali", "country": "🇮🇳"},
-    {"rank": 6, "username": "Elena_Opt", "avatar": "🎯", "agents": 6, "total_improvements": 10, "biggest_jump": 150,
-     "badge": "EvoRookie", "challenges_won": 1, "github": "", "country": "🇧🇷"},
-    {"rank": 7, "username": "Max_Solve", "avatar": "⚙️", "agents": 1, "total_improvements": 8, "biggest_jump": 120,
-     "badge": "EvoRookie", "challenges_won": 0, "github": "github.com/max", "country": "🇬🇧"},
-    {"rank": 8, "username": "Yuki_Net", "avatar": "🌊", "agents": 3, "total_improvements": 6, "biggest_jump": 95,
-     "badge": "EvoRookie", "challenges_won": 0, "github": "", "country": "🇯🇵"},
-]
-
-
 # ===== Routes =====
 
 @app.route("/")
 def home():
-    # Mix fake challenges with real engine challenges
+    # Real engine challenges only
     engine_challenges = []
     for cid, ch in challenge_manager.challenges.items():
         stats = challenge_manager.store.get_stats(cid)
@@ -162,39 +90,50 @@ def home():
             "category": "Algorithm Speed",
         })
 
-    all_challenges = engine_challenges + challenges
+    # Load user-created challenges from Supabase
+    supabase_challenges = []
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.desc&limit=20",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        if r.status_code == 200:
+            for ch in r.json():
+                if ch["id"] not in challenge_manager.challenges:
+                    supabase_challenges.append({
+                        "id": ch["id"],
+                        "title": ch["title"],
+                        "description": ch.get("description", ""),
+                        "status": "stopped" if ch.get("is_stopped") else "active",
+                        "agents_count": 0,
+                        "best_score": ch.get("best_score", 0),
+                        "initial_score": ch.get("initial_score", 0),
+                        "time_left": "Ended" if ch.get("is_stopped") else "Live now",
+                        "reward": f"${ch.get('reward_amount', 0)}" if ch.get("reward_amount") else "—",
+                        "rounds": ch.get("total_rounds", 0),
+                        "category": ch.get("category", "Other"),
+                    })
+    except:
+        pass
 
-    # Build leaderboard from real engine data (across all challenges)
-    real_leaderboard = []
-    agent_scores = {}
-    for cid in challenge_manager.challenges:
-        board = challenge_manager.get_leaderboard(cid, limit=50)
-        for entry in board:
-            name = entry["agent_name"]
-            if name not in agent_scores or entry["score"] > agent_scores[name]["score"]:
-                agent_scores[name] = entry
-    for i, (name, data) in enumerate(sorted(agent_scores.items(), key=lambda x: x[1]["score"], reverse=True)):
-        real_leaderboard.append({
-            "rank": i + 1, "username": name, "avatar": "🤖",
-            "agents": 1, "total_improvements": data.get("round", 0),
-            "biggest_jump": int(data["score"]), "badge": "EvoRookie",
-            "challenges_won": 0, "github": "", "country": "🌍",
-        })
+    all_challenges = engine_challenges + supabase_challenges
 
-    display_leaderboard = real_leaderboard[:3] if real_leaderboard else leaderboard_data[:3]
+    # Real stats only
+    total_agents = sum(c.get("agents_count", 0) for c in all_challenges)
+    total_submissions = sum(
+        challenge_manager.store.get_stats(cid)["total_submissions"]
+        for cid in challenge_manager.challenges
+    )
 
     stats = {
-        "total_agents": sum(c.get("agents_count", 0) for c in all_challenges),
-        "active_challenges": len([c for c in all_challenges if c.get("status") == "active"]),
-        "total_improvements": sum(
-            challenge_manager.store.get_stats(cid)["total_submissions"]
-            for cid in challenge_manager.challenges
-        ),
-        "total_users": len(agent_scores) if agent_scores else len(leaderboard_data),
+        "total_agents": total_agents,
+        "active_challenges": len(all_challenges),
+        "total_improvements": total_submissions,
     }
 
     return render_template("index.html", challenges=all_challenges,
-                           leaderboard=display_leaderboard, stats=stats,
+                           leaderboard=[], stats=stats,
                            user=get_current_user())
 
 
@@ -236,20 +175,7 @@ def challenge_detail(cid):
         return render_template("challenge.html", challenge=ch, evolution_log=evo_formatted,
                                island_status=island_status, user=get_current_user())
 
-    # Fallback to fake data
-    try:
-        int_cid = int(cid)
-    except ValueError:
-        return "Challenge not found", 404
-    ch = next((c for c in challenges if c["id"] == int_cid), None)
-    if not ch:
-        return "Challenge not found", 404
-    evo = [
-        {"round": 1, "score": ch["initial_score"], "agent": "—", "jump": 0, "time": "00:00"},
-        {"round": ch["rounds"], "score": ch["best_score"], "agent": "Demo",
-         "jump": ch["best_score"] - ch["initial_score"], "time": "—"},
-    ]
-    return render_template("challenge.html", challenge=ch, evolution_log=evo, user=get_current_user())
+    return "Challenge not found", 404
 
 
 @app.route("/leaderboard")
@@ -344,7 +270,7 @@ def leaderboard_page():
                 "badge": "EvoRookie", "github": "", "country": "🌍",
             })
 
-    display_leaderboard = real_leaderboard if real_leaderboard else leaderboard_data
+    display_leaderboard = real_leaderboard
     return render_template("leaderboard.html", leaderboard=display_leaderboard, user=get_current_user())
 
 
@@ -595,7 +521,7 @@ def challenges_page():
     r = requests.get(url, headers=supabase_headers())
     db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
 
-    all_challenges = engine_challenges + db_challenges + challenges
+    all_challenges = engine_challenges + db_challenges
     categories = ["GPU & Inference", "Algorithm Speed", "Compression", "Math & Discovery", "Scheduling", "Prompts", "Memory", "Other"]
     return render_template("challenges.html",
                            challenges=all_challenges,
