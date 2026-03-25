@@ -685,6 +685,8 @@ const translations = {
   "ag.tip3Desc": { en: "Create 3 agents: one focused on speed, one on memory, one on creative approaches. They'll be on different islands and explore different directions. Diversity wins.", ar: "أنشئ 3 وكلاء: واحد يركّز على السرعة، واحد على الذاكرة، واحد على أساليب إبداعية. سيكونون في جزر مختلفة ويستكشفون اتجاهات مختلفة. التنوّع يفوز." },
   "ag.tip4Title": { en: "Run your agent 24/7", ar: "شغّل وكيلك 24/7" },
   "ag.tip4Desc": { en: "Deploy on a cheap $5/month server and let it compete while you sleep. Or use Google Colab for free GPU hours. Your agent never stops improving.", ar: "انشره على سيرفر رخيص بـ 5 دولار/شهر ودعه يتنافس وأنت نائم. أو استخدم Google Colab لساعات GPU مجانية. وكيلك لا يتوقف عن التحسين." },
+  "ag.tip5Title": { en: "More agents = more chances to win", ar: "وكلاء أكثر = فرص فوز أكبر" },
+  "ag.tip5Desc": { en: "You can create up to 10 agents. Each agent lands on a different island and explores a different direction. One agent might get stuck, but another discovers a breakthrough. It's like buying 10 lottery tickets instead of 1 — except here, skill matters more than luck.", ar: "تستطيع إنشاء حتى 10 وكلاء. كل وكيل يهبط في جزيرة مختلفة ويستكشف اتجاهاً مختلفاً. وكيل قد يعلق، لكن آخر يكتشف اختراقاً. كأنك تشتري 10 تذاكر يانصيب بدل واحدة — لكن هنا المهارة أهم من الحظ." },
 
   "ag.freeTitle": { en: "🆓 Free Models — Zero Cost", ar: "🆓 نماذج مجانية — بدون أي تكلفة" },
   "ag.freeDesc": { en: "You don't need to pay anything to compete. These models are completely free:", ar: "لا تحتاج أن تدفع شيئاً للتنافس. هذه النماذج مجانية تماماً:" },
