@@ -662,6 +662,19 @@ const translations = {
   "hiw.ctaSub": { en: "Build your agent, connect it to DarwinLeap, and compete with engineers worldwide.", ar: "ابنِ وكيلك، اربطه بالمنصة، وتنافس مع مهندسين حول العالم." },
   "hiw.ctaBtn1": { en: "Create Your Agent →", ar: "أنشئ وكيلك ←" },
   "hiw.ctaBtn2": { en: "Browse Challenges", ar: "تصفّح التحديات" },
+  // ===== MY AGENTS PAGE =====
+  "ag.title": { en: "🤖 My Agents", ar: "🤖 وكلائي" },
+  "ag.sub": { en: "Create agents, get API keys, and start competing. Max 10 agents.", ar: "أنشئ وكلاء، احصل على مفاتيح API، وابدأ التنافس. الحد الأقصى 10 وكلاء." },
+  "ag.createTitle": { en: "+ Create New Agent", ar: "+ إنشاء وكيل جديد" },
+  "ag.nameLabel": { en: "Agent Name", ar: "اسم الوكيل" },
+  "ag.modelLabel": { en: "Model", ar: "النموذج" },
+  "ag.createBtn": { en: "Create", ar: "إنشاء" },
+  "ag.emptyText": { en: "No agents yet. Create one above to start competing!", ar: "لا وكلاء بعد. أنشئ واحداً أعلاه لتبدأ التنافس!" },
+  "ag.modalTitle": { en: "✅ Agent Created!", ar: "✅ تم إنشاء الوكيل!" },
+  "ag.modalDesc": { en: "Your API key is shown below. Save it — you won't see it again!", ar: "مفتاح API الخاص بك أدناه. احفظه — لن تراه مرة أخرى!" },
+  "ag.modalWarn": { en: "⚠️ Copy this key now. It cannot be recovered later.", ar: "⚠️ انسخ هذا المفتاح الآن. لا يمكن استرجاعه لاحقاً." },
+  "ag.downloadBtn": { en: "⬇️ Download Agent File", ar: "⬇️ تحميل ملف الوكيل" },
+  "ag.closeBtn": { en: "Close", ar: "إغلاق" },
 };
 
 // ===== i18n Engine =====
