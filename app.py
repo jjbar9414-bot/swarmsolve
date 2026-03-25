@@ -585,6 +585,123 @@ def create_challenge():
 
 from engine import challenge_manager
 
+# ===== Supabase Persistence Layer =====
+
+def db_save_solution(challenge_id, agent_name, code, score, island_id, user_id=None, error=None):
+    """Save a solution to Supabase"""
+    try:
+        data = {
+            "challenge_id": challenge_id,
+            "agent_name": agent_name,
+            "code": code[:50000],  # limit size
+            "score": score,
+            "island_id": island_id,
+            "user_id": user_id,
+            "error": error,
+        }
+        requests.post(
+            f"{SUPABASE_URL}/rest/v1/solutions",
+            headers=supabase_headers(),
+            json=data,
+            timeout=5
+        )
+    except Exception as e:
+        print(f"[DB] Failed to save solution: {e}")
+
+
+def db_save_challenge(challenge_id, title, initial_code, evaluator_code, initial_score,
+                      best_score=0, best_agent=None, is_stopped=False, total_rounds=0):
+    """Save or update challenge in Supabase"""
+    try:
+        data = {
+            "id": challenge_id,
+            "title": title,
+            "initial_code": initial_code,
+            "evaluator_code": evaluator_code,
+            "initial_score": initial_score,
+            "best_score": best_score,
+            "best_agent": best_agent,
+            "is_stopped": is_stopped,
+            "total_rounds": total_rounds,
+        }
+        # Upsert (insert or update)
+        requests.post(
+            f"{SUPABASE_URL}/rest/v1/challenges",
+            headers={**supabase_headers(), "Prefer": "resolution=merge-duplicates"},
+            json=data,
+            timeout=5
+        )
+    except Exception as e:
+        print(f"[DB] Failed to save challenge: {e}")
+
+
+def db_update_challenge_best(challenge_id, best_score, best_agent, total_rounds, is_stopped):
+    """Update challenge best score"""
+    try:
+        requests.patch(
+            f"{SUPABASE_URL}/rest/v1/challenges?id=eq.{challenge_id}",
+            headers=supabase_headers(),
+            json={
+                "best_score": best_score,
+                "best_agent": best_agent,
+                "total_rounds": total_rounds,
+                "is_stopped": is_stopped,
+            },
+            timeout=5
+        )
+    except Exception as e:
+        print(f"[DB] Failed to update challenge: {e}")
+
+
+def db_save_migration(challenge_id, from_island, to_island, count, best_score, trigger_type):
+    """Save migration event"""
+    try:
+        requests.post(
+            f"{SUPABASE_URL}/rest/v1/migrations_log",
+            headers=supabase_headers(),
+            json={
+                "challenge_id": challenge_id,
+                "from_island": from_island,
+                "to_island": to_island,
+                "solutions_count": count,
+                "best_score": best_score,
+                "trigger_type": trigger_type,
+            },
+            timeout=5
+        )
+    except Exception as e:
+        print(f"[DB] Failed to save migration: {e}")
+
+
+def db_load_solutions(challenge_id):
+    """Load all solutions for a challenge from Supabase"""
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/solutions?challenge_id=eq.{challenge_id}&select=agent_name,code,score,island_id&order=created_at.asc&limit=5000",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        if r.status_code == 200:
+            return r.json()
+    except Exception as e:
+        print(f"[DB] Failed to load solutions: {e}")
+    return []
+
+
+def db_load_challenges():
+    """Load all challenges from Supabase"""
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?select=*",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        if r.status_code == 200:
+            return r.json()
+    except Exception as e:
+        print(f"[DB] Failed to load challenges: {e}")
+    return []
+
 # سجّل تحدي تجريبي عند بدء التشغيل
 def setup_demo_challenges():
     """تحديات تجريبية مع مُقيِّمات حقيقية"""
@@ -687,6 +804,56 @@ def evaluate(solution_path):
 
 setup_demo_challenges()
 
+# ===== Load existing solutions from Supabase on startup =====
+def reload_from_db():
+    """Reload solutions from Supabase into engine memory"""
+    print("[DB] Loading existing data from Supabase...")
+
+    for cid in challenge_manager.challenges:
+        solutions = db_load_solutions(cid)
+        if solutions:
+            print(f"[DB] Loaded {len(solutions)} solutions for {cid}")
+            for sol in solutions:
+                agent_name = sol.get("agent_name", "Unknown")
+                island_id = sol.get("island_id", 0)
+                score = sol.get("score", 0)
+                code = sol.get("code", "")
+
+                if score > 0 and code:
+                    im = challenge_manager.island_managers.get(cid)
+                    if im:
+                        im.assign_agent_to_island(agent_name)
+                        solution_data = {
+                            "code": code,
+                            "score": score,
+                            "agent_name": agent_name,
+                            "island_id": island_id,
+                        }
+                        if island_id not in im.islands:
+                            im.islands[island_id] = []
+                        im.islands[island_id].append(solution_data)
+
+                        if score > im.global_best_score:
+                            im.global_best_score = score
+
+                        challenge_manager.store.add(cid, solution_data)
+
+        # Upsert challenge to DB
+        ch = challenge_manager.challenges[cid]
+        im = challenge_manager.island_managers.get(cid)
+        db_save_challenge(
+            cid, ch["title"], ch["initial_code"], ch["evaluator_code"],
+            ch["initial_score"],
+            best_score=im.global_best_score if im and im.global_best_score > float("-inf") else 0,
+        )
+
+    print("[DB] Reload complete")
+
+try:
+    reload_from_db()
+except Exception as e:
+    print(f"[DB] Reload failed (first run?): {e}")
+
 
 @app.route("/api/challenge/<challenge_id>", methods=["GET"])
 def api_get_challenge(challenge_id):
@@ -732,6 +899,27 @@ def api_submit_solution():
         agent_name=agent_name,
         user_id=user_id,
     )
+
+    # Save to Supabase (async-style, don't block response)
+    try:
+        island_id = result.get("island_id", 0)
+        score = result.get("score", 0)
+        error = result.get("error", None)
+        db_save_solution(challenge_id, agent_name, code, score, island_id, user_id, error)
+
+        # Update challenge best if improved
+        if result.get("is_new_global_best"):
+            im = challenge_manager.island_managers.get(challenge_id)
+            if im:
+                db_update_challenge_best(
+                    challenge_id,
+                    im.global_best_score,
+                    agent_name,
+                    im.round_counter,
+                    im.is_stopped
+                )
+    except Exception as e:
+        print(f"[DB] Persistence error: {e}")
 
     return jsonify(result)
 
