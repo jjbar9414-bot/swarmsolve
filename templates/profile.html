@@ -312,10 +312,7 @@ body.modal-open{position:fixed;width:100%;left:0}
                     <div class="pr-ach lk"><div class="pr-ach-ico">💎</div><div class="pr-ach-n" data-i18n="pr.achDiamond">Diamond</div><div class="pr-ach-d" data-i18n="pr.achDiamondD">Top 10 global</div></div>
                 </div></div>
                 <div class="pr-scard"><div class="pr-scard-title" data-i18n="pr.myAgents">🤖 My Agents</div>
-                    {% if user.agents_count and user.agents_count > 0 %}
-                    <div class="pr-ag"><div class="pr-ag-dot on"></div><div class="pr-ag-name">{{ user.username or 'My' }}_Agent_01</div><div class="pr-ag-model">Llama 3.1</div></div>
-                    {% if user.agents_count > 1 %}<div class="pr-ag"><div class="pr-ag-dot off"></div><div class="pr-ag-name">{{ user.username or 'My' }}_GPT</div><div class="pr-ag-model">GPT-4o-mini</div></div>{% endif %}
-                    {% else %}<div style="text-align:center;padding:14px 0;color:#6e7681;font-size:13px"><p data-i18n="pr.noAgents">No agents yet</p><a href="/new-agent" style="color:#22d3ee;font-size:13px" data-i18n="pr.createFirst">Create your first →</a></div>{% endif %}
+                    <div id="pr-agents-list"><div style="text-align:center;padding:14px 0;color:#6e7681;font-size:13px"><p>Loading...</p></div></div>
                 </div>
                 <div class="pr-scard"><div class="pr-scard-title" data-i18n="pr.shareTitle">📤 Share Profile</div><div class="pr-share"><p data-i18n="pr.shareDesc">Show your ranking on LinkedIn</p><button class="pr-share-btn" onclick="navigator.clipboard.writeText(location.origin+'/profile').then(function(){showToast('Link copied!')})" data-i18n="pr.copyLink">📋 Copy Profile Link</button></div></div>
                 <a href="/logout" class="pr-abtn pr-abtn-d" style="width:100%" data-i18n="pr.logout">Log Out</a>
@@ -426,6 +423,32 @@ body.modal-open{position:fixed;width:100%;left:0}
     </script>
     <script>
     (function(){var p=window.location.pathname;var map={'/':'/','/challenges':'/challenges','/challenge':'/challenges','/leaderboard':'/leaderboard','/solutions':'/solutions','/why':'/why','/how-it-works':'/how-it-works','/new-agent':'/challenges','/profile':'/profile'};var seg='/'+p.split('/').filter(Boolean)[0]||'/';if(seg==='/'){seg=p;}var target=map[seg]||seg;document.querySelectorAll('.nav-group-links a').forEach(function(a){var h=a.getAttribute('href');if(h===target)a.classList.add('nav-active');});})();
+
+    // Load user's agents
+    fetch("/api/agents").then(function(r){return r.json();}).then(function(d){
+        var list=document.getElementById("pr-agents-list");
+        var agents=d.agents||[];
+        // Update agents count in stats
+        var statEls=document.querySelectorAll(".pr-stat-num");
+        statEls.forEach(function(el){
+            var label=el.parentElement.querySelector(".pr-stat-label");
+            if(label && (label.textContent==="Agents" || label.getAttribute("data-i18n")==="pr.agents")){
+                el.textContent=agents.length;
+            }
+        });
+        if(agents.length===0){
+            list.innerHTML='<div style="text-align:center;padding:14px 0;color:#6e7681;font-size:13px"><p>No agents yet</p><a href="/new-agent" style="color:#22d3ee;font-size:13px">Create your first →</a></div>';
+            return;
+        }
+        var html='';
+        agents.forEach(function(ag){
+            var dot=ag.is_active?'on':'off';
+            html+='<div class="pr-ag"><div class="pr-ag-dot '+dot+'"></div><div class="pr-ag-name">'+ag.name+'</div><div class="pr-ag-model">'+(ag.model||'unknown')+'</div></div>';
+        });
+        list.innerHTML=html;
+    }).catch(function(){
+        document.getElementById("pr-agents-list").innerHTML='<div style="text-align:center;padding:14px 0;color:#6e7681;font-size:13px"><p>No agents yet</p><a href="/new-agent" style="color:#22d3ee;font-size:13px">Create your first →</a></div>';
+    });
     </script>
 </body>
 </html>

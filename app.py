@@ -873,7 +873,7 @@ def api_submit_solution():
     """
     نقطة الوصول الثانية — الوكيل يرسل حل جديد
     POST /api/submit
-    Body: {"challenge_id": "sort-speed", "code": "...", "agent_name": "MyAgent"}
+    Body: {"challenge_id": "sort-speed", "code": "...", "agent_name": "MyAgent", "api_key": "dl_xxx"}
     """
     data = request.get_json()
     if not data:
@@ -882,6 +882,7 @@ def api_submit_solution():
     challenge_id = data.get("challenge_id")
     code = data.get("code", "")
     agent_name = data.get("agent_name", "Anonymous")
+    api_key = data.get("api_key", "")
 
     if not challenge_id or not code:
         return jsonify({"error": "challenge_id and code are required"}), 400
@@ -889,9 +890,37 @@ def api_submit_solution():
     if len(code) > 50000:
         return jsonify({"error": "Code too long (max 50000 characters)"}), 400
 
-    # حاول معرفة المستخدم من الجلسة
-    user = get_current_user()
-    user_id = user["id"] if user else None
+    # Verify API key if provided
+    user_id = None
+    if api_key:
+        try:
+            r = requests.get(
+                f"{SUPABASE_URL}/rest/v1/agents?description=eq.{api_key}&name=eq.{agent_name}&select=user_id,id",
+                headers=supabase_headers(),
+                timeout=5
+            )
+            agents = r.json() if r.status_code == 200 else []
+            if agents:
+                user_id = agents[0].get("user_id")
+                # Update submission count
+                agent_id = agents[0].get("id")
+                try:
+                    requests.patch(
+                        f"{SUPABASE_URL}/rest/v1/agents?id=eq.{agent_id}",
+                        headers=supabase_headers(),
+                        json={"total_submissions": agents[0].get("total_submissions", 0) + 1 if "total_submissions" in agents[0] else 1},
+                        timeout=3
+                    )
+                except:
+                    pass
+            else:
+                return jsonify({"error": "Invalid API key or agent name mismatch"}), 401
+        except Exception as e:
+            print(f"[AUTH] Key verification error: {e}")
+    else:
+        # No API key — try session
+        user = get_current_user()
+        user_id = user["id"] if user else None
 
     result = challenge_manager.submit_solution(
         challenge_id=challenge_id,
@@ -1315,6 +1344,7 @@ Your task: Improve this code to get a HIGHER score.
                     "challenge_id": CHALLENGE_ID,
                     "code": improved_code,
                     "agent_name": AGENT_NAME,
+                    "api_key": API_KEY,
                 },
                 timeout=60)
 
