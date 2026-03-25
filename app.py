@@ -1026,10 +1026,44 @@ setup_demo_challenges()
 
 # ===== Load existing solutions from Supabase on startup =====
 def reload_from_db():
-    """Reload solutions from Supabase into engine memory"""
+    """Reload challenges and solutions from Supabase into engine memory"""
     print("[DB] Loading existing data from Supabase...")
 
-    for cid in challenge_manager.challenges:
+    # Step 1: Load user-created challenges from Supabase and register in engine
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.asc",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        if r.status_code == 200:
+            db_challenges = r.json()
+            for ch in db_challenges:
+                cid = ch["id"]
+                if cid not in challenge_manager.challenges:
+                    # This is a user-created challenge — register it in engine
+                    title = ch.get("title", "Untitled")
+                    initial_code = ch.get("initial_code", "")
+                    evaluator_code = ch.get("evaluator_code", "")
+                    initial_score = ch.get("initial_score", 0)
+
+                    if initial_code and evaluator_code:
+                        try:
+                            challenge_manager.register_challenge(
+                                challenge_id=cid,
+                                title=title,
+                                initial_code=initial_code,
+                                evaluator_code=evaluator_code,
+                                initial_score=initial_score,
+                            )
+                            print(f"[DB] Registered user challenge: {cid} ({title})")
+                        except Exception as e:
+                            print(f"[DB] Failed to register {cid}: {e}")
+    except Exception as e:
+        print(f"[DB] Failed to load challenges from DB: {e}")
+
+    # Step 2: Reload solutions for ALL challenges (demo + user-created)
+    for cid in list(challenge_manager.challenges.keys()):
         solutions = db_load_solutions(cid)
         if solutions:
             print(f"[DB] Loaded {len(solutions)} solutions for {cid}")
@@ -1058,7 +1092,7 @@ def reload_from_db():
 
                         challenge_manager.store.add(cid, solution_data)
 
-        # Upsert challenge to DB
+        # Update challenge in DB with current best
         ch = challenge_manager.challenges[cid]
         im = challenge_manager.island_managers.get(cid)
         db_save_challenge(
@@ -1067,7 +1101,7 @@ def reload_from_db():
             best_score=im.global_best_score if im and im.global_best_score > float("-inf") else 0,
         )
 
-    print("[DB] Reload complete")
+    print(f"[DB] Reload complete — {len(challenge_manager.challenges)} challenges active")
 
 try:
     reload_from_db()
