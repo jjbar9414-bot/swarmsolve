@@ -154,8 +154,9 @@ def home():
 
 @app.route("/challenge/<cid>")
 def challenge_detail(cid):
-    # Try engine challenge first
     str_cid = str(cid)
+
+    # Try engine first
     if str_cid in challenge_manager.challenges:
         ch_data = challenge_manager.challenges[str_cid]
         stats = challenge_manager.store.get_stats(str_cid)
@@ -163,7 +164,7 @@ def challenge_detail(cid):
         ch = {
             "id": str_cid,
             "title": ch_data["title"],
-            "description": f"Live challenge with real evaluator",
+            "description": ch_data.get("description", "Live challenge with real evaluator"),
             "status": "stopped" if (island_status and island_status["is_stopped"]) else "active",
             "agents_count": stats["unique_agents"],
             "best_score": stats["best_score"] if stats["best_score"] > 0 else ch_data["initial_score"],
@@ -171,10 +172,9 @@ def challenge_detail(cid):
             "time_left": "Ended" if (island_status and island_status["is_stopped"]) else "Live now",
             "reward": "—",
             "rounds": stats["total_submissions"],
-            "category": "Algorithm Speed",
+            "category": ch_data.get("category", "Algorithm Speed"),
         }
         evo = challenge_manager.get_evolution_log(str_cid)
-        # Format for template
         evo_formatted = []
         for e in evo:
             evo_formatted.append({
@@ -204,6 +204,48 @@ def challenge_detail(cid):
 
         return render_template("challenge.html", challenge=ch, evolution_log=evo_formatted,
                                island_status=island_status, user=current_user, is_owner=is_owner)
+
+    # Not in engine — try loading from Supabase and registering
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?id=eq.{str_cid}&select=*",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        if r.status_code == 200 and r.json():
+            db_ch = r.json()[0]
+            # Register in engine if has evaluator
+            if db_ch.get("initial_code") and db_ch.get("evaluator_code"):
+                challenge_manager.register_challenge(
+                    challenge_id=str_cid,
+                    title=db_ch.get("title", "Untitled"),
+                    initial_code=db_ch["initial_code"],
+                    evaluator_code=db_ch["evaluator_code"],
+                    initial_score=db_ch.get("initial_score", 1),
+                    target_score=db_ch.get("target_score", 0) or 0,
+                    save_to_db=False,
+                )
+                # Redirect to self to load from engine now
+                return redirect(f"/challenge/{str_cid}")
+            else:
+                # Show basic info from DB
+                ch = {
+                    "id": str_cid,
+                    "title": db_ch.get("title", "Untitled"),
+                    "description": db_ch.get("description", ""),
+                    "status": "active",
+                    "agents_count": 0,
+                    "best_score": db_ch.get("best_score", 0),
+                    "initial_score": db_ch.get("initial_score", 0),
+                    "time_left": "Live now",
+                    "reward": f"${db_ch.get('reward_amount', 0)}" if db_ch.get("reward_amount") else "—",
+                    "rounds": 0,
+                    "category": db_ch.get("category", "Other"),
+                }
+                return render_template("challenge.html", challenge=ch, evolution_log=[],
+                                       island_status=None, user=get_current_user(), is_owner=False)
+    except Exception as e:
+        print(f"[CHALLENGE] Error loading from DB: {e}")
 
     return "Challenge not found", 404
 
