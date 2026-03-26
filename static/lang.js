@@ -347,6 +347,7 @@ const translations = {
   "terms.p4p": { en: "We do not sell your data, send marketing emails, track you across websites, or use advertising cookies.", ar: "لا نبيع بياناتك ولا نرسل رسائل تسويقية ولا نتتبعك عبر المواقع ولا نستخدم كوكيز إعلانية." },
   "terms.p5h": { en: "5. Your Rights", ar: "5. حقوقك" },
   "terms.p5p": { en: "You can delete your agents anytime. To delete your account, contact us via GitHub. The platform is open-source — you can inspect exactly what we do with your data.", ar: "يمكنك حذف وكلاءك في أي وقت. لحذف حسابك تواصل معنا عبر GitHub. المنصة مفتوحة المصدر — تستطيع فحص ما نفعله ببياناتك بالضبط." },
+  "detail.stopBtn": { en: "⏹ Stop This Challenge", ar: "⏹ إيقاف هذا التحدي" },
 
   // ===== CHALLENGE DETAIL PAGE =====
   "detail.back": { en: "← Back to Challenges", ar: "العودة للتحديات →" },

@@ -187,8 +187,23 @@ def challenge_detail(cid):
         if not evo_formatted:
             evo_formatted = [{"round": 0, "score": ch_data["initial_score"], "agent": "—", "jump": 0, "time": "—"}]
 
+        # Check ownership
+        is_owner = False
+        current_user = get_current_user()
+        try:
+            r = requests.get(
+                f"{SUPABASE_URL}/rest/v1/challenges?id=eq.{str_cid}&select=owner_id",
+                headers=supabase_headers(),
+                timeout=5
+            )
+            db_ch = r.json() if r.status_code == 200 else []
+            if db_ch and current_user and db_ch[0].get("owner_id") == current_user.get("id"):
+                is_owner = True
+        except:
+            pass
+
         return render_template("challenge.html", challenge=ch, evolution_log=evo_formatted,
-                               island_status=island_status, user=get_current_user())
+                               island_status=island_status, user=current_user, is_owner=is_owner)
 
     return "Challenge not found", 404
 
@@ -1577,6 +1592,48 @@ def api_delete_agent(agent_id):
         return jsonify({"ok": True})
     except:
         return jsonify({"error": "Failed to delete"}), 500
+
+
+@app.route("/api/challenge/<challenge_id>/stop", methods=["POST"])
+def api_stop_challenge(challenge_id):
+    """Stop a challenge — only the owner can do this"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
+
+    # Check ownership in Supabase
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?id=eq.{challenge_id}&select=owner_id",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        challenges = r.json() if r.status_code == 200 else []
+        if not challenges:
+            return jsonify({"error": "Challenge not found"}), 404
+        owner_id = challenges[0].get("owner_id")
+        if owner_id and owner_id != user["id"]:
+            return jsonify({"error": "Only the challenge owner can stop it"}), 403
+    except:
+        pass
+
+    # Stop in engine
+    if challenge_id in challenge_manager.island_managers:
+        im = challenge_manager.island_managers[challenge_id]
+        im.is_stopped = True
+
+    # Update Supabase
+    try:
+        requests.patch(
+            f"{SUPABASE_URL}/rest/v1/challenges?id=eq.{challenge_id}",
+            headers=supabase_headers(),
+            json={"is_stopped": True},
+            timeout=5
+        )
+    except:
+        pass
+
+    return jsonify({"ok": True, "message": "Challenge stopped"})
 
 
 @app.route("/download-template")

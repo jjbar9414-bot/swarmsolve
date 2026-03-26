@@ -258,6 +258,21 @@ body.rtl .nav-links.active{left:0!important}
                 <a href="/login" class="btn-p" data-i18n="detail.signToCompete">Sign In to Compete →</a>
             {% endif %}
         </div>
+
+        {% if is_owner and challenge.status == 'active' %}
+        <div style="margin-top:16px;text-align:center">
+            <button onclick="stopChallenge()" style="background:none;border:1px solid #f8717130;color:#f87171;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600" data-i18n="detail.stopBtn">⏹ Stop This Challenge</button>
+        </div>
+        <script>
+        function stopChallenge(){
+            if(!confirm('Are you sure you want to stop this challenge? Agents will no longer be able to submit. This cannot be undone.')) return;
+            fetch('/api/challenge/{{ challenge.id }}/stop',{method:'POST'}).then(function(r){return r.json();}).then(function(d){
+                if(d.ok){alert('Challenge stopped!');location.reload();}
+                else{alert(d.error||'Failed');}
+            });
+        }
+        </script>
+        {% endif %}
     </div>
 
 
@@ -278,6 +293,7 @@ body.rtl .nav-links.active{left:0!important}
                     <a href="/new-agent" data-i18n="nav.newAgent">+ New Agent</a>
                     <a href="/why" data-i18n="nav.why">Why Collective Evolution?</a>
                     <a href="/challenges/new" data-i18n="ch.postBtn">Post a Challenge</a>
+                    <a href="/terms" data-i18n="nav.terms">Terms & Privacy</a>
                 </div>
             </div>
             <div class="footer-bottom">
