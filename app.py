@@ -1327,6 +1327,54 @@ def api_list_user_agents():
         return jsonify({"agents": [], "max_agents": 10})
 
 
+@app.route("/api/my-history", methods=["GET"])
+def api_my_history():
+    """Get current user's challenge participation history"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"history": []})
+    try:
+        # Get user's solutions grouped by challenge
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/solutions?user_id=eq.{user['id']}&select=challenge_id,score,agent_name,created_at&order=score.desc",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        solutions = r.json() if r.status_code == 200 else []
+
+        # Group by challenge
+        challenges = {}
+        for sol in solutions:
+            cid = sol["challenge_id"]
+            if cid not in challenges:
+                challenges[cid] = {"best_score": 0, "submissions": 0, "best_agent": "", "last_time": ""}
+            challenges[cid]["submissions"] += 1
+            if sol["score"] > challenges[cid]["best_score"]:
+                challenges[cid]["best_score"] = sol["score"]
+                challenges[cid]["best_agent"] = sol["agent_name"]
+                challenges[cid]["last_time"] = sol.get("created_at", "")
+
+        # Get challenge titles
+        history = []
+        for cid, data in challenges.items():
+            title = cid
+            # Try engine
+            if cid in challenge_manager.challenges:
+                title = challenge_manager.challenges[cid]["title"]
+            history.append({
+                "challenge_id": cid,
+                "title": title,
+                "best_score": int(data["best_score"]),
+                "submissions": data["submissions"],
+                "best_agent": data["best_agent"],
+            })
+
+        return jsonify({"history": history})
+    except Exception as e:
+        print(f"[HISTORY] Error: {e}")
+        return jsonify({"history": []})
+
+
 @app.route("/api/agents", methods=["POST"])
 def api_create_agent():
     """Create a new agent for the current user"""
