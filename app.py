@@ -1386,7 +1386,7 @@ def api_recent_activity():
     """Get recent improvements across all challenges"""
     try:
         r = requests.get(
-            f"{SUPABASE_URL}/rest/v1/solutions?select=agent_name,score,challenge_id,created_at&score=gt.0&order=created_at.desc&limit=15",
+            f"{SUPABASE_URL}/rest/v1/solutions?select=agent_name,score,challenge_id,created_at&score=gt.0&order=created_at.desc&limit=3",
             headers=supabase_headers(),
             timeout=10
         )
