@@ -217,7 +217,7 @@ def leaderboard_page():
 
         # Get all profiles
         r3 = requests.get(
-            f"{SUPABASE_URL}/rest/v1/profiles?select=id,username,name,avatar_url,github",
+            f"{SUPABASE_URL}/rest/v1/profiles?select=id,username,full_name,avatar_url,github",
             headers=supabase_headers(),
             timeout=10
         )
@@ -254,9 +254,9 @@ def leaderboard_page():
 
             real_leaderboard.append({
                 "rank": i + 1,
-                "username": profile.get("username") or profile.get("name") or (uid.replace("anon_", "") if is_anon else "User"),
+                "username": profile.get("username") or profile.get("full_name") or (uid.replace("anon_", "") if is_anon else "User"),
                 "avatar_url": profile.get("avatar_url", ""),
-                "avatar": "🤖" if is_anon else (profile.get("name", "U")[0].upper() if profile.get("name") else "U"),
+                "avatar": "🤖" if is_anon else (profile.get("full_name", "U")[0].upper() if profile.get("full_name") else "U"),
                 "agents": len(agent_names),
                 "agent_list": [{"name": n, "score": agent_scores[n], "model": next((a["model"] for a in user_agents if a["name"] == n), "")} for n in sorted(agent_names, key=lambda x: agent_scores[x], reverse=True)],
                 "best_score": int(data["best_score"]),
@@ -353,8 +353,8 @@ def set_session():
     if profile:
         # Update if name/avatar missing in profile
         updates = {}
-        if not profile.get("name") and google_name:
-            updates["name"] = google_name
+        if not profile.get("full_name") and google_name:
+            updates["full_name"] = google_name
         if not profile.get("avatar_url") and google_avatar:
             updates["avatar_url"] = google_avatar
         if not profile.get("username") and google_name:
@@ -368,10 +368,10 @@ def set_session():
             requests.post(
                 f"{SUPABASE_URL}/rest/v1/profiles",
                 headers={**supabase_headers(access_token), "Prefer": "return=representation"},
-                json={"id": user_id, "username": google_name, "name": google_name, "avatar_url": google_avatar},
+                json={"id": user_id, "username": google_name, "full_name": google_name, "avatar_url": google_avatar},
                 timeout=5
             )
-            profile = {"username": google_name, "name": google_name, "avatar_url": google_avatar}
+            profile = {"username": google_name, "full_name": google_name, "avatar_url": google_avatar}
         except:
             profile = {}
 
@@ -560,7 +560,7 @@ def challenges_page():
         })
 
     # Supabase challenges
-    url = f"{SUPABASE_URL}/rest/v1/challenges?select=*,profiles(username,avatar_url)&order=created_at.desc"
+    url = f"{SUPABASE_URL}/rest/v1/challenges?select=*,profiles(username,avatar_url,full_name)&order=created_at.desc"
     r = requests.get(url, headers=supabase_headers())
     db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
 
