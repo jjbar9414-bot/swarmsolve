@@ -347,6 +347,34 @@ def set_session():
     # Get or create profile
     profile = get_profile(user_id, access_token)
 
+    # Ensure name and avatar are saved to profiles table
+    google_name = meta.get("full_name", "")
+    google_avatar = meta.get("avatar_url", "")
+    if profile:
+        # Update if name/avatar missing in profile
+        updates = {}
+        if not profile.get("name") and google_name:
+            updates["name"] = google_name
+        if not profile.get("avatar_url") and google_avatar:
+            updates["avatar_url"] = google_avatar
+        if not profile.get("username") and google_name:
+            updates["username"] = google_name
+        if updates:
+            update_profile(user_id, updates, access_token)
+            profile.update(updates)
+    else:
+        # Create profile with Google data
+        try:
+            requests.post(
+                f"{SUPABASE_URL}/rest/v1/profiles",
+                headers={**supabase_headers(access_token), "Prefer": "return=representation"},
+                json={"id": user_id, "username": google_name, "name": google_name, "avatar_url": google_avatar},
+                timeout=5
+            )
+            profile = {"username": google_name, "name": google_name, "avatar_url": google_avatar}
+        except:
+            profile = {}
+
     # Store in session
     session.permanent = True
     session["user"] = {
@@ -1119,6 +1147,9 @@ def api_get_challenge(challenge_id):
     data = challenge_manager.get_challenge_for_agent(challenge_id, agent_name=agent_name)
     if not data:
         return jsonify({"error": "Challenge not found"}), 404
+    # Add total submissions count
+    stats = challenge_manager.store.get_stats(challenge_id)
+    data["total_submissions"] = stats.get("total_submissions", 0)
     return jsonify(data)
 
 

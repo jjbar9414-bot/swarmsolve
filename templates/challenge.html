@@ -629,18 +629,96 @@ body.rtl .nav-links.active{left:0!important}
         }
         draw();
 
-        // Auto-refresh data every 30 seconds
+        // Auto-refresh every 10 seconds
         setInterval(function(){
-            fetch('/api/islands/{{ challenge.id }}').then(function(r){return r.json();}).then(function(d){
+            var cid = '{{ challenge.id }}';
+
+            // Refresh island data
+            fetch('/api/islands/' + cid).then(function(r){return r.json();}).then(function(d){
                 if(d.island_stats){
+                    // Update existing islands
                     for(var i=0;i<d.island_stats.length && i<islands.length;i++){
                         islands[i].agents = d.island_stats[i].num_agents;
                         islands[i].score = d.island_stats[i].best_score;
                         islands[i].solutions = d.island_stats[i].num_solutions;
                     }
+                    // Add new islands if created
+                    while(d.island_stats.length > islands.length){
+                        var ns = d.island_stats[islands.length];
+                        islands.push({id:ns.island_id, agents:ns.num_agents, score:ns.best_score, solutions:ns.num_solutions, migrations:ns.migrations_completed||0});
+                        numIslands = islands.length;
+                    }
+
+                    // Update stats on page
+                    var statEls = document.querySelectorAll('.cd-stat-val');
+                    statEls.forEach(function(el){
+                        var label = el.parentElement.querySelector('.cd-stat-label');
+                        if(!label) return;
+                        var txt = label.textContent.toLowerCase();
+                        if(txt.indexOf('island') >= 0 || label.getAttribute('data-i18n') === 'detail.islands') el.textContent = d.num_islands;
+                        if(txt.indexOf('agent') >= 0 || label.getAttribute('data-i18n') === 'detail.agents') el.textContent = d.total_agents;
+                        if(txt.indexOf('migrat') >= 0 || label.getAttribute('data-i18n') === 'detail.migrations') el.textContent = d.migrations_completed;
+                    });
+
+                    // Update island status cards
+                    var cardsContainer = document.querySelector('.cd-islands');
+                    if(cardsContainer && d.island_stats){
+                        cardsContainer.innerHTML = '';
+                        d.island_stats.forEach(function(s){
+                            var card = document.createElement('div');
+                            card.className = 'cd-island';
+                            var scoreStr = s.best_score > 1000000 ? (s.best_score/1000000).toFixed(1)+'M' : s.best_score > 1000 ? Math.round(s.best_score/1000)+'K' : Math.round(s.best_score);
+                            card.innerHTML = '<div class="cd-island-name">Island ' + s.island_id + '</div><div class="cd-island-score">' + scoreStr + '</div><div class="cd-island-agents">' + s.num_agents + ' agents · ' + s.num_solutions + ' solutions</div><div class="cd-island-mig">' + (s.migrations_completed||0) + ' migrations</div>';
+                            cardsContainer.appendChild(card);
+                        });
+                    }
+
+                    // Recreate agents if count changed
+                    var totalAgentDots = agents.length;
+                    var neededDots = 0;
+                    for(var i=0;i<islands.length;i++) neededDots += Math.max(islands[i].agents, 3);
+                    if(Math.abs(neededDots - totalAgentDots) > 3) createAgents();
                 }
             }).catch(function(){});
-        }, 30000);
+
+            // Refresh evolution log
+            fetch('/api/evolution/' + cid).then(function(r){return r.json();}).then(function(d){
+                if(d.log && d.log.length > 0){
+                    var tbody = document.querySelector('.cd-evo tbody');
+                    if(tbody){
+                        tbody.innerHTML = '';
+                        d.log.forEach(function(e){
+                            var tr = document.createElement('tr');
+                            var jumpStr = e.jump > 0 ? '+' + Math.round(e.jump).toLocaleString() : '—';
+                            tr.innerHTML = '<td>R' + e.round + '</td><td class="score-c">' + Math.round(e.score).toLocaleString() + '</td><td class="jump-c">' + jumpStr + '</td><td class="agent-c">' + e.agent_name + '</td>';
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    // Update best score stat
+                    var bestScore = d.log[d.log.length-1].score;
+                    document.querySelectorAll('.cd-stat-val').forEach(function(el){
+                        var label = el.parentElement.querySelector('.cd-stat-label');
+                        if(label && (label.getAttribute('data-i18n') === 'detail.currentBest')){
+                            el.textContent = Math.round(bestScore).toLocaleString();
+                        }
+                    });
+                }
+            }).catch(function(){});
+
+            // Refresh round count
+            fetch('/api/challenge/' + cid).then(function(r){return r.json();}).then(function(d){
+                if(d){
+                    document.querySelectorAll('.cd-stat-val').forEach(function(el){
+                        var label = el.parentElement.querySelector('.cd-stat-label');
+                        if(label && (label.getAttribute('data-i18n') === 'detail.rounds')){
+                            el.textContent = d.total_submissions || 0;
+                        }
+                    });
+                }
+            }).catch(function(){});
+
+        }, 10000);
     })();
     </script>
 </body>
