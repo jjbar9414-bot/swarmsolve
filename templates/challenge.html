@@ -330,11 +330,15 @@ body.rtl .nav-links.active{left:0!important}
         function getPositions(){
             var W = canvas.width, H = canvas.height;
             var cx = W/2, cy = H/2;
-            var radius = Math.min(W,H)*0.32;
+            var radius = numIslands === 1 ? 0 : Math.min(W,H)*0.32;
             var positions = [];
-            for(var i=0;i<numIslands;i++){
-                var angle = (i/numIslands)*Math.PI*2 - Math.PI/2;
-                positions.push({x: cx+Math.cos(angle)*radius, y: cy+Math.sin(angle)*radius});
+            if(numIslands === 1){
+                positions.push({x: cx, y: cy});
+            } else {
+                for(var i=0;i<numIslands;i++){
+                    var angle = (i/numIslands)*Math.PI*2 - Math.PI/2;
+                    positions.push({x: cx+Math.cos(angle)*radius, y: cy+Math.sin(angle)*radius});
+                }
             }
             return {positions:positions, cx:cx, cy:cy, W:W, H:H};
         }
@@ -618,12 +622,21 @@ body.rtl .nav-links.active{left:0!important}
             }
 
             // Center info
-            ctx.fillStyle = '#6e768130';
-            ctx.font = '9px Plus Jakarta Sans';
-            ctx.textAlign = 'center';
-            ctx.fillText('Ring Migration', cx, cy-4);
-            ctx.font = '12px sans-serif';
-            ctx.fillText('🔄', cx, cy+12);
+            if(numIslands > 1){
+                ctx.fillStyle = '#6e768130';
+                ctx.font = '9px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText('Ring Migration', cx, cy-4);
+                ctx.font = '12px sans-serif';
+                ctx.fillText('🔄', cx, cy+12);
+            } else {
+                // Single island — show helpful text
+                ctx.fillStyle = '#6e768120';
+                ctx.font = '10px Plus Jakarta Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText('10+ agents = 3 islands', cx, H-20);
+                ctx.fillText('50+ agents = 5 islands', cx, H-8);
+            }
 
             requestAnimationFrame(draw);
         }

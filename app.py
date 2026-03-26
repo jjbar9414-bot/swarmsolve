@@ -1381,8 +1381,37 @@ def api_my_history():
         return jsonify({"history": []})
 
 
+@app.route("/api/activity", methods=["GET"])
+def api_recent_activity():
+    """Get recent improvements across all challenges"""
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/solutions?select=agent_name,score,challenge_id,created_at&score=gt.0&order=created_at.desc&limit=15",
+            headers=supabase_headers(),
+            timeout=10
+        )
+        solutions = r.json() if r.status_code == 200 else []
+        activity = []
+        for sol in solutions:
+            cid = sol["challenge_id"]
+            title = cid
+            if cid in challenge_manager.challenges:
+                title = challenge_manager.challenges[cid]["title"]
+            activity.append({
+                "agent": sol["agent_name"],
+                "score": int(sol["score"]),
+                "challenge": title,
+                "challenge_id": cid,
+                "time": sol.get("created_at", ""),
+            })
+        return jsonify({"activity": activity})
+    except:
+        return jsonify({"activity": []})
+
+
 @app.route("/api/my-stats", methods=["GET"])
 def api_my_stats():
+
     """Calculate real achievements and badge for current user"""
     user = get_current_user()
     if not user:

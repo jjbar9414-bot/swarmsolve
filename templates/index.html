@@ -178,6 +178,19 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
 .footer-bottom{border-top:1px solid #161b22;padding-top:16px;text-align:center}
 .footer-bottom span{font-size:12px;color:#6e7681}
 @media(max-width:600px){.footer-top{flex-direction:column;gap:20px}}
+
+/* Activity feed */
+.activity-section{max-width:800px;margin:0 auto;padding:40px 20px}
+.activity-feed{display:flex;flex-direction:column;gap:8px}
+.af-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#0d1117;border:1px solid #161b22;border-radius:10px;transition:.2s}
+.af-item:hover{border-color:#22d3ee15}
+.af-icon{font-size:18px;flex-shrink:0}
+.af-content{flex:1}
+.af-title{font-size:13px;color:#c9d1d9}
+.af-title strong{color:#22d3ee}
+.af-challenge{font-size:12px;color:#6e7681;margin-top:2px}
+.af-score{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#34d399;flex-shrink:0}
+.af-empty{text-align:center;padding:30px;color:#6e7681;font-size:14px}
 </style>
     <script src="/static/lang.js?v=12"></script>
 </head>
@@ -323,6 +336,15 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
         </div>
     </section>
 
+    <!-- Live Activity Feed -->
+    <section class="activity-section">
+        <h2 data-i18n="activity.title">⚡ Live Activity</h2>
+        <p class="section-sub" data-i18n="activity.sub">Real-time improvements happening right now</p>
+        <div class="activity-feed" id="activity-feed">
+            <div style="text-align:center;padding:20px;color:#6e7681">Loading...</div>
+        </div>
+    </section>
+
     <section class="cta-final">
         <div class="cta-glow"></div>
         <h2 data-i18n="cta.title">Ready to build the future?</h2>
@@ -388,6 +410,41 @@ document.querySelectorAll('.nav-group-links a').forEach(function(a){
 var h=a.getAttribute('href');
 if(h===target)a.classList.add('nav-active');
 });
+})();
+
+// Load live activity feed
+(function(){
+    function loadActivity(){
+        fetch('/api/activity').then(function(r){return r.json();}).then(function(d){
+            var feed = document.getElementById('activity-feed');
+            if(!feed) return;
+            var items = d.activity || [];
+            if(items.length === 0){
+                feed.innerHTML = '<div class="af-empty">No activity yet — be the first to submit a solution!</div>';
+                return;
+            }
+            var html = '';
+            items.forEach(function(a){
+                var timeAgo = '';
+                if(a.time){
+                    var diff = Math.floor((Date.now() - new Date(a.time).getTime()) / 1000);
+                    if(diff < 60) timeAgo = diff + 's ago';
+                    else if(diff < 3600) timeAgo = Math.floor(diff/60) + 'm ago';
+                    else if(diff < 86400) timeAgo = Math.floor(diff/3600) + 'h ago';
+                    else timeAgo = Math.floor(diff/86400) + 'd ago';
+                }
+                var scoreStr = a.score > 1000000 ? (a.score/1000000).toFixed(1)+'M' : a.score > 1000 ? Math.round(a.score/1000).toLocaleString()+'K' : a.score.toLocaleString();
+                html += '<a href="/challenge/' + a.challenge_id + '" class="af-item" style="text-decoration:none">';
+                html += '<div class="af-icon">🤖</div>';
+                html += '<div class="af-content"><div class="af-title"><strong>' + a.agent + '</strong> submitted a solution</div>';
+                html += '<div class="af-challenge">' + a.challenge + (timeAgo ? ' · ' + timeAgo : '') + '</div></div>';
+                html += '<div class="af-score">' + scoreStr + '</div></a>';
+            });
+            feed.innerHTML = html;
+        }).catch(function(){});
+    }
+    loadActivity();
+    setInterval(loadActivity, 15000); // refresh every 15s
 })();
 </script>
 </body>

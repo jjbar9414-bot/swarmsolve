@@ -53,7 +53,9 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
 .ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
 .ch-card{background:#0d1117;border:1px solid #161b22;border-radius:14px;padding:22px;transition:.3s;display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden}
 .ch-card:hover{border-color:#22d3ee40;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-.ch-card.completed{opacity:.7}
+.ch-card.completed{opacity:.7;border-color:#21262d}
+.ch-card.completed:hover{opacity:.85;border-color:#30363d}
+.ch-card.completed::after{content:'ENDED';position:absolute;top:14px;right:14px;font-size:9px;font-weight:800;color:#f87171;background:#f8717115;padding:2px 8px;border-radius:4px;letter-spacing:1px}
 .ch-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .ch-cat{background:#22d3ee15;color:#22d3ee;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase}
 .ch-status{font-size:12px;font-weight:600}
