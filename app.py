@@ -601,16 +601,19 @@ def upload_avatar():
 
 @app.route("/challenges")
 def challenges_page():
-    """List all challenges — engine + Supabase + demo"""
-    # Engine challenges (real, with evaluators)
+    """List all challenges — engine + Supabase, no duplicates"""
     engine_challenges = []
+    engine_ids = set()
+
+    # Engine challenges (real, with evaluators)
     for cid, ch in challenge_manager.challenges.items():
+        engine_ids.add(cid)
         stats = challenge_manager.store.get_stats(cid)
         island_status = challenge_manager.get_island_status(cid)
         engine_challenges.append({
             "id": cid,
             "title": ch["title"],
-            "description": f"Live challenge — submit solutions via API",
+            "description": ch.get("description", f"Live challenge — submit solutions via API"),
             "status": "stopped" if (island_status and island_status["is_stopped"]) else "active",
             "agents_count": stats["unique_agents"],
             "best_score": stats["best_score"] if stats["best_score"] > 0 else ch["initial_score"],
@@ -618,18 +621,52 @@ def challenges_page():
             "time_left": "Ended" if (island_status and island_status["is_stopped"]) else "Live now",
             "reward": "—",
             "rounds": stats["total_submissions"],
-            "category": "Algorithm Speed",
+            "category": ch.get("category", "Algorithm Speed"),
         })
 
-    # Supabase challenges
-    url = f"{SUPABASE_URL}/rest/v1/challenges?select=*,profiles(username,avatar_url,full_name)&order=created_at.desc"
-    r = requests.get(url, headers=supabase_headers())
-    db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
+    # Supabase challenges (only those NOT already in engine)
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.desc"
+        r = requests.get(url, headers=supabase_headers(), timeout=10)
+        db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
 
-    all_challenges = engine_challenges + db_challenges
+        for ch in db_challenges:
+            if ch["id"] not in engine_ids:
+                # Register in engine if possible
+                if ch.get("initial_code") and ch.get("evaluator_code"):
+                    try:
+                        challenge_manager.register_challenge(
+                            challenge_id=ch["id"],
+                            title=ch.get("title", "Untitled"),
+                            initial_code=ch["initial_code"],
+                            evaluator_code=ch["evaluator_code"],
+                            initial_score=ch.get("initial_score", 1),
+                            target_score=ch.get("target_score", 0) or 0,
+                            save_to_db=False,
+                        )
+                        engine_ids.add(ch["id"])
+                        stats = challenge_manager.store.get_stats(ch["id"])
+                        engine_challenges.append({
+                            "id": ch["id"],
+                            "title": ch.get("title", "Untitled"),
+                            "description": ch.get("description", ""),
+                            "status": "active",
+                            "agents_count": stats["unique_agents"],
+                            "best_score": ch.get("best_score", 0) or ch.get("initial_score", 0),
+                            "initial_score": ch.get("initial_score", 0),
+                            "time_left": "Live now",
+                            "reward": f"${ch.get('reward_amount', 0)}" if ch.get("reward_amount") else "—",
+                            "rounds": 0,
+                            "category": ch.get("category", "Other"),
+                        })
+                    except Exception as e:
+                        print(f"[CHALLENGES] Failed to register {ch['id']}: {e}")
+    except Exception as e:
+        print(f"[CHALLENGES] Failed to load from Supabase: {e}")
+
     categories = ["GPU & Inference", "Algorithm Speed", "Compression", "Math & Discovery", "Scheduling", "Prompts", "Memory", "Other"]
     return render_template("challenges.html",
-                           challenges=all_challenges,
+                           challenges=engine_challenges,
                            categories=categories,
                            selected_category="all",
                            selected_status="all",
