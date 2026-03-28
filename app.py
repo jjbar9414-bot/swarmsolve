@@ -1167,14 +1167,14 @@ def reload_from_db():
         )
         if r.status_code == 200:
             db_challenges = r.json()
+            print(f"[DB] Found {len(db_challenges)} challenges in Supabase")
             for ch in db_challenges:
                 cid = ch["id"]
                 if cid not in challenge_manager.challenges:
-                    # This is a user-created challenge — register it in engine
                     title = ch.get("title", "Untitled")
                     initial_code = ch.get("initial_code", "")
                     evaluator_code = ch.get("evaluator_code", "")
-                    initial_score = ch.get("initial_score", 0)
+                    initial_score = ch.get("initial_score", 0) or 0
 
                     if initial_code and evaluator_code:
                         try:
@@ -1184,10 +1184,18 @@ def reload_from_db():
                                 initial_code=initial_code,
                                 evaluator_code=evaluator_code,
                                 initial_score=initial_score,
+                                target_score=ch.get("target_score", 0) or 0,
+                                save_to_db=False,
+                                description=ch.get("description", ""),
+                                category=ch.get("category", "Other"),
                             )
                             print(f"[DB] Registered user challenge: {cid} ({title})")
                         except Exception as e:
                             print(f"[DB] Failed to register {cid}: {e}")
+                    else:
+                        print(f"[DB] Skipped {cid} — missing initial_code or evaluator_code")
+        else:
+            print(f"[DB] Supabase returned status {r.status_code}")
     except Exception as e:
         print(f"[DB] Failed to load challenges from DB: {e}")
 
