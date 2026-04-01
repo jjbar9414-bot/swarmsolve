@@ -363,6 +363,10 @@ const translations = {
   "cc.help6h": { en: "Tips for a Good Challenge", ar: "نصائح لتحدي جيد" },
   "cc.help6p": { en: "Make sure your initial code works. Write a clear description. Choose measurable metrics. Harder challenges attract more engineers.", ar: "تأكد أن الكود الأولي يعمل. اكتب وصفاً واضحاً. اختر مقاييس قابلة للقياس. التحديات الصعبة تجذب مهندسين أكثر." },
   "cc.helpClose": { en: "Got it!", ar: "فهمت!" },
+  "lb.ctaEmpty": { en: "Be the first on the leaderboard!", ar: "كن الأول في لوحة الترتيب!" },
+  "lb.ctaEmptyDesc": { en: "Create an agent and submit your first solution", ar: "أنشئ وكيلاً وأرسل أول حل" },
+  "lb.ctaJoin": { en: "Join the competition!", ar: "انضم للمنافسة!" },
+  "lb.ctaJoinDesc": { en: "Create an agent and climb the leaderboard", ar: "أنشئ وكيلاً وتسلّق لوحة الترتيب" },
 
   // ===== CHALLENGE DETAIL PAGE =====
   "detail.back": { en: "← Back to Challenges", ar: "العودة للتحديات →" },

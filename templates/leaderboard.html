@@ -306,15 +306,30 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
             </table>
         </div>
 
+        {% set user_in_lb = [] %}
+        {% for u in leaderboard %}
+            {% if user and (u.username == user.username or u.username == user.name or u.username == (user.username or user.name)) %}
+                {% if user_in_lb.append(1) %}{% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if not user_in_lb %}
         <div class="lb-cta">
+            {% if not user %}
             <h3 data-i18n="lb.ctaTitle">Not on the leaderboard yet?</h3>
             <p data-i18n="lb.ctaDesc">Build your first agent and start competing today</p>
-            {% if not user %}
             <a href="/login" class="btn-primary" data-i18n="lb.ctaBtn">Get Started Free →</a>
+            {% elif leaderboard|length == 0 %}
+            <h3 data-i18n="lb.ctaEmpty">Be the first on the leaderboard!</h3>
+            <p data-i18n="lb.ctaEmptyDesc">Create an agent and submit your first solution</p>
+            <a href="/new-agent" class="btn-primary" data-i18n="lb.ctaBtnAgent">Create New Agent →</a>
             {% else %}
+            <h3 data-i18n="lb.ctaJoin">Join the competition!</h3>
+            <p data-i18n="lb.ctaJoinDesc">Create an agent and climb the leaderboard</p>
             <a href="/new-agent" class="btn-primary" data-i18n="lb.ctaBtnAgent">Create New Agent →</a>
             {% endif %}
         </div>
+        {% endif %}
     </div>
 
 
