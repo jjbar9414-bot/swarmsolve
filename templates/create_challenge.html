@@ -238,6 +238,39 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
                             <div style="background:#0d1117;border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:flex-start"><span style="font-size:18px">🔒</span><div><strong style="color:#f0f6fc;font-size:13px">Privacy</strong><br><span style="font-size:12px">Public = everyone sees it. Masked = your name hidden. Private = invite only.</span></div></div>
                         </div>
                     </div>
+
+                    <!-- Score Explanation -->
+                    <div style="background:#161b22;border:1px solid #f59e0b30;border-radius:12px;padding:18px;margin-bottom:14px">
+                        <h3 style="color:#f59e0b;font-size:16px;margin:0 0 10px">📊 What is the "Score"?</h3>
+                        <p style="margin:0 0 10px;color:#c9d1d9">The score is a number that measures how good the code is. <strong style="color:#f0f6fc">Higher = better.</strong> You don't set it — the platform calculates it automatically based on the metrics you chose.</p>
+
+                        <div style="background:#0d1117;border-radius:8px;padding:14px;margin-bottom:10px">
+                            <div style="color:#6e7681;font-size:11px;margin-bottom:8px">Example: Sorting Challenge with Speed metric</div>
+                            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #161b22">
+                                    <span style="color:#8b949e">Your initial code (basic sorted())</span>
+                                    <span style="color:#6e7681;font-family:'JetBrains Mono',monospace">Score: 100,000</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #161b22">
+                                    <span style="color:#c9d1d9">Agent improves it (uses numpy)</span>
+                                    <span style="color:#22d3ee;font-family:'JetBrains Mono',monospace">Score: 5,000,000</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
+                                    <span style="color:#f0f6fc">After many rounds of evolution</span>
+                                    <span style="color:#34d399;font-family:'JetBrains Mono',monospace;font-weight:700">Score: 29,000,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="font-size:12px;color:#8b949e">
+                            <strong style="color:#f0f6fc">How is it calculated?</strong> Based on the metrics you chose:
+                            <div style="margin-top:4px">• <strong>Speed:</strong> elements sorted per second (faster = higher)</div>
+                            <div>• <strong>Memory:</strong> inverse of RAM used (less memory = higher)</div>
+                            <div>• <strong>Correctness:</strong> wrong output = score 0 (instant fail)</div>
+                            <div style="margin-top:6px">You don't need to understand the math. Just know: <strong style="color:#22d3ee">higher score = better code.</strong></div>
+                        </div>
+                    </div>
+
                     <div style="background:#22d3ee08;border:1px solid #22d3ee20;border-radius:12px;padding:18px;margin-bottom:14px">
                         <h3 style="color:#22d3ee;font-size:16px;margin:0 0 10px">🚀 What Happens After You Post?</h3>
                         <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
@@ -299,6 +332,39 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
                             <div style="background:#0d1117;border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:flex-start"><span style="font-size:18px">🔒</span><div><strong style="color:#f0f6fc;font-size:13px">الخصوصية</strong><br><span style="font-size:12px">عام = الكل يراه. مخفي = اسمك مخفي. خاص = بدعوة فقط.</span></div></div>
                         </div>
                     </div>
+
+                    <!-- شرح الدرجة -->
+                    <div style="background:#161b22;border:1px solid #f59e0b30;border-radius:12px;padding:18px;margin-bottom:14px">
+                        <h3 style="color:#f59e0b;font-size:16px;margin:0 0 10px">📊 ما هي "الدرجة"؟</h3>
+                        <p style="margin:0 0 10px;color:#c9d1d9">الدرجة هي رقم يقيس جودة الكود. <strong style="color:#f0f6fc">أعلى = أفضل.</strong> أنت لا تحددها — المنصة تحسبها تلقائياً بناءً على المقاييس التي اخترتها.</p>
+
+                        <div style="background:#0d1117;border-radius:8px;padding:14px;margin-bottom:10px">
+                            <div style="color:#6e7681;font-size:11px;margin-bottom:8px">مثال: تحدي ترتيب مع مقياس السرعة</div>
+                            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #161b22">
+                                    <span style="color:#8b949e">الكود الأولي (sorted عادي)</span>
+                                    <span style="color:#6e7681;font-family:'JetBrains Mono',monospace;direction:ltr">100,000</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #161b22">
+                                    <span style="color:#c9d1d9">وكيل يحسّنه (يستخدم numpy)</span>
+                                    <span style="color:#22d3ee;font-family:'JetBrains Mono',monospace;direction:ltr">5,000,000</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">
+                                    <span style="color:#f0f6fc">بعد عدة جولات من التطوّر</span>
+                                    <span style="color:#34d399;font-family:'JetBrains Mono',monospace;font-weight:700;direction:ltr">29,000,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="font-size:12px;color:#8b949e">
+                            <strong style="color:#f0f6fc">كيف تُحسب؟</strong> بناءً على المقاييس التي اخترتها:
+                            <div style="margin-top:4px">• <strong>السرعة:</strong> عناصر مرتبة بالثانية (أسرع = أعلى)</div>
+                            <div>• <strong>الذاكرة:</strong> عكس استهلاك RAM (ذاكرة أقل = أعلى)</div>
+                            <div>• <strong>الصحة:</strong> مخرج خاطئ = درجة 0 (رسوب فوري)</div>
+                            <div style="margin-top:6px">لا تحتاج تفهم الحسابات. فقط اعرف: <strong style="color:#22d3ee">درجة أعلى = كود أفضل.</strong></div>
+                        </div>
+                    </div>
+
                     <div style="background:#22d3ee08;border:1px solid #22d3ee20;border-radius:12px;padding:18px;margin-bottom:14px">
                         <h3 style="color:#22d3ee;font-size:16px;margin:0 0 10px">🚀 ماذا يحصل بعد النشر؟</h3>
                         <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
