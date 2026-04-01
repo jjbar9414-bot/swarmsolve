@@ -219,13 +219,11 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
                 {% set start = c.get('initial_score', 0)|int %}
                 {% if best > 0 %}
                 <div class="ch-score-section">
-                    <div class="ch-score-row">
-                        <div><span class="ch-score-label">Start: </span><span class="ch-score-val ch-score-start">{{ "{:,}".format(start) }}</span></div>
-                        <div><span class="ch-score-label">Best: </span><span class="ch-score-val ch-score-best">{{ "{:,}".format(best) }}</span></div>
-                    </div>
-                    <div class="ch-score-bar"><div class="ch-score-bar-fill" style="width:{{ [((best - start) / (best if best > 0 else 1) * 100)|int, 100]|min }}%"></div></div>
                     {% if best > start and start > 0 %}
-                    <div class="ch-improve-badge">↑ {{ ((best / start)|round(0)|int) }}x improvement</div>
+                    <div class="ch-improve-badge">🚀 {{ ((best / start)|round(0)|int) }}x <span data-i18n="ch.improvement">improvement</span></div>
+                    <div class="ch-score-bar"><div class="ch-score-bar-fill" style="width:{{ [((best - start) / (best if best > 0 else 1) * 100)|int, 100]|min }}%"></div></div>
+                    {% else %}
+                    <div class="ch-improve-badge" style="opacity:.5">⏳ <span data-i18n="ch.waitingImprovement">Waiting for improvements</span></div>
                     {% endif %}
                 </div>
                 {% endif %}

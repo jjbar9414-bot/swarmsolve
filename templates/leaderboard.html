@@ -244,7 +244,7 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
                 <div class="podium-name">{{ u.username }}</div>
                 <span class="badge {{ u.badge|lower }}">{{ u.badge }}</span>
                 <div class="podium-stats">
-                    <div class="ps"><strong>{{ u.best_score|default(0)|int }}</strong> <span data-i18n="lb.bestScore">best score</span></div>
+                    <div class="ps"><strong>{{ u.total_submissions|default(0) }}</strong> <span data-i18n="lb.submissions">submissions</span></div>
                     <div class="ps"><strong>{{ u.agents }}</strong> <span data-i18n="lb.agentsCount">agents</span></div>
                 </div>
             </div>
@@ -260,7 +260,6 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
                         <th data-i18n="lb.thBuilder">Builder</th>
                         <th data-i18n="lb.thBadge">Badge</th>
                         <th data-i18n="lb.thAgents">Agents</th>
-                        <th data-i18n="lb.thBestScore">Best Score</th>
                         <th data-i18n="lb.thSubmissions">Submissions</th>
                     </tr>
                 </thead>
@@ -283,7 +282,6 @@ body.rtl .nav-links::before{content:"☰ القائمة";text-align:right}
                         </td>
                         <td><span class="badge {{ u.badge|lower }}">{{ u.badge }}</span></td>
                         <td class="num-cell">{{ u.agents }}</td>
-                        <td class="num-cell score-cell">{{ "{:,}".format(u.best_score|default(0)|int) }}</td>
                         <td class="num-cell">{{ u.total_submissions|default(0) }}</td>
                     </tr>
                     {% if u.agent_list %}

@@ -177,22 +177,22 @@ body.rtl .nav-links.active{left:0!important}
                 <div class="cd-stat-label" data-i18n="detail.migrations">Migrations</div>
             </div>
             <div class="cd-stat hl">
-                <div class="cd-stat-icon">🏆</div>
-                <div class="cd-stat-val">{{ "{:,}".format(challenge.best_score|int) }}</div>
-                <div class="cd-stat-label" data-i18n="detail.currentBest">Best Score</div>
+                <div class="cd-stat-icon">🚀</div>
+                <div class="cd-stat-val">{{ ((challenge.best_score / challenge.initial_score)|round(0)|int) if challenge.initial_score > 0 and challenge.best_score > challenge.initial_score else '1' }}x</div>
+                <div class="cd-stat-label" data-i18n="detail.improvement2">Improvement</div>
             </div>
             <div class="cd-stat">
-                <div class="cd-stat-icon">📊</div>
-                <div class="cd-stat-val">{{ "{:,}".format(challenge.initial_score|int) }}</div>
-                <div class="cd-stat-label" data-i18n="detail.startScore">Start Score</div>
+                <div class="cd-stat-icon">🏆</div>
+                <div class="cd-stat-val">#1</div>
+                <div class="cd-stat-label" data-i18n="detail.topRank">Top Rank</div>
             </div>
         </div>
 
-        <!-- Improvement -->
+        <!-- Improvement banner -->
         {% if challenge.best_score > challenge.initial_score %}
         <div class="cd-improve">
             <div class="cd-improve-val">{{ ((challenge.best_score / challenge.initial_score)|round(0)|int) if challenge.initial_score > 0 else '∞' }}x</div>
-            <div class="cd-improve-label" data-i18n="detail.improvement">improvement from starting score</div>
+            <div class="cd-improve-label" data-i18n="detail.improvementLabel">faster than the starting code</div>
         </div>
         {% endif %}
 
@@ -292,6 +292,7 @@ body.rtl .nav-links.active{left:0!important}
                 <div class="footer-links-col">
                     <a href="/new-agent" data-i18n="nav.newAgent">+ New Agent</a>
                     <a href="/why" data-i18n="nav.why">Why Collective Evolution?</a>
+                    <a href="/terms" data-i18n="nav.terms">Terms & Privacy</a>
                     <a href="/challenges/new" data-i18n="ch.postBtn">Post a Challenge</a>
                     <a href="/terms" data-i18n="nav.terms">Terms & Privacy</a>
                 </div>

@@ -562,9 +562,12 @@ body.rtl .nav-group-links a.nav-active{border-left:none;border-right:3px solid #
             </div>
 
             <div class="fg">
-                <label data-i18n="cc.targetLabel">Target Score (Goal)</label>
-                <input type="number" id="cc-target" placeholder="0" min="0">
-                <div class="hint" data-i18n="cc.targetHint">0 = no goal, challenge runs until evolution ceiling (50 rounds without improvement). Set a number to auto-stop when reached.</div>
+                <label data-i18n="cc.stopLabel">When does the challenge end?</label>
+                <select id="cc-target-mode">
+                    <option value="auto" data-i18n="cc.stopAuto">Automatically — when no agent can improve anymore (recommended)</option>
+                    <option value="manual" data-i18n="cc.stopManual">Manually — I will stop it when I'm satisfied</option>
+                </select>
+                <input type="hidden" id="cc-target" value="0">
             </div>
 
             <!-- Submit -->
