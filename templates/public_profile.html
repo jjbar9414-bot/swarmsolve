@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>.brand-logo{width:32px;height:32px;object-fit:contain;border-radius:6px}
+html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity .08s ease}</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pub_user.name }} — DarwinLeap</title>
+    <link rel="stylesheet" href="/static/style.css?v=9">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.pub-page{max-width:600px;margin:0 auto;padding:30px 20px 60px}
+.pub-card{background:#0d1117;border:1px solid #161b22;border-radius:16px;padding:30px;text-align:center}
+.pub-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;border:3px solid #22d3ee30}
+.pub-avatar-letter{width:80px;height:80px;border-radius:50%;background:#161b22;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#22d3ee;margin:0 auto 12px;border:3px solid #22d3ee30}
+.pub-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:4px}
+.pub-username{font-size:14px;color:#6e7681;margin-bottom:12px}
+.pub-bio{font-size:14px;color:#8b949e;margin-bottom:16px;line-height:1.6}
+.pub-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#22d3ee20;color:#22d3ee;margin-bottom:16px}
+.pub-stats{display:flex;justify-content:center;gap:24px;margin:20px 0;flex-wrap:wrap}
+.pub-stat{text-align:center}
+.pub-stat-num{font-size:22px;font-weight:800;color:#f0f6fc}
+.pub-stat-label{font-size:11px;color:#6e7681;margin-top:2px}
+.pub-links{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.pub-links a{color:#8b949e;font-size:13px;text-decoration:none;padding:6px 14px;border:1px solid #21262d;border-radius:8px;transition:.2s}
+.pub-links a:hover{color:#22d3ee;border-color:#22d3ee30}
+.pub-back{display:inline-block;margin-bottom:16px;color:#22d3ee;font-size:14px;text-decoration:none}
+</style>
+    <script src="/static/lang.js?v=12"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand"><img src="/static/frog-logo.png" class="brand-logo" alt="DarwinLeap"> DarwinLeap</a>
+    </nav>
+
+    <div class="pub-page">
+        <a href="javascript:history.back()" class="pub-back">← Back</a>
+
+        <div class="pub-card">
+            {% if pub_user.avatar_url %}
+            <img src="{{ pub_user.avatar_url }}" class="pub-avatar">
+            {% else %}
+            <div class="pub-avatar-letter">{{ pub_user.name[0]|upper }}</div>
+            {% endif %}
+
+            <div class="pub-name">{{ pub_user.name }}</div>
+            {% if pub_user.username %}
+            <div class="pub-username">@{{ pub_user.username }}</div>
+            {% endif %}
+
+            <div class="pub-badge">{{ pub_user.badge }}</div>
+
+            {% if pub_user.bio %}
+            <div class="pub-bio">{{ pub_user.bio }}</div>
+            {% endif %}
+
+            <div class="pub-stats">
+                <div class="pub-stat">
+                    <div class="pub-stat-num">{{ pub_user.total_submissions }}</div>
+                    <div class="pub-stat-label" data-i18n="pub.submissions">Submissions</div>
+                </div>
+                <div class="pub-stat">
+                    <div class="pub-stat-num">{{ pub_user.agents_count }}</div>
+                    <div class="pub-stat-label" data-i18n="pub.agents">Agents</div>
+                </div>
+                <div class="pub-stat">
+                    <div class="pub-stat-num">{{ pub_user.challenges_participated }}</div>
+                    <div class="pub-stat-label" data-i18n="pub.challenges">Challenges</div>
+                </div>
+            </div>
+
+            {% if pub_user.github or pub_user.linkedin %}
+            <div class="pub-links">
+                {% if pub_user.github %}
+                <a href="https://github.com/{{ pub_user.github }}" target="_blank">GitHub</a>
+                {% endif %}
+                {% if pub_user.linkedin %}
+                <a href="https://linkedin.com/in/{{ pub_user.linkedin }}" target="_blank">LinkedIn</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

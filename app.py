@@ -191,6 +191,7 @@ def challenge_detail(cid):
         is_owner = False
         owner_name = None
         owner_avatar = None
+        owner_id = None
         current_user = get_current_user()
         try:
             r = requests.get(
@@ -222,7 +223,7 @@ def challenge_detail(cid):
 
         return render_template("challenge.html", challenge=ch, evolution_log=evo_formatted,
                                island_status=island_status, user=current_user, is_owner=is_owner,
-                               owner_name=owner_name, owner_avatar=owner_avatar)
+                               owner_name=owner_name, owner_avatar=owner_avatar, owner_id=owner_id or "")
 
     # Not in engine — try loading from Supabase and registering
     try:
@@ -520,6 +521,59 @@ def profile():
         session["user"] = user
         session.modified = True
     return render_template("profile.html", user=user, supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY)
+
+
+@app.route("/user/<user_id>")
+def public_profile(user_id):
+    """View any user's public profile"""
+    try:
+        # Get profile
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/profiles?id=eq.{user_id}&select=*",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        if r.status_code != 200 or not r.json():
+            return "User not found", 404
+        profile = r.json()[0]
+
+        # Get agents count
+        r2 = requests.get(
+            f"{SUPABASE_URL}/rest/v1/agents?user_id=eq.{user_id}&select=id",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        agents_count = len(r2.json()) if r2.status_code == 200 else 0
+
+        # Get solutions count
+        r3 = requests.get(
+            f"{SUPABASE_URL}/rest/v1/solutions?user_id=eq.{user_id}&select=challenge_id,score&order=score.desc",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        solutions = r3.json() if r3.status_code == 200 else []
+        total_submissions = len(solutions)
+        best_score = max([s["score"] for s in solutions], default=0)
+        challenges_participated = len(set(s["challenge_id"] for s in solutions))
+
+        pub_user = {
+            "id": user_id,
+            "name": profile.get("full_name") or profile.get("username") or "Anonymous",
+            "username": profile.get("username", ""),
+            "avatar_url": profile.get("avatar_url", ""),
+            "bio": profile.get("bio", ""),
+            "github": profile.get("github", ""),
+            "linkedin": profile.get("linkedin", ""),
+            "badge": profile.get("badge", "EvoRookie"),
+            "agents_count": agents_count,
+            "total_submissions": total_submissions,
+            "challenges_participated": challenges_participated,
+            "created_at": profile.get("created_at", ""),
+        }
+        return render_template("public_profile.html", pub_user=pub_user, user=get_current_user())
+    except Exception as e:
+        print(f"[PROFILE] Error: {e}")
+        return "User not found", 404
 
 
 @app.route("/profile/update", methods=["POST"])
