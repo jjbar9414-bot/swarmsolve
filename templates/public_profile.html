@@ -236,18 +236,37 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
 
     function editComment(id){
         var textEl = document.getElementById('comment-text-' + id);
+        var commentEl = document.getElementById('comment-' + id);
         var currentText = textEl.textContent.trim();
-        var newText = prompt('Edit your review:', currentText);
-        if(newText === null || newText.trim() === '') return;
-        if(newText.trim() === currentText) return;
+
+        // Already editing?
+        if(textEl.querySelector('textarea')) return;
+
+        // Replace text with textarea
+        var originalHTML = textEl.innerHTML;
+        textEl.innerHTML = '<textarea id="edit-area-' + id + '" style="width:100%;background:#0d1117;border:1px solid #22d3ee40;border-radius:8px;color:#c9d1d9;padding:10px;font-size:13px;resize:vertical;min-height:60px;font-family:inherit;box-sizing:border-box">' + currentText + '</textarea><div style="display:flex;gap:8px;margin-top:8px"><button onclick="saveEdit(' + id + ')" style="background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;border:none;padding:6px 16px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">Save</button><button onclick="cancelEdit(' + id + ',\'' + encodeURIComponent(currentText) + '\')" style="background:#161b22;color:#8b949e;border:1px solid #21262d;padding:6px 16px;border-radius:6px;font-size:12px;cursor:pointer">Cancel</button></div>';
+
+        // Focus textarea
+        document.getElementById('edit-area-' + id).focus();
+    }
+
+    function saveEdit(id){
+        var textarea = document.getElementById('edit-area-' + id);
+        var newText = textarea.value.trim();
+        if(!newText){alert('Review cannot be empty');return;}
         fetch('/api/comment/' + id, {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({content: newText.trim()})
+            body: JSON.stringify({content: newText})
         }).then(function(r){return r.json();}).then(function(d){
             if(d.ok){ location.reload(); }
             else { alert(d.error || 'Failed'); }
         });
+    }
+
+    function cancelEdit(id, originalText){
+        var textEl = document.getElementById('comment-text-' + id);
+        textEl.innerHTML = decodeURIComponent(originalText);
     }
 
     function deleteComment(id){
