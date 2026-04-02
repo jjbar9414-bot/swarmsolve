@@ -1518,8 +1518,8 @@ def evaluate(solution_path):
             print(f"[DEMO] Restored stopped state for {cid}")
 
 
-setup_demo_challenges()
-
+# Demo challenges disabled — real challenges loaded from Supabase
+# setup_demo_challenges()
 
 # ===== Load existing solutions from Supabase on startup =====
 def reload_from_db():
@@ -1887,6 +1887,44 @@ def api_recent_activity():
         return jsonify({"activity": activity})
     except:
         return jsonify({"activity": []})
+
+
+@app.route("/api/waitlist", methods=["POST"])
+def api_join_waitlist():
+    """Add email to waitlist"""
+    data = request.get_json()
+    email = sanitize_input(data.get("email", ""), max_length=100)
+    if not email or "@" not in email or "." not in email:
+        return jsonify({"error": "Valid email required"}), 400
+    try:
+        r = requests.post(
+            f"{SUPABASE_URL}/rest/v1/waitlist",
+            headers={**supabase_headers(), "Prefer": "return=representation"},
+            json={"email": email},
+            timeout=5
+        )
+        if r.status_code in [200, 201]:
+            return jsonify({"ok": True})
+        if "duplicate" in r.text.lower() or "unique" in r.text.lower():
+            return jsonify({"ok": True})  # Already registered
+        return jsonify({"error": "Failed"}), 500
+    except:
+        return jsonify({"error": "Failed"}), 500
+
+
+@app.route("/api/waitlist/count", methods=["GET"])
+def api_waitlist_count():
+    """Get waitlist count"""
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/waitlist?select=id",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        count = len(r.json()) if r.status_code == 200 else 0
+        return jsonify({"count": count})
+    except:
+        return jsonify({"count": 0})
 
 
 @app.route("/api/my-stats", methods=["GET"])
