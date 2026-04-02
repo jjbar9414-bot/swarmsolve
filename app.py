@@ -122,6 +122,9 @@ def home():
 
     all_challenges = engine_challenges + supabase_challenges
 
+    # Filter: homepage shows only active challenges
+    active_challenges = [c for c in all_challenges if c["status"] == "active"]
+
     # Real stats only
     total_submissions = sum(
         challenge_manager.store.get_stats(cid)["total_submissions"]
@@ -143,11 +146,11 @@ def home():
 
     stats = {
         "total_agents": registered_agents,
-        "active_challenges": len(all_challenges),
+        "active_challenges": len(active_challenges),
         "total_improvements": total_submissions,
     }
 
-    return render_template("index.html", challenges=all_challenges,
+    return render_template("index.html", challenges=active_challenges,
                            leaderboard=[], stats=stats,
                            user=get_current_user())
 
