@@ -537,15 +537,15 @@ def public_profile(user_id):
             return "User not found", 404
         profile = r.json()[0]
 
-        # Get agents count
+        # Get agents
         r2 = requests.get(
-            f"{SUPABASE_URL}/rest/v1/agents?user_id=eq.{user_id}&select=id",
+            f"{SUPABASE_URL}/rest/v1/agents?user_id=eq.{user_id}&select=name,model,best_score,total_submissions",
             headers=supabase_headers(),
             timeout=5
         )
-        agents_count = len(r2.json()) if r2.status_code == 200 else 0
+        agents = r2.json() if r2.status_code == 200 else []
 
-        # Get solutions count
+        # Get solutions
         r3 = requests.get(
             f"{SUPABASE_URL}/rest/v1/solutions?user_id=eq.{user_id}&select=challenge_id,score&order=score.desc",
             headers=supabase_headers(),
@@ -553,8 +553,27 @@ def public_profile(user_id):
         )
         solutions = r3.json() if r3.status_code == 200 else []
         total_submissions = len(solutions)
-        best_score = max([s["score"] for s in solutions], default=0)
         challenges_participated = len(set(s["challenge_id"] for s in solutions))
+
+        # Get challenges posted by this user
+        r4 = requests.get(
+            f"{SUPABASE_URL}/rest/v1/challenges?owner_id=eq.{user_id}&select=id,title,best_score,initial_score,is_stopped,created_at",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        posted_challenges = r4.json() if r4.status_code == 200 and isinstance(r4.json(), list) else []
+
+        # Get comments about this user
+        r5 = requests.get(
+            f"{SUPABASE_URL}/rest/v1/comments?target_user_id=eq.{user_id}&select=*&order=created_at.desc&limit=20",
+            headers=supabase_headers(),
+            timeout=5
+        )
+        comments = r5.json() if r5.status_code == 200 and isinstance(r5.json(), list) else []
+
+        # Calculate average rating
+        ratings = [c["rating"] for c in comments if c.get("rating") and c["rating"] > 0]
+        avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else 0
 
         pub_user = {
             "id": user_id,
@@ -565,15 +584,62 @@ def public_profile(user_id):
             "github": profile.get("github", ""),
             "linkedin": profile.get("linkedin", ""),
             "badge": profile.get("badge", "EvoRookie"),
-            "agents_count": agents_count,
+            "agents_count": len(agents),
+            "agents": agents,
             "total_submissions": total_submissions,
             "challenges_participated": challenges_participated,
+            "posted_challenges": posted_challenges,
+            "comments": comments,
+            "avg_rating": avg_rating,
+            "total_ratings": len(ratings),
             "created_at": profile.get("created_at", ""),
         }
         return render_template("public_profile.html", pub_user=pub_user, user=get_current_user())
     except Exception as e:
         print(f"[PROFILE] Error: {e}")
         return "User not found", 404
+
+
+@app.route("/api/comment", methods=["POST"])
+def api_post_comment():
+    """Post a comment/rating on a user's profile"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json()
+    target_id = data.get("target_user_id", "")
+    content = data.get("content", "").strip()
+    rating = int(data.get("rating", 0))
+
+    if not target_id or not content:
+        return jsonify({"error": "Content required"}), 400
+    if len(content) > 500:
+        return jsonify({"error": "Comment too long (max 500 chars)"}), 400
+    if rating < 0 or rating > 5:
+        return jsonify({"error": "Rating must be 0-5"}), 400
+    if target_id == user["id"]:
+        return jsonify({"error": "Cannot rate yourself"}), 400
+
+    try:
+        r = requests.post(
+            f"{SUPABASE_URL}/rest/v1/comments",
+            headers={**supabase_headers(), "Prefer": "return=representation"},
+            json={
+                "target_user_id": target_id,
+                "author_id": user["id"],
+                "author_name": user.get("username") or user.get("name") or "Anonymous",
+                "author_avatar": user.get("avatar_url", ""),
+                "content": content,
+                "rating": rating,
+            },
+            timeout=5
+        )
+        if r.status_code in [200, 201]:
+            return jsonify({"ok": True})
+        return jsonify({"error": "Failed to post"}), 500
+    except:
+        return jsonify({"error": "Failed"}), 500
 
 
 @app.route("/profile/update", methods=["POST"])

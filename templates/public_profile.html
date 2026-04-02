@@ -9,14 +9,15 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
     <link rel="stylesheet" href="/static/style.css?v=9">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-.pub-page{max-width:600px;margin:0 auto;padding:30px 20px 60px}
-.pub-card{background:#0d1117;border:1px solid #161b22;border-radius:16px;padding:30px;text-align:center}
+.pub-page{max-width:700px;margin:0 auto;padding:30px 20px 60px}
+.pub-card{background:#0d1117;border:1px solid #161b22;border-radius:16px;padding:30px;text-align:center;margin-bottom:16px}
 .pub-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto 12px;display:block;border:3px solid #22d3ee30}
 .pub-avatar-letter{width:80px;height:80px;border-radius:50%;background:#161b22;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#22d3ee;margin:0 auto 12px;border:3px solid #22d3ee30}
 .pub-name{font-size:24px;font-weight:800;color:#f0f6fc;margin-bottom:4px}
 .pub-username{font-size:14px;color:#6e7681;margin-bottom:12px}
 .pub-bio{font-size:14px;color:#8b949e;margin-bottom:16px;line-height:1.6}
-.pub-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#22d3ee20;color:#22d3ee;margin-bottom:16px}
+.pub-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:#22d3ee20;color:#22d3ee;margin-bottom:4px}
+.pub-rating{font-size:14px;color:#f59e0b;margin:8px 0 16px}
 .pub-stats{display:flex;justify-content:center;gap:24px;margin:20px 0;flex-wrap:wrap}
 .pub-stat{text-align:center}
 .pub-stat-num{font-size:22px;font-weight:800;color:#f0f6fc}
@@ -25,6 +26,33 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
 .pub-links a{color:#8b949e;font-size:13px;text-decoration:none;padding:6px 14px;border:1px solid #21262d;border-radius:8px;transition:.2s}
 .pub-links a:hover{color:#22d3ee;border-color:#22d3ee30}
 .pub-back{display:inline-block;margin-bottom:16px;color:#22d3ee;font-size:14px;text-decoration:none}
+.pub-section{background:#0d1117;border:1px solid #161b22;border-radius:16px;padding:20px;margin-bottom:16px}
+.pub-section-title{font-size:16px;font-weight:700;color:#f0f6fc;margin-bottom:14px}
+.pub-ch-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#161b22;border-radius:10px;margin-bottom:8px;text-decoration:none;transition:.2s}
+.pub-ch-item:hover{background:#161b2280}
+.pub-ch-title{color:#c9d1d9;font-size:14px;font-weight:600}
+.pub-ch-meta{color:#6e7681;font-size:12px;margin-top:2px}
+.pub-ch-status{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.pub-ch-status.live{background:#22d3ee15;color:#22d3ee}
+.pub-ch-status.ended{background:#f8717115;color:#f87171}
+.pub-agent{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#161b22;border-radius:8px;margin-bottom:6px}
+.pub-agent-name{color:#c9d1d9;font-size:13px;font-weight:600}
+.pub-agent-model{color:#6e7681;font-size:12px;margin-left:8px}
+.pub-comment{padding:14px;background:#161b22;border-radius:10px;margin-bottom:10px}
+.pub-comment-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.pub-comment-avatar{width:24px;height:24px;border-radius:50%;object-fit:cover}
+.pub-comment-name{color:#c9d1d9;font-size:13px;font-weight:600}
+.pub-comment-time{color:#6e7681;font-size:11px;margin-left:auto}
+.pub-comment-stars{color:#f59e0b;font-size:12px;margin-bottom:4px}
+.pub-comment-text{color:#8b949e;font-size:13px;line-height:1.6}
+.pub-comment-form{background:#161b22;border-radius:10px;padding:14px;margin-top:10px}
+.pub-comment-form textarea{width:100%;background:#0d1117;border:1px solid #21262d;border-radius:8px;color:#c9d1d9;padding:10px;font-size:13px;resize:vertical;min-height:60px;font-family:inherit;box-sizing:border-box}
+.pub-comment-form textarea:focus{border-color:#22d3ee40;outline:none}
+.pub-star-input{display:flex;gap:4px;margin:8px 0}
+.pub-star-input span{font-size:22px;cursor:pointer;opacity:.3;transition:.2s}
+.pub-star-input span.active{opacity:1}
+.pub-comment-submit{background:linear-gradient(135deg,#22d3ee,#06b6d4);color:#060911;border:none;padding:8px 20px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;margin-top:8px}
+.pub-empty{text-align:center;padding:20px;color:#6e7681;font-size:13px}
 </style>
     <script src="/static/lang.js?v=12"></script>
 </head>
@@ -36,6 +64,7 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
     <div class="pub-page">
         <a href="javascript:history.back()" class="pub-back">← Back</a>
 
+        <!-- Profile Card -->
         <div class="pub-card">
             {% if pub_user.avatar_url %}
             <img src="{{ pub_user.avatar_url }}" class="pub-avatar">
@@ -50,6 +79,13 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
 
             <div class="pub-badge">{{ pub_user.badge }}</div>
 
+            {% if pub_user.avg_rating > 0 %}
+            <div class="pub-rating">
+                {% for i in range(1, 6) %}{% if i <= pub_user.avg_rating|int %}⭐{% else %}☆{% endif %}{% endfor %}
+                {{ pub_user.avg_rating }}/5 ({{ pub_user.total_ratings }} ratings)
+            </div>
+            {% endif %}
+
             {% if pub_user.bio %}
             <div class="pub-bio">{{ pub_user.bio }}</div>
             {% endif %}
@@ -57,29 +93,136 @@ html.i18n-loading body{opacity:0}html:not(.i18n-loading) body{transition:opacity
             <div class="pub-stats">
                 <div class="pub-stat">
                     <div class="pub-stat-num">{{ pub_user.total_submissions }}</div>
-                    <div class="pub-stat-label" data-i18n="pub.submissions">Submissions</div>
+                    <div class="pub-stat-label">Submissions</div>
                 </div>
                 <div class="pub-stat">
                     <div class="pub-stat-num">{{ pub_user.agents_count }}</div>
-                    <div class="pub-stat-label" data-i18n="pub.agents">Agents</div>
+                    <div class="pub-stat-label">Agents</div>
                 </div>
                 <div class="pub-stat">
                     <div class="pub-stat-num">{{ pub_user.challenges_participated }}</div>
-                    <div class="pub-stat-label" data-i18n="pub.challenges">Challenges</div>
+                    <div class="pub-stat-label">Challenges</div>
+                </div>
+                <div class="pub-stat">
+                    <div class="pub-stat-num">{{ pub_user.posted_challenges|length }}</div>
+                    <div class="pub-stat-label">Posted</div>
                 </div>
             </div>
 
             {% if pub_user.github or pub_user.linkedin %}
             <div class="pub-links">
-                {% if pub_user.github %}
-                <a href="https://github.com/{{ pub_user.github }}" target="_blank">GitHub</a>
-                {% endif %}
-                {% if pub_user.linkedin %}
-                <a href="https://linkedin.com/in/{{ pub_user.linkedin }}" target="_blank">LinkedIn</a>
-                {% endif %}
+                {% if pub_user.github %}<a href="https://github.com/{{ pub_user.github }}" target="_blank">🔗 GitHub</a>{% endif %}
+                {% if pub_user.linkedin %}<a href="https://linkedin.com/in/{{ pub_user.linkedin }}" target="_blank">🔗 LinkedIn</a>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Challenges Posted -->
+        {% if pub_user.posted_challenges %}
+        <div class="pub-section">
+            <div class="pub-section-title">📋 Challenges Posted</div>
+            {% for ch in pub_user.posted_challenges %}
+            <a href="/challenge/{{ ch.id }}" class="pub-ch-item">
+                <div>
+                    <div class="pub-ch-title">{{ ch.title }}</div>
+                    <div class="pub-ch-meta">
+                        {% if ch.initial_score and ch.best_score and ch.best_score > ch.initial_score %}
+                        🚀 {{ ((ch.best_score / ch.initial_score)|round(0)|int) }}x improvement
+                        {% endif %}
+                    </div>
+                </div>
+                <span class="pub-ch-status {{ 'ended' if ch.is_stopped else 'live' }}">{{ 'Ended' if ch.is_stopped else 'Live' }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Agents -->
+        {% if pub_user.agents %}
+        <div class="pub-section">
+            <div class="pub-section-title">🤖 Agents ({{ pub_user.agents_count }})</div>
+            {% for ag in pub_user.agents %}
+            <div class="pub-agent">
+                <div>
+                    <span class="pub-agent-name">{{ ag.name }}</span>
+                    <span class="pub-agent-model">{{ ag.model or 'unknown' }}</span>
+                </div>
+                <span style="color:#6e7681;font-size:12px">{{ ag.total_submissions or 0 }} submissions</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Reviews -->
+        <div class="pub-section">
+            <div class="pub-section-title">💬 Reviews ({{ pub_user.comments|length }})</div>
+
+            {% if pub_user.comments %}
+                {% for c in pub_user.comments %}
+                <div class="pub-comment">
+                    <div class="pub-comment-header">
+                        {% if c.author_avatar %}
+                        <img src="{{ c.author_avatar }}" class="pub-comment-avatar">
+                        {% endif %}
+                        <span class="pub-comment-name">{{ c.author_name or 'Anonymous' }}</span>
+                        <span class="pub-comment-time">{{ c.created_at[:10] if c.created_at else '' }}</span>
+                    </div>
+                    {% if c.rating and c.rating > 0 %}
+                    <div class="pub-comment-stars">{% for i in range(c.rating) %}⭐{% endfor %}</div>
+                    {% endif %}
+                    <div class="pub-comment-text">{{ c.content }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="pub-empty">No reviews yet. Be the first!</div>
+            {% endif %}
+
+            <!-- Comment Form -->
+            {% if user and user.id != pub_user.id %}
+            <div class="pub-comment-form">
+                <div style="font-size:13px;color:#c9d1d9;font-weight:600;margin-bottom:8px">Leave a review</div>
+                <div class="pub-star-input" id="star-input">
+                    <span onclick="setRating(1)">⭐</span>
+                    <span onclick="setRating(2)">⭐</span>
+                    <span onclick="setRating(3)">⭐</span>
+                    <span onclick="setRating(4)">⭐</span>
+                    <span onclick="setRating(5)">⭐</span>
+                </div>
+                <textarea id="comment-text" placeholder="Write your review..."></textarea>
+                <button class="pub-comment-submit" onclick="postComment()">Post Review</button>
+            </div>
+            {% elif not user %}
+            <div style="text-align:center;margin-top:12px">
+                <a href="/login" style="color:#22d3ee;font-size:13px;text-decoration:none">Sign in to leave a review →</a>
             </div>
             {% endif %}
         </div>
     </div>
+
+    <script>
+    var selectedRating = 0;
+    function setRating(n){
+        selectedRating = n;
+        var stars = document.querySelectorAll('#star-input span');
+        stars.forEach(function(s, i){ s.classList.toggle('active', i < n); });
+    }
+    function postComment(){
+        var content = document.getElementById('comment-text').value.trim();
+        if(!content){alert('Please write a review');return;}
+        if(selectedRating === 0){alert('Please select a rating');return;}
+        fetch('/api/comment', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                target_user_id: '{{ pub_user.id }}',
+                content: content,
+                rating: selectedRating
+            })
+        }).then(function(r){return r.json();}).then(function(d){
+            if(d.ok){ location.reload(); }
+            else { alert(d.error || 'Failed'); }
+        });
+    }
+    </script>
 </body>
 </html>
