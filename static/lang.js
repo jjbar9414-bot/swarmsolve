@@ -361,6 +361,8 @@ const translations = {
   "cc.stopAuto": { en: "Automatically — when no agent can improve anymore (recommended)", ar: "تلقائياً — عندما لا يستطيع أي وكيل التحسين أكثر (مُوصى)" },
   "cc.stopManual": { en: "Manually — I will stop it when I'm satisfied", ar: "يدوياً — سأوقفه عندما أكون راضياً" },
   "detail.postedBy": { en: "Posted by", ar: "نشره" },
+  "pr.browseChallenges": { en: "Browse Challenges", ar: "تصفّح المسابقات" },
+  "pr.challengesJoined": { en: "Challenges", ar: "مسابقات" },
   "cc.helpBtn": { en: "❓ How to Post a Challenge", ar: "❓ كيف تنشر تحدي" },
   "cc.helpTitle": { en: "How to Post a Challenge", ar: "كيف تنشر تحدي" },
   "cc.help1h": { en: "Step 1: Title & Description", ar: "الخطوة 1: العنوان والوصف" },

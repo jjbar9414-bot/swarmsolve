@@ -275,11 +275,10 @@ body.modal-open{position:fixed;width:100%;left:0}
 
         <!-- STATS -->
         <div class="pr-stats">
-            <div class="pr-stat hl"><div class="pr-stat-icon">🏆</div><span class="pr-stat-num">{{ user.challenges_won or 0 }}</span><div class="pr-stat-label" data-i18n="pr.wins">Wins</div></div>
-            <div class="pr-stat"><div class="pr-stat-icon">📈</div><span class="pr-stat-num">{{ user.total_improvements or 0 }}</span><div class="pr-stat-label" data-i18n="pr.improvements">Improvements</div></div>
-            <div class="pr-stat"><div class="pr-stat-icon">⚡</div><span class="pr-stat-num">{{ user.biggest_jump or '—' }}</span><div class="pr-stat-label" data-i18n="pr.bestJump">Best Jump</div></div>
+            <div class="pr-stat hl"><div class="pr-stat-icon">📈</div><span class="pr-stat-num" id="stat-submissions">{{ user.total_improvements or 0 }}</span><div class="pr-stat-label" data-i18n="pr.improvements">Submissions</div></div>
             <div class="pr-stat"><div class="pr-stat-icon">🤖</div><span class="pr-stat-num">{{ user.agents_count or 0 }}</span><div class="pr-stat-label" data-i18n="pr.agents">Agents</div></div>
-            <div class="pr-stat"><div class="pr-stat-icon">🎯</div><span class="pr-stat-num">#—</span><div class="pr-stat-label" data-i18n="pr.globalRank">Global Rank</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">🏅</div><span class="pr-stat-num" id="stat-challenges">0</span><div class="pr-stat-label" data-i18n="pr.challengesJoined">Challenges</div></div>
+            <div class="pr-stat"><div class="pr-stat-icon">🏆</div><span class="pr-stat-num">{{ user.challenges_won or 0 }}</span><div class="pr-stat-label" data-i18n="pr.wins">Wins</div></div>
         </div>
 
         <!-- TWO COLUMNS -->
@@ -291,16 +290,10 @@ body.modal-open{position:fixed;width:100%;left:0}
                     <div class="pr-badge-box {% if user.badge == 'EvoGrandmaster' %}b-gm{% elif user.badge == 'EvoMaster' %}b-master{% elif user.badge == 'EvoExpert' %}b-expert{% else %}b-rookie{% endif %}">
                         <div class="pr-badge-ico">{% if user.badge == 'EvoGrandmaster' %}👑{% elif user.badge == 'EvoMaster' %}💎{% elif user.badge == 'EvoExpert' %}⚡{% else %}🌱{% endif %}</div>
                         <div class="pr-badge-info">
-                            <h3>{{ user.badge or 'EvoRookie' }}</h3>
-                            <p>{% if user.badge == 'EvoGrandmaster' %}Top 1% of all builders. Legendary.{% elif user.badge == 'EvoMaster' %}Top 5%. Consistently winning.{% elif user.badge == 'EvoExpert' %}Proven optimizer. Multiple wins.{% else %}Just getting started. Win a challenge to level up!{% endif %}</p>
+                            <h3 id="badge-name">{{ user.badge or 'EvoRookie' }}</h3>
+                            <p id="badge-desc">{% if user.badge == 'EvoGrandmaster' %}Top 1%. Legendary builder.{% elif user.badge == 'EvoMaster' %}Top 5%. Elite optimizer.{% elif user.badge == 'EvoExpert' %}Proven engineer. Multiple improvements.{% else %}Welcome! Submit your first solution to level up.{% endif %}</p>
                         </div>
                     </div>
-                </div>
-                <!-- Activity -->
-                <div class="pr-section">
-                    <div class="pr-stitle" data-i18n="pr.activity">📊 Activity</div>
-                    <div class="pr-heatmap" id="heatmap"></div>
-                    <div class="pr-hleg"><span data-i18n="pr.less">Less</span><div class="pr-hc"></div><div class="pr-hc l1"></div><div class="pr-hc l2"></div><div class="pr-hc l3"></div><div class="pr-hc l4"></div><span data-i18n="pr.more">More</span></div>
                 </div>
                 <!-- Challenge History -->
                 <div class="pr-section">
@@ -313,7 +306,7 @@ body.modal-open{position:fixed;width:100%;left:0}
 
             <!-- SIDEBAR -->
             <div>
-                <div class="pr-scard"><div class="pr-scard-title" data-i18n="pr.quickActions">🚀 Quick Actions</div><div class="pr-actions"><a href="/new-agent" class="pr-abtn pr-abtn-p" data-i18n="pr.createAgent">+ Create New Agent</a><a href="/challenges" class="pr-abtn pr-abtn-o">Browse Challenges</a><a href="/leaderboard" class="pr-abtn pr-abtn-o" data-i18n="pr.viewLeaderboard">View Leaderboard</a></div></div>
+                <div class="pr-scard"><div class="pr-scard-title" data-i18n="pr.quickActions">🚀 Quick Actions</div><div class="pr-actions"><a href="/new-agent" class="pr-abtn pr-abtn-p" data-i18n="pr.createAgent">+ Create New Agent</a><a href="/challenges" class="pr-abtn pr-abtn-o" data-i18n="pr.browseChallenges">Browse Challenges</a><a href="/leaderboard" class="pr-abtn pr-abtn-o" data-i18n="pr.viewLeaderboard">View Leaderboard</a></div></div>
                 <div class="pr-scard"><div class="pr-scard-title" data-i18n="pr.achievements">🏆 Achievements</div><div class="pr-achs">
                     <div class="pr-ach {{ '' if (user.total_improvements or 0) > 0 else 'lk' }}"><div class="pr-ach-ico">🎯</div><div class="pr-ach-n" data-i18n="pr.achFirstBlood">First Blood</div><div class="pr-ach-d" data-i18n="pr.achFirstBloodD">First improvement</div></div>
                     <div class="pr-ach {{ '' if (user.challenges_won or 0) > 0 else 'lk' }}"><div class="pr-ach-ico">🥇</div><div class="pr-ach-n" data-i18n="pr.achChampion">Champion</div><div class="pr-ach-d" data-i18n="pr.achChampionD">Win a challenge</div></div>
@@ -358,8 +351,7 @@ body.modal-open{position:fixed;width:100%;left:0}
     (function(){var h=document.getElementById("hamburger"),n=document.getElementById("nav-links"),o=document.getElementById("nav-sidebar-overlay");if(!h||!n)return;h.addEventListener("click",function(e){e.stopPropagation();h.classList.toggle("active");n.classList.toggle("active");if(o)o.classList.toggle("active");document.body.style.overflow=n.classList.contains("active")?"hidden":"";});if(o)o.addEventListener("click",c);n.querySelectorAll("a").forEach(function(a){a.addEventListener("click",c);});function c(){h.classList.remove("active");n.classList.remove("active");if(o)o.classList.remove("active");document.body.style.overflow="";}})();
     function showToast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
 
-    // Heatmap
-    (function(){var hm=document.getElementById("heatmap");if(!hm)return;for(var w=0;w<22;w++){var col=document.createElement("div");col.className="pr-hcol";for(var d=0;d<7;d++){var c=document.createElement("div");c.className="pr-hc";var r=Math.random(),b=(w/22)*.3;if(r<.12+b)c.className+=" l4";else if(r<.25+b)c.className+=" l3";else if(r<.42+b)c.className+=" l2";else if(r<.58+b)c.className+=" l1";col.appendChild(c);}hm.appendChild(col);}})();
+    // Profile loaded
 
     // Edit modal
     document.getElementById("btn-open-edit").addEventListener("click",function(){var st=window.scrollY;document.body.style.top=(-st)+'px';document.body.classList.add('modal-open');document.documentElement.classList.add('modal-open');document.body.dataset.scrollY=st;document.getElementById("edit-modal").classList.add("open");});
@@ -494,16 +486,20 @@ body.modal-open{position:fixed;width:100%;left:0}
         var container = document.getElementById("pr-challenge-history");
         var history = d.history || [];
         if(history.length === 0){
-            container.innerHTML='<div style="text-align:center;padding:30px 0;color:#6e7681"><div style="font-size:36px;margin-bottom:8px">🏁</div><p>No challenges yet</p><a href="/challenges" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:10px 24px;background:#22d3ee15;color:#22d3ee;border:1px solid #22d3ee30;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px">Browse Challenges →</a></div>';
+            container.innerHTML='<div style="text-align:center;padding:30px 0;color:#6e7681"><div style="font-size:36px;margin-bottom:8px">🏁</div><p>No challenges yet</p><a href="/challenges" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:10px 24px;background:#22d3ee15;color:#22d3ee;border:1px solid #22d3ee30;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px" data-i18n="pr.browseChallenges">Browse Challenges →</a></div>';
             return;
         }
         var html = '';
         history.forEach(function(h, i){
             var rank = i === 0 ? 'g' : (i === 1 ? 's' : 'o');
             var rankLabel = i === 0 ? '🥇' : (i === 1 ? '🥈' : '#' + (i+1));
-            html += '<div class="pr-chi"><div class="pr-chr ' + rank + '">' + rankLabel + '</div><div class="pr-chinfo"><strong>' + h.title + '</strong><small>' + h.submissions + ' submissions · Best agent: ' + h.best_agent + '</small></div><div class="pr-chsc"><b>' + h.best_score.toLocaleString() + '</b><small>best score</small></div></div>';
+            html += '<div class="pr-chi"><a href="/challenge/' + h.challenge_id + '" style="text-decoration:none;display:flex;align-items:center;gap:12px;width:100%"><div class="pr-chr ' + rank + '">' + rankLabel + '</div><div class="pr-chinfo"><strong>' + h.title + '</strong><small>' + h.submissions + ' submissions · ' + h.best_agent + '</small></div><div class="pr-chsc"><b>' + h.submissions + '</b><small>submissions</small></div></a></div>';
         });
         container.innerHTML = html;
+
+        // Update challenges count
+        var chEl = document.getElementById('stat-challenges');
+        if(chEl) chEl.textContent = history.length;
     }).catch(function(){
         document.getElementById("pr-challenge-history").innerHTML='<div style="text-align:center;padding:30px 0;color:#6e7681"><p>Could not load history</p></div>';
     });
@@ -513,16 +509,11 @@ body.modal-open{position:fixed;width:100%;left:0}
         if(!d || !d.achievements) return;
 
         // Update stat numbers
-        var statEls = document.querySelectorAll(".pr-stat");
-        statEls.forEach(function(el){
-            var label = el.querySelector(".pr-stat-label");
-            var num = el.querySelector(".pr-stat-num");
-            if(!label || !num) return;
-            var key = label.getAttribute("data-i18n") || "";
-            if(key === "pr.improvements") num.textContent = d.total_submissions || 0;
-            if(key === "pr.bestJump") num.textContent = d.biggest_jump ? d.biggest_jump.toLocaleString() : "—";
-            if(key === "pr.agents") num.textContent = d.agents_count || 0;
-        });
+        var subEl = document.getElementById('stat-submissions');
+        if(subEl) subEl.textContent = d.total_submissions || 0;
+
+        var chEl = document.getElementById('stat-challenges');
+        if(chEl && d.challenges_participated) chEl.textContent = d.challenges_participated;
 
         // Update achievements (unlock/lock)
         var achMap = {
