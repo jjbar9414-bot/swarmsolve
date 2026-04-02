@@ -801,7 +801,7 @@ def profile_update():
 
     data = request.get_json()
     update_data = {}
-    max_lengths = {"username": 30, "bio": 300, "github": 50, "linkedin": 50, "full_name": 50, "avatar_url": 500}
+    max_lengths = {"username": 30, "bio": 300, "github": 200, "linkedin": 200, "full_name": 50, "avatar_url": 500}
     for field in ["username", "bio", "github", "linkedin", "full_name", "avatar_url"]:
         if field in data:
             val = sanitize_input(data[field], max_length=max_lengths.get(field, 100))
