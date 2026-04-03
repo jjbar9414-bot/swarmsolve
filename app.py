@@ -184,11 +184,11 @@ def home():
             "category": "Algorithm Speed",
         })
 
-    # Load user-created challenges from Supabase
+    # Load user-created challenges from Supabase (only approved)
     supabase_challenges = []
     try:
         r = requests.get(
-            f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.desc&limit=20",
+            f"{SUPABASE_URL}/rest/v1/challenges?select=*&is_approved=eq.true&order=created_at.desc&limit=20",
             headers=supabase_headers(),
             timeout=5
         )
@@ -954,9 +954,9 @@ def challenges_page():
             "category": ch.get("category", "Algorithm Speed"),
         })
 
-    # Supabase challenges (only those NOT already in engine)
+    # Supabase challenges (only approved and NOT already in engine)
     try:
-        url = f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.desc"
+        url = f"{SUPABASE_URL}/rest/v1/challenges?select=*&is_approved=eq.true&order=created_at.desc"
         r = requests.get(url, headers=supabase_headers(), timeout=10)
         db_challenges = r.json() if r.status_code == 200 and isinstance(r.json(), list) else []
 
@@ -1085,6 +1085,7 @@ def create_challenge():
                 "reward_amount": reward_amount,
                 "owner_id": user["id"],
                 "is_stopped": False,
+                "is_approved": False,
                 "total_rounds": 0,
                 "target_score": target_score,
             }
@@ -1101,7 +1102,8 @@ def create_challenge():
         except Exception as e:
             print(f"[DB] Save challenge exception: {e}")
 
-        return jsonify({"ok": True, "id": cid, "initial_score": initial_score})
+        return jsonify({"ok": True, "id": cid, "initial_score": initial_score, "pending": True,
+                        "message": "Challenge submitted! It will appear after admin approval."})
 
     return render_template("create_challenge.html", user=user)
 
@@ -1529,7 +1531,7 @@ def reload_from_db():
     # Step 1: Load user-created challenges from Supabase and register in engine
     try:
         r = requests.get(
-            f"{SUPABASE_URL}/rest/v1/challenges?select=*&order=created_at.asc",
+            f"{SUPABASE_URL}/rest/v1/challenges?select=*&is_approved=eq.true&order=created_at.asc",
             headers=supabase_headers(),
             timeout=10
         )
