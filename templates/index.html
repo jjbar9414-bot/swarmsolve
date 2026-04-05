@@ -475,19 +475,28 @@ if(localStorage.getItem('darwinleap_waitlist')){
 function joinWaitlist(){
     var email = document.getElementById('waitlist-email').value.trim();
     if(!email || !email.includes('@')){alert('Please enter a valid email');return;}
+    // Hide form immediately for instant feedback
+    document.getElementById('waitlist-form').style.display='none';
+    document.getElementById('waitlist-success').style.display='block';
+    localStorage.setItem('darwinleap_waitlist','1');
     fetch('/api/waitlist', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: email})
     }).then(function(r){return r.json();}).then(function(d){
         if(d.ok){
-            document.getElementById('waitlist-form').style.display='none';
-            document.getElementById('waitlist-success').style.display='block';
-            localStorage.setItem('darwinleap_waitlist','1');
             loadWaitlistCount();
         } else {
+            // Revert if failed
+            document.getElementById('waitlist-form').style.display='';
+            document.getElementById('waitlist-success').style.display='none';
+            localStorage.removeItem('darwinleap_waitlist');
             alert(d.error || 'Failed');
         }
+    }).catch(function(){
+        document.getElementById('waitlist-form').style.display='';
+        document.getElementById('waitlist-success').style.display='none';
+        localStorage.removeItem('darwinleap_waitlist');
     });
 }
 function loadWaitlistCount(){
