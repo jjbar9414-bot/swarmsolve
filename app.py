@@ -607,6 +607,7 @@ def profile():
             "bio": profile.get("bio", ""),
             "github": profile.get("github", ""),
             "linkedin": profile.get("linkedin", ""),
+            "public_email": profile.get("public_email", ""),
             "avatar_url": profile.get("avatar_url", user.get("avatar_url", "")),
             "badge": profile.get("badge", "EvoRookie"),
             "agents_count": profile.get("agents_count", 0),
