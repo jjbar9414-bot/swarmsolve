@@ -563,6 +563,7 @@ def set_session():
         "bio": profile.get("bio", "") if profile else "",
         "github": profile.get("github", "") if profile else "",
         "linkedin": profile.get("linkedin", "") if profile else "",
+        "public_email": profile.get("public_email", "") if profile else "",
         "badge": profile.get("badge", "EvoRookie") if profile else "EvoRookie",
         "agents_count": profile.get("agents_count", 0) if profile else 0,
         "total_improvements": profile.get("total_improvements", 0) if profile else 0,
@@ -825,9 +826,9 @@ def profile_update():
 
     data = request.get_json()
     update_data = {}
-    max_lengths = {"username": 30, "bio": 300, "github": 200, "linkedin": 200, "full_name": 50, "avatar_url": 500}
+    max_lengths = {"username": 30, "bio": 300, "github": 200, "linkedin": 200, "full_name": 50, "avatar_url": 500, "public_email": 100}
     url_fields = {"github", "linkedin", "avatar_url"}  # Don't HTML escape URLs
-    for field in ["username", "bio", "github", "linkedin", "full_name", "avatar_url"]:
+    for field in ["username", "bio", "github", "linkedin", "full_name", "avatar_url", "public_email"]:
         if field in data:
             if field in url_fields:
                 # URLs: just limit length, strip, remove null bytes — no HTML escape

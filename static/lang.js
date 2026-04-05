@@ -361,6 +361,8 @@ const translations = {
   "pr.labelUsername": { en: "Username", ar: "اسم المستخدم" },
   "pr.labelFullname": { en: "Full Name", ar: "الاسم الكامل" },
   "pr.labelBio": { en: "Bio", ar: "النبذة" },
+  "pr.labelEmail": { en: "Public Email", ar: "البريد العام" },
+  "pr.emailHint": { en: "Optional — visible on your profile. Leave empty to hide.", ar: "اختياري — يظهر بملفك الشخصي. اتركه فارغاً لإخفائه." },
   "pr.save": { en: "Save", ar: "حفظ" },
   "pr.cancel": { en: "Cancel", ar: "إلغاء" },
   "pr.avView": { en: "View Photo", ar: "عرض الصورة" },
